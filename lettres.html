@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Lettres</title>
+    <style>
+        body {
+            background-color:#f2f3f4;
+            font-family: Arial,sans-serif;
+        }
+        #main {
+            background-color: #fff;
+            border-bottom: 1px solid #d0d1d5;
+            border-left: 1px solid #dedfe2;
+            border-radius: 0.3125em;
+            border-right: 1px solid #dedfe2;
+            box-shadow: 0 1px 0 0 #dedfe2;
+            margin: 50px;
+            overflow: hidden;
+            padding: 40px;
+            font-size:30px;
+            text-align:center;
+        }
+        li {
+            list-style: none;
+            margin-bottom:5px;
+        }
+        a, a:visited {
+            color:#6495ed;
+        }
+    </style>
+
+    <script>
+    window.onload = function() {
+        var thisCSS = document.getElementsByTagName('style')[0].firstChild.data;
+
+        function writeContent(win, number, letter) {
+            win.document.write("<!DOCTYPE html><html lang='fr'>");
+            win.document.write("<head><title>Lettre n°"+number+"</title>");
+            win.document.write("<style>");
+            win.document.write(thisCSS);
+            win.document.write("</style></head>");
+            win.document.write("<body>");
+            win.document.write("<div id='main'>"+letter+"</div>");
+            win.document.write("</body>");
+            win.document.write("</html>");
+            if (win.document.close) {
+                win.document.close();
+            }
+        } 
+
+        var link4 = document.getElementById("link4");
+        link4.onclick = function() {
+            var win = window.open();
+            writeContent(win, 4, "R");
+            return false;
+        }
+        var link3 = document.getElementById("link3");
+        link3.onclick = function() {
+            var win = window.open();
+            writeContent(win, 3, "A");
+            return false;
+        }
+        var link2 = document.getElementById("link2");
+        link2.onclick = function() {
+            var win = window.open();
+            writeContent(win, 2, "T");
+            return false;
+        }
+        var link1 = document.getElementById("link1");
+        link1.onclick = function() {
+            var win = window.open();
+            writeContent(win, 1, "S");
+            return false;
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="main">
+        <ul>
+            <li>
+                <a href="#" id="link1">Lettre n°1</a>
+            </li>
+            <li>
+                <a href="#" id="link2">Lettre n°2</a>
+            </li>
+            <li>
+                <a href="#" id="link3">Lettre n°3</a>
+            </li>
+            <li>
+                <a href="#" id="link4">Lettre n°4</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
