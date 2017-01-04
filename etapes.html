@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Etapes</title>
+    <style>
+        body {
+            background-color:#f2f3f4;
+            font-family: Arial,sans-serif;
+        }
+        #main {
+            background-color: #fff;
+            border-bottom: 1px solid #d0d1d5;
+            border-left: 1px solid #dedfe2;
+            border-radius: 0.3125em;
+            border-right: 1px solid #dedfe2;
+            box-shadow: 0 1px 0 0 #dedfe2;
+            margin: 50px;
+            overflow: hidden;
+            padding: 40px;
+            font-size:30px;
+            text-align:center;
+        }
+        a, a:visited {
+            text-decoration: underline;
+            color:blue;
+        }
+        #code {
+            padding-top:40px;
+            color:#ff7f50;
+        }
+        #step2, #step3, #step4 {
+            display:none;
+        }
+    </style>
+    <script>
+        var step = 1;
+        var detectBack = false;
+        var ignoreHashDetection = false;
+        
+        function displayStep(index) {
+            for (var i = 1; i<5;i++) {
+                var element = document.getElementById("step"+i);
+                if (i==index) {
+                    element.style.display = "block";
+                } else {
+                    element.style.display = "none";
+                }
+            }
+        }
+
+        function setStep1() {
+            if (typeof history.replaceState === "function") {
+                history.replaceState("step1", "Etape 1", "#");
+            } else {
+                window.location.hash = "";
+            }
+            displayStep(1);
+        }
+
+        function setStep2() {
+            if (typeof history.pushState === "function") {
+                history.pushState("step2", "Etape 2", "#bck");
+            } else {
+                window.location.hash = "bck";
+            }
+            displayStep(2);
+            detectBack = true;
+        }
+        
+        function setStep3() {
+            if (typeof history.pushState === "function") {
+                history.pushState("step3", "Etape 3", "#rld");
+            } else {
+                window.location.hash = "rld";
+            }
+            displayStep(3);
+            detectBack = false;
+        }
+
+        function setStep4() {
+            if (typeof history.replaceState === "function") {
+                history.replaceState("step4", "Etape 4", "#nd");
+            } else {
+                window.location.hash = "nd";
+            }
+            displayStep(4);
+        }
+
+        window.onload= function() {
+            // 1st check reload
+            if (window.location.hash == "#rld") {
+                if(window.performance) {
+                    if (performance.navigation.type  == 1 ) {
+                        setStep4();
+                    }
+                } else {
+                    // set Step4 anyway
+                    setStep4();
+                }             
+            } else {
+                 setStep1();
+            }
+            // 2nd set up link
+            var link = document.getElementById("link");
+            link.onclick = function() {
+                setStep2();
+            };
+            // 3rd set up "back" detection
+            if (typeof history.pushState === "function") {
+                window.onpopstate = function (event) {
+                    switch (event.state) {
+                        case "step1":
+                            if (detectBack)
+                                setStep3();
+                            else
+                                setStep1();
+                            break;
+                        case "step2":
+                            setStep2();
+                            break;
+                        case "step3":
+                            setStep3();
+                            break;
+                        case "step4":
+                            setStep4();
+                            break;
+                    }
+                };
+            } else {
+                window.onhashchange = function () {
+                    switch (window.location.hash) {
+                        case "#rld" :
+                            setStep3();
+                            break;
+                        case "#bck" :
+                            setStep2();
+                            break;
+                        default:
+                            if (detectBack && window.location.hash.length == 0) {
+                                setStep3();
+                            } else {
+                                setStep1();
+                            }
+                            break; 
+                    }
+                };
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="main">
+        <div id="step1">
+            Etape 1 : cliquez sur <a id="link" href="#bck">ce lien</a>
+        </div>
+        <div id="step2">
+            Etape 2 : revenez en arrière
+        </div>
+        <div id="step3">
+            Etape 3 : rechargez la page pour voir le code
+        </div>
+        <div id="step4">
+            Etape 4 : retournez sur PIX pour écrire le code ci-dessous
+            <div id="code">
+                poisson
+            </div>
+        </div>
+    </div>
+</body>
+</html>
