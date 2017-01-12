@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>PIX - trier un tableau</title>
+
+<style>
+body{font-family: Arial}
+/* les flèches */
+.flecheDesc {
+  width: 0; 
+  height: 0; 
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+.flecheAsc {
+  width: 0; 
+  height: 0;
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+/* le tableau */
+table {table-layout: fixed;border-collapse: collapse;}
+td {padding:.5rem}
+tr {background-color: #F1EDEB;border-bottom:1px solid #ccc;color:#444;}
+//tr: nth-child(even)  tr: nth-child(odd)
+.bande tbody tr:hover:nth-child(odd) {background-color: #7F8A8C;color:#ffffff;}
+.bande tbody tr:hover:nth-child(even) {background-color: #7F8A8C;color:#ffffff;}
+th {text-align:center;padding:5px 0 0 5px;vertical-align: middle;background-color:#4B5259;color:#F1EDEB;cursor:pointer;
+}
+th.choisi {background-color:#5d625c;color:#fff;}
+th.choisi .flecheDesc {border-bottom-color: white;}
+th.choisi .flecheAsc {border-top-color: white;}
+caption{text-align:center; font-size: 1.5em;padding:1em}
+</style>
+
+<script>
+  // Tri dynamique 
+  function initialiseTab() {
+    // Initialise le tableau, la première fois, les fleche sont toutes vers le bas
+       [].forEach.call(document.getElementsByTagName("table"), function(monTab) {
+           var sonEntete = monTab.getElementsByTagName("tr")[0];
+           var ncol = 1;
+          // maj attribut de chaque colonne selon la capture du clic
+          // soit : affichage du picto flèche, attribut sens du tri (0 Asc - 1 Desc), et num colonne
+          
+          [].forEach.call(sonEntete.querySelectorAll("th"), function(sonTH) {
+            // déclenche la fonction trier au clic sur l'en tête de la colonne 
+            sonTH.addEventListener("click", trier, false);
+            sonTH.setAttribute("data-pos", ncol);
+            if(sonTH.getAttribute("data-tri")=="1") {
+             sonTH.innerHTML += "<span class=\"flecheDesc\"></span>";
+            } else {
+              sonTH.setAttribute("data-tri", "0");
+              sonTH.innerHTML += "<span class=\"flecheAsc\"></span>";
+            }
+            // Tri par défaut
+            if (sonTH.className=="choisi") {
+              sonTH.click();
+            }
+            ncol++;
+          });
+        });
+      }
+
+  function trier() {
+    // afficher le tableau dans le tri choisi mémorisé dans data-tri
+    var sensTri = this.getAttribute("data-tri");
+    this.setAttribute("data-tri", (sensTri=="0") ? "1" : "0");
+    // Supprime la classe « choisi » de chaque colonne.
+    [].forEach.call( this.parentNode.querySelectorAll("th"), function(sonTH) {sonTH.classList.remove("choisi");});
+    // Ajoute la classe « choisi » à la colonne cliquée (this).
+    this.className = "choisi";
+    // Ajuste la flèche
+    this.querySelector("span").className = (sensTri=="0") ? "flecheAsc" : "flecheDesc";
+
+    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets 
+    // NE PAS MODIFIER STRUCTURE DU TABLEAU
+    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0]; 
+    var sesLignes = sonTBody.rows;
+    var nNbrLigne = sesLignes.length;
+    var laCol = new Array(), i, j, laCel;
+    for(i = 0; i < nNbrLigne; i++) {
+      laCel = sesLignes[i].cells;
+      laCol[i] = new Array();
+      for(j = 0; j < laCel.length; j++){
+        laCol[i][j] = laCel[j].innerHTML;
+      }
+    }
+
+    // Trier la matrice (array)
+    var nCol = this.getAttribute("data-pos");
+    // Récupère le type de tri (numérique ou par défaut « local »)
+    var sFonctionTri = (this.getAttribute("data-type")=="num") ? "compareNombres" : "compareLocale";
+    // Tri
+    laCol.sort(eval(sFonctionTri));
+    // Tri numérique
+    function compareNombres(a, b) {return a[nCol-1] - b[nCol-1];}
+    // Tri local (pour support utf-8)
+    function compareLocale(a, b) {return a[nCol-1].localeCompare(b[nCol-1]);}
+    // Renverse la matrice dans le cas d’un tri descendant
+    if (sensTri==0) laCol.reverse();
+    
+    // Construit les colonne du nouveau tableau
+    for(i = 0; i < nNbrLigne; i++){
+      laCol[i] = "<td>"+laCol[i].join("</td><td>")+"</td>";
+    }
+
+    // assigne les lignes au tableau
+    sonTBody.innerHTML = "<tr>"+laCol.join("</tr><tr>")+"</tr>";
+  }
+</script>
+</head>
+
+<body onload="initialiseTab()">
+<h1>PIX - trier un tableau</h1>
+
+<table>
+    <caption>Les arbres remarquables de la ville de Montpellier</caption>
+  <thead>
+    <tr>
+        <th>Nom </th>
+        <th>Quartier</th>
+        <th data-type="num">Âge</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr><td>Mûrier noir</td><td>Magasin</td><td>2</td></tr>
+<tr><td>Chêne pubescent</td><td>Hôpitaux-Facultés</td><td>6</td></tr>
+<tr><td>platane</td><td>Hôpitaux-Facultés</td><td>5</td></tr>
+<tr><td>magniolia</td><td>Hôpitaux-Facultés</td><td>5</td></tr>
+<tr><td>Cèdre de lAtlas</td><td>Hôpitaux-Facultés</td><td>5</td></tr>
+<tr><td>Cyprès chauve</td><td>Mosson</td><td>6</td></tr>
+<tr><td>Jubea, Palma de miel</td><td>Antigone</td><td>5</td></tr>
+<tr><td>Chêne liège</td><td>Hôpitaux-Facultés</td><td>0</td></tr>
+<tr><td>Jujubier</td><td>Hôpitaux-Facultés</td><td>4</td></tr>
+<tr><td>Cèdre du Liban</td><td>Hôpitaux-Facultés</td><td>6</td></tr>
+<tr><td>Arbousier de Grèce</td><td>Hôpitaux-Facultés</td><td>4</td></tr>
+<tr><td>Micocoulier de Virginie</td><td>Ecusson</td><td>4</td></tr>
+<tr><td>Gommier à cidre</td><td>Prés d'Arènes</td><td>2</td></tr>
+<tr><td>Micocoulier de Provence</td><td>Verdanson</td><td>5</td></tr>
+<tr><td>Copalme d'Orient</td><td>Ecusson</td><td>5</td></tr>
+<tr><td>Oranger des Osages</td><td>Ecusson</td><td>5</td></tr>
+<tr><td>platane</td><td>Ecusson</td><td>4</td></tr>
+<tr><td>Podocarpus</td><td>Ecusson</td><td>0</td></tr>
+<tr><td>Peuplier d'Italie</td><td>Ecusson</td><td>0</td></tr>
+<tr><td>Pin pignon</td><td>Croix d'Argent</td><td>4</td></tr>
+<tr><td>cèdre de l'Atlas</td><td>Croix d'Argent</td><td>4</td></tr>
+<tr><td>Chêne liège</td><td>Croix d'Argent</td><td>4</td></tr>
+<tr><td>Cormier</td><td>Cévennes</td><td>0</td></tr>
+<tr><td>Orme de Sibérie</td><td>Ecusson</td><td>0</td></tr>
+<tr><td>Eucalyptus</td><td>Grammont</td><td>2</td></tr>
+<tr><td>Grevillea</td><td>Grammont</td><td>0</td></tr>
+<tr><td>Cèdre de l'Atlas</td><td>Cévennes</td><td>5</td></tr>
+<tr><td>cyprès vert de Provence</td><td>Mosson</td><td>5</td></tr>
+<tr><td>Pin pignon</td><td>Peyrou</td><td>4</td></tr>
+<tr><td>pin pignon</td><td>Croix d'Argent</td><td>4</td></tr>
+<tr><td>cèdre de l'Atlas</td><td>Croix d'Argent</td><td>4</td></tr>
+<tr><td>Pin pignon</td><td>Cévennes</td><td>7</td></tr>
+<tr><td>if commun</td><td>Cévennes</td><td>4</td></tr>
+<tr><td>thuya du Canada ou cèdre blanc</td><td>Cévennes</td><td>4</td></tr>
+<tr><td>Cyprès de Provence</td><td>Cévennes</td><td>6</td></tr>
+<tr><td>Cyprès chauve</td><td>Cévennes</td><td>5</td></tr>
+<tr><td>Platane</td><td>Cévennes</td><td>5</td></tr>
+<tr><td>Erable de Montpellier</td><td>Port Marianne</td><td>5</td></tr>
+<tr><td>Chêne pubescent</td><td>Port Marianne</td><td>5</td></tr>
+<tr><td>Sapin d'Espagne</td><td>Prés d'Arènes</td><td>3</td></tr>
+<tr><td>Cèdre de l'Atlas</td><td>Port Marianne</td><td>5</td></tr>
+<tr><td>Cèdre de l'Atlas</td><td>Port Marianne</td><td>5</td></tr>
+<tr><td>Cèdre du Liban</td><td>Grammont</td><td>8</td></tr>
+<tr><td>Chêne vert</td><td>Grammont</td><td>4</td></tr>
+<tr><td>Cyprès du cachemire</td><td>Grammont</td><td>3</td></tr>
+<tr><td>Séquoia toujours vert</td><td>Hauts de Massane</td><td>0</td></tr>
+<tr><td>Erable pourpre</td><td>Hauts de Massane</td><td>0</td></tr>
+<tr><td>Tulipier de Virginie</td><td>Hauts de Massane</td><td>0</td></tr>
+<tr><td>Frêne à fleurs</td><td>Cévennes</td><td>4</td></tr>
+<tr><td>Arbousier de Grèce</td><td>Verdanson</td><td>6</td></tr>
+<tr><td>Tilleul à grandes feuilles</td><td>Verdanson</td><td>5</td></tr>
+<tr><td>Filaire</td><td>Hôpitaux-Facultés</td><td>4</td></tr>
+<tr><td>Mûrier à papier</td><td>Antigone</td><td>0</td></tr>
+<tr><td>Palmier bleu</td><td>Antigone</td><td>0</td></tr>
+<tr><td>Palmier des Canaries</td><td>Antigone</td><td>0</td></tr>
+<tr><td>Platane</td><td>Verdanson</td><td>4</td></tr>
+<tr><td>Micocoulier de Provence</td><td>Peyrou</td><td>4</td></tr>
+<tr><td>Lilas des Indes</td><td>Ecusson</td><td>2</td></tr>
+<tr><td>Pin d'Alep</td><td>Grammont</td><td>3</td></tr>
+<tr><td>Magnolia à grandes fleurs</td><td>Peyrou</td><td>5</td></tr>
+<tr><td>Pin pignon</td><td>Peyrou</td><td>6</td></tr>
+<tr><td>cyprès vert de Provence</td><td>Peyrou</td><td>5</td></tr>
+<tr><td>Sequoia toujours vert</td><td>Ecusson</td><td>3</td></tr>
+<tr><td>Pin Napoleon</td><td>Ecusson</td><td>3</td></tr>
+<tr><td>Arbre aux quarante écus</td><td>Ecusson</td><td>3</td></tr>
+<tr><td>Sterculier à feuilles de Platane</td><td>Ecusson</td><td>3</td></tr>
+<tr><td>Cyprès de Provence</td><td>Ecusson</td><td>0</td></tr>
+<tr><td>Févier d'Amérique</td><td>Ecusson</td><td>3</td></tr>
+<tr><td>Copalme d'Orient</td><td>Ecusson</td><td>0</td></tr>
+<tr><td>Micocoulier de Provence</td><td>Ecusson</td><td>4</td></tr>
+<tr><td>Olivier d'Europe</td><td>Ecusson</td><td>5</td></tr>
+      </tbody>
+</table>
+    <p>Source : <a href="http://opendata.montpelliernumerique.fr/Arbres-remarquables">opendata.montpelliernumerique.fr/Arbres-remarquables</a></p>
+    
+    </body>
+    </html>
