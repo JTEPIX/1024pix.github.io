@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat de l'élection</title>
+    <style>
+    body {
+        font-family:sans-serif;
+    }
+    li {
+    list-style: none;
+}
+li:before {
+    content: "✓ ";
+}
+
+input {
+    border: none;
+    width: 80px;
+    font-size: 14px;
+    padding: 2px;
+    text-align:left;
+}
+
+table, td, input {
+    cursor:cell;
+}
+
+input:hover {
+    background-color: #eee;
+}
+
+input:focus {
+    background-color: #ccf;
+    outline:none;
+    cursor:text;
+}
+
+table {
+    border:none;
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #999;
+    padding: 0;
+}
+
+tr:first-child td, td:first-child {
+    background-color: #ccc;
+    padding: 1px 3px;
+    text-align: center;
+}
+
+footer {
+    font-size: 80%;
+}
+
+input#A18, input#B18,
+input#A1, input#B1
+ {
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+<table>
+</table>
+    <script>
+        var NB_COLS = 10;
+        var NB_ROWS = 20;
+        var DATA={};
+        var cache = {};
+        for (var i=0; i<NB_ROWS; i++) {
+            var row = document.querySelector("table").insertRow(-1);
+            for (var j=0; j<NB_COLS; j++) {
+                var letter = i|j ? String.fromCharCode("A".charCodeAt(0)+j-1):"";
+                row.insertCell(-1).innerHTML = i&&j ? "<input id='"+ letter+i +"' data-row='"+i+"' data-col='"+letter+"'/>" : i||letter;
+                cache[letter+i] = "";
+            }
+        }
+        var INPUTS=[].slice.call(document.querySelectorAll("input"));
+
+        INPUTS.forEach(function(elm) {
+            elm.onfocus = function(e) {
+                e.target.value = cache[e.target.id] || "";
+            };
+            elm.onblur = function(e) {
+                cache[e.target.id] = e.target.value;
+                computeAll();
+            };
+            elm.onkeypress = function (e) {
+                var key = e.which || e.keyCode;
+                if (key === 13) {
+                    e.target.blur();
+                    var row = e.target.getAttribute("data-row");
+                    var col = e.target.getAttribute("data-col");
+                    if (row < NB_ROWS-1) {
+                        document.getElementById(col+(parseInt(row)+1)).select();
+                    }
+                }
+            };
+
+            var getter = function() {
+                var value = cache[elm.id] || "";
+                if (value.charAt(0) == "=") {
+                    with (DATA) return eval(value.substring(1));
+                } else { return isNaN(parseFloat(value)) ? value : parseFloat(value); }
+            };
+            Object.defineProperty(DATA, elm.id, {get:getter});
+            Object.defineProperty(DATA, elm.id.toLowerCase(), {get:getter});
+        });
+
+        var updateManagers = [];
+
+        (window.computeAll = function() {
+            for (var i=0;i<updateManagers.length;i++) {
+                updateManagers[i]();
+            }
+            INPUTS.forEach(function(elm) { try { elm.value = DATA[elm.id]; } catch(e) {} });
+        })();
+        
+        window.setValues = function(values) {
+            for (var i =0; i<values.length;i++) {
+                for (var j= 0;j<values[i].length; j++) {
+                    var letter = String.fromCharCode("A".charCodeAt(0)+j)
+                    cache[letter+(i+1)] = values[i][j];
+                }
+            }
+            window.computeAll();
+        }
+
+        window.getValue = function(i,j) {
+            var letter = String.fromCharCode("A".charCodeAt(0)+j);
+            return DATA[letter+(i+1)];
+        }
+
+        window.setValue = function(i,j, value) {
+            var letter = String.fromCharCode("A".charCodeAt(0)+j);
+            if (typeof value != "string") {
+                value = value.toString();
+            }
+            cache[letter+(i+1)] = value;
+            //window.computeAll();
+        }
+
+        window.addUpdateManager = function(manager) {
+            updateManagers.push(manager);
+        }
+
+        var values = [
+            ["Candidats", "Votes"],
+            ["Alexia", "765"],
+            ["Arno", "285"],
+            ["Chloé", "109"],
+            ["Ely", "484"],
+            ["Grégoire", "459"],
+            ["Jean-Luc", "543"],
+            ["Jérémy", ""],
+            ["Jill", "930"],
+            ["Laure", "194"],
+            ["Magalie", "564"],
+            ["Maud", "389"],
+            ["Mickaël", "42"],
+            ["Moïses", "62"],
+            ["Nassim", "19"],
+            ["Neïssa", "22"],
+            ["Pascal", "722"],
+            ["Total", ""]
+        ]
+
+        addUpdateManager(function() {
+            var sum = 0;
+            for (var i=1; i<17;i++) {
+                var val = getValue(i,1);
+                if (isNaN(val)) {
+                    sum = "?";
+                    break;
+                } 
+                val = parseFloat(val);
+                if (!isNaN(val)) {
+                    sum += val;
+                }
+            }
+            setValue(17,1,sum);
+        });
+
+        setValues(values);
+        document.getElementById("B18").setAttribute("readonly", "readonly");
+
+    </script>
+</body>
+</html>
