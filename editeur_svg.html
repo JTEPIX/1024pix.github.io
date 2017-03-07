@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIX - épreuve edition d'image vectorielle codée en SVG</title>
+<meta content="PIX - éditeur SVG" name="description">
+<style>
+    
+	head
+	{
+		margin:0;
+		padding:20px 20px 20px 20px;
+    }
+    h1
+    {
+        font-family: arial, verdana, sans-serif;
+        font-size: 1.5em;
+    }
+    
+    #barre_outils
+    {
+        width:80%;
+        text-align: center;
+    }
+	
+	button 	{ margin:0; height:40px; width:40px; }
+
+    body { width: 100%; background:#f0f0f0}
+	
+	#imageDiv {
+        width: 80%;
+        margin:0;}
+	#codeArea {
+        width:80%;
+        height: 110px;
+        margin: 0% 2%;
+        font-size: 1em;
+        padding:5px;
+        border:1px #000000 solid;
+	}
+	#imageFrame {
+        width:100%;
+        height: 50%;
+        margin: 0% 2%;
+        padding: 5px;
+        background:white;
+        border:1px #000000 solid;
+	}
+</style>
+    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+	//window.onload = function()
+	$(document).ready( function() {
+		var s="<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"300\" height=\"200\" version=\"1.1\">\n\n   <rect width=\"300\" height=\"100\" fill=\"green\" stroke=\"black\" stroke-width=\"2\" />\n\n</svg>\n";
+		$("#codeArea").val(s);
+		
+		OnDraw();
+	});
+	
+	function OnDraw()
+	{
+		var s=$("#codeArea").val();
+		s = "<!DOCTYPE html><html><body>"+s+"</body></html>";
+		$("#imageFrame").attr("srcdoc",s);
+	}
+    function OnReload()
+	{
+       var s="<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"300\" height=\"200\" version=\"1.1\">\n\n   <rect width=\"300\" height=\"100\" fill=\"green\" stroke=\"black\" stroke-width=\"2\" />\n\n</svg>\n";
+		$("#codeArea").val(s);
+		
+		OnDraw();
+	}
+	
+</script>
+</head>
+
+<body>
+	<head>
+			<h1>PIX - éditeur d'image SVG.</h1>
+    </head>
+    
+    <div id="code">
+        <textarea id="codeArea"></textarea>
+    </div>
+    
+	
+    <div id="barre_outils"> 
+        <button type="button" title="New" onclick="OnReload()"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABy0lEQVRIia3Wy2oUQRQG4G96JeJCJIuQRRgGURfiW7gRVxKyEfciLsQHEGRw4SPIIIP4CN7IwkcQkYCKFyTegkiMIaugk3FRVfYlnfSk6R8KiupT/6n6z6W652AMcAHncRZz+ItfeI3neIoPDTx7sIj72MC0YWxijP6s5JfwrYZoA6tx1Dlej3sTjgg3LuE6dgqbvmCIM8gKdllcG0abZL8TOU7gGZ5UT57IJ/HaCzPceCHaTgpOXsX5+2S0WJBlgruVEzchw52Ck2J8EAKaFseHJE+Yw8eKg21CKm7KNZ9FliqOYcXewG8TgpIWhi3ICfGryjPFjx4e4WI0PI13LZ0cxTyOCym6i+/wSZ7nbbQ/EJmQs/A1eu3cQeekuIo3uEYu0U/dSJTJa2o1E7oiIY9PduBgIE/1z5mQvwmXO3BwpTBfIZw6FdqadoWWMB85Upv4r8hYXhwj7WKR4V6B50HxY1/o56nZDQ/pJIt7UjWvq3mAlpXb9cjs7Xqk3K6X9jO+ofzgrOG2oGX1RgPckms+xR/cbDrRklyuUuPCS7yI87onc7mJPKGPh9iqIaqOLSGg/TqiXoOjU/LflnNCp9zFb/lvy2O83Y/gH2awsiXBthUtAAAAAElFTkSuQmCC" alt="new"/></button>
+        <button type="button" title="View SVG code" onclick="OnDraw()"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABO0lEQVRIibXUTytEURjH8U+TNFl6AbKQFyALS80rkIVsvAF7ZcFCkiQ7C8mKDVkpIsXWxsJGkRKlMCzHnyZmLM7cmqa5Y+bOnV/9unXOc8/3nOc55yFoGI84wygyUtYcyhV/YQf9aQIWqwCRXzGLnjQAS3UAke8whq4kC2dqvvU0gH0cYCgJBFbEn6DaH1hDb6cAkZ8xjWynAGX84gI5DerTzn3PYATHwrXuSxsQqRuTuMaCmPqsaj1Fcb7FuEraUm8JGMQeJjoFiJTtFOABU9gm4fOP0SfWhYeYjwbTABRxiBnc1062AyjhEvM4x0+9oKSAvNDit/DdKLBVQAGbWMZ7Mz80CyjiVEjHVSs7igClBjE3QgFPxOS5GUA9vQhddsM/eW4GUKwaK2BXaFxPSReuVQ5vOBJacGr6A3ymdn4Bq4wzAAAAAElFTkSuQmCC" alt="view"/></button>
+    </div>
+    
+    <div id="imageDiv">
+            <iframe id="imageFrame"></iframe>
+    </div>
+
+</body>
+</html>
