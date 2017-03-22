@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+		body {
+			background-color:#EEEEEE;
+			text-align:center;
+			padding-top:20px;
+			font-size:20px;
+		}
+		#cadre {
+			border:solid 2px #000000;
+			width:60%;
+			background-color:#FFFFFF;
+			padding:10px;
+			margin: 20px auto;
+			height:100px;
+			line-height:100px;
+		}
+		#cache {
+            display:none;
+            font-size:40px;
+        }
+        @media print {
+            #cache {
+                display:block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    Si vous imprimez cette page, un mot apparaîtra dans le cadre ci-dessous.<br>
+	(vous pouvez aussi vous servir de l'aperçu avant impression)
+	<div id="cadre">
+		<div id="cache">
+			MATELAS
+		</div>
+	</div>
+
+</body>
+</html>
