@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dessin noir et blanc</title>
+    <style>
+        body {
+            text-align:center;
+            background-color:lightgray;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        #main {
+            max-width:800px;
+            margin:auto;
+            text-align: left;
+            background-color: #ffffff;
+            padding:50px 70px;
+        }
+        #explications {
+            margin-bottom:10px;
+        }
+        .exemple {
+            margin-bottom:10px;
+        }
+        .ligne {
+            margin:0;
+            padding:0;
+        }
+        .cellule {
+            height:50px;
+            width:50px;
+            background-color:#ffffff;
+            display:inline-block;
+            cursor:pointer;
+            border:solid 1px #000000;
+            margin:1px;
+            vertical-align: middle;
+        }
+        .label {
+            vertical-align: middle;
+            display:inline-block;
+            margin-left:10px;
+            color:orangered;
+        }
+        .cellule.active {
+            background-color:#000000;
+        }
+    </style>
+    <script>
+        var NB_COLS = 11;
+        var NB_ROWS = 9;
+        var instructions = ["5, 2", "4, 1, 2, 1", "3, 1, 4, 1", "2, 1, 6, 1", "1, 10", "2, 1, 6, 1", "2, 1, 2, 2, 2, 1", "2, 1, 2, 2, 2, 1", "2, 1, 2, 2, 2, 1"];
+        
+        function getCellule() {
+            var cell = document.createElement("span");
+            cell.className="cellule";
+            var celluleActive = false;
+            cell.onclick = function() {
+                celluleActive = !celluleActive;
+                if (celluleActive) {
+                    cell.className="cellule active";
+                } else {
+                    cell.className="cellule";
+                }
+            }
+            return cell;
+        }
+        
+        window.onload = function() {
+            var tableau = document.getElementById("tableau");
+            for (var i=0;i<NB_ROWS; i++) {
+                var row = document.createElement("div");
+                row.className="ligne";
+                for (var j=0; j<NB_COLS; j++) {
+                    row.appendChild(getCellule());
+                }
+                var label = document.createElement("span");
+                label.className = "label";
+                label.innerText = instructions[i];
+                row.appendChild(label);
+                tableau.appendChild(row);
+            }
+        }
+
+    </script>
+
+</head>
+<body>
+    <div id="main">
+        <div id="explications">
+            Chaque ligne est décrite par une liste de nombres : 
+            <ul>
+                <li>le premier donne un nombre de carrés <b>blancs</b>,</li>
+                <li>le deuxième un nombre de carrés <b>noirs</b>,</li>
+                <li>le troisième un nombre de carrés <b>blancs</b>,</li>
+                <li>et ainsi de suite...</li>
+            </ul>
+            <div class="exemple">Par exemple :</div>
+            <div class="ligne">
+                <span class="cellule"></span><span class="cellule active"></span><span class="cellule active"></span><span class="cellule"></span><span class="cellule"></span><span class="cellule"></span><span class="cellule active"></span><span class="label">1, 2, 3, 1</span>
+            </div>
+            <br><br>
+            En suivant la description de chaque ligne, reproduisez le dessin.<br>Il suffit de cliquer sur une case pour la faire changer de couleur. 
+        </div>
+        <div id="tableau"></div>
+    </div>
+</body>
+</html>
