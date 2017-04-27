@@ -7,6 +7,7 @@
     <title>Espace Personnel</title>
     <script>
         var word = "097117116111114111117116101";
+        var data = "049050051052053";
         var message;
 
         deo = function (txt) { 
@@ -20,15 +21,15 @@
 
         function check() {
             var value = document.getElementById("password").value;
-            var code = deo("049050051052053");
+            var code = deo(data);
             if (value === code) {
                 document.getElementById("answer").innerHTML = deo(word);
                 document.getElementById("login").style.display = "none";
                 document.getElementById("space").style.display = "block";
             } else {
-                if (value.length < 5) {
+                if (value.length < code.length) {
                     message.innerHTML = "Le mot de passe est trop court";
-                } else if (value.length > 5) {
+                } else if (value.length > code.length) {
                     message.innerHTML = "Le mot de passe est trop long";
                 } 
                 else if (! /^\d+$/.test(value)) {
