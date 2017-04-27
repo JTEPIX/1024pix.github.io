@@ -11,9 +11,9 @@
         var word = "109117115105113117101";
         var lastStep;
         var stepSearchVirus = 1;
-        var stepVirus = 2;
-        var stepForm = 4;
-        var stepService = 6;
+        var stepVirus = 1;
+        var stepForm = 3;
+        var stepService = 5;
 
         deo = function (txt) { 
             var string = ""; 
@@ -24,6 +24,13 @@
             return string;
         }
 
+        function clearErrors() {
+            var errors = document.getElementsByClassName("form__error");
+            for (var i=0;i<errors.length;i++) {
+                errors[i].style.display = "none";
+            }
+        }
+
         function init() {
             if (step>-1) {
                 var previous = document.getElementById("step__"+step);
@@ -31,6 +38,7 @@
             } else {
                 eError.style.display = "none";
             }
+            clearErrors();
         }
 
         function setStep(i) {
@@ -82,26 +90,46 @@
 
         function ok() {
             switch(step) {
-                case stepSearchVirus:
+                /*case stepSearchVirus:
                     progress(stepSearchVirus); 
-                    break;
+                    break;*/
                 case stepForm:
+                    clearErrors();
                     var login = document.getElementById("login");
                     var password = document.getElementById("password");
-                    if (login.value.length>0 || password.value.length>0) {
+                    var test = true;
+                    if (login.value.length==0) {
+                        document.getElementById("error__login").style.display="block";
+                        test = false;
+                    }
+                    if (password.value.length==0) {
+                        test = false;
+                        document.getElementById("error__password").style.display="block";
+                    }
+                    if (test) {
                         error();
-                    } else {
-                        nextStep();
                     }
                     break;
                 case stepService:
+                    clearErrors();                
+                    var test = true;
                     var service = document.getElementById("service");
                     var email = document.getElementById("email");
-                    var password = document.getElementById("password");
-                    if (service.selectedIndex > 0 && (email.value.length>0 || password.value.length>0)) {
+                    var password = document.getElementById("password2");
+                    if (service.selectedIndex == 0) {
+                        test = false;
+                        document.getElementById("error__service").style.display="block";                        
+                    } 
+                    if (email.value.length == 0) {
+                        test = false;
+                        document.getElementById("error__email").style.display="block";                        
+                    }
+                    if (password.value.length == 0) {
+                        test = false;
+                        document.getElementById("error__password2").style.display="block";                        
+                    } 
+                    if (test) {
                         error();
-                    } else {
-                        nextStep();
                     }
                     break;
                 default:
@@ -112,10 +140,9 @@
 
         function cancel() {
             switch(step) {
-                case 3:
-                    setStep(1);
-                    break;
                 case stepVirus:
+                case stepForm:
+                case stepService:
                     nextStep();
                     break;
                 default:
@@ -293,6 +320,13 @@
             margin-top:2px;
         }
 
+        .form__error {
+            display:none;
+            margin-bottom:4px;
+            color: #ff0000;
+            margin-left:200px;
+        }
+
         #error h1 {
             color: #ff0000;
         }
@@ -319,6 +353,7 @@
                 <button onclick="ok()">Commencer</button>
             </div>
         </div>
+<!--        
         <div class="step" id="step__1">
             <h1>Recherche de virus</h1>
             Cliquez sur le bouton pour lancer la recherche de virus.
@@ -330,7 +365,8 @@
                 <button onclick="ok()">Lancer la recherche</button>
             </div>
         </div>
-        <div class="step" id="step__2">
+-->
+        <div class="step" id="step__1">
             <div class="overlay">
                 <div class="alert">
                     <div class="alert__title"></div>
@@ -347,7 +383,7 @@
                 </div>
             </div>
         </div>
-        <div class="step" id="step__3">
+        <div class="step" id="step__2">
             <div class="overlay">
                 <div class="alert">
                     <div class="alert__title"></div>
@@ -364,7 +400,7 @@
                 </div>
             </div>
         </div>
-        <div class="step" id="step__4">
+        <div class="step" id="step__3">
             <h1>Inspection de votre environnement</h1>
             <p>Nous allons à présent inspecter votre environnement.<br><br>
             Pour cela, vous devez entrer le nom d'utilisateur ainsi que le mot de passe que vous utilisez habituellement pour vous connecter sur cet ordinateur.
@@ -374,8 +410,14 @@
                 <div class="form__line">
                     <div class="label">Nom d'utilisateur&nbsp;:</div><input type="text" class="entry" id="login"></input>
                 </div>
+                <div class="form__error" id="error__login">
+                    Veuillez entrer votre nom d'utilisateur
+                </div>
                 <div class="form__line">
                     <div class="label">Mot de passe&nbsp;:</div><input type="password" class="entry" id="password"></input>
+                </div>
+                <div class="form__error" id="error__password">
+                    Veuillez entrer votre mot de passe
                 </div>
             </form>
             <div class="step__buttons">
@@ -383,7 +425,7 @@
                 <button onclick="ok()">Ok</button>
             </div>
         </div>
-        <div class="step" id="step__5">
+        <div class="step" id="step__4">
             <div class="overlay">
                 <div class="alert">
                     <div class="alert__title"></div>
@@ -400,7 +442,7 @@
                 </div>
             </div>
         </div>    
-        <div class="step" id="step__6">
+        <div class="step" id="step__5">
             <h1>Contrôle de vos applications en ligne (1/2)</h1>
             Pour cette étape, vous devez tout d'abord accéder à l'un de vos comptes en ligne&nbsp;
             <form class="service">
@@ -412,11 +454,20 @@
                     <option value="4">Microsoft live</option>
                     </select>
                 </div>
+                <div class="form__error" id="error__service">
+                    Veuillez sélectionner un service
+                </div>
                 <div class="form__line">
                     <div class="label">Adresse e-mail&nbsp;:</div><input type="text" class="entry" id="email"></input>
                 </div>
+                <div class="form__error" id="error__email">
+                    Veuillez entrer votre adresse mail
+                </div>
                 <div class="form__line">
                     <div class="label">Mot de passe&nbsp;:</div><input type="password" class="entry" id="password2"></input>
+                </div>
+                <div class="form__error" id="error__password2">
+                    Veuillez entrer votre mot de passe
                 </div>
             </form>
             <div class="step__buttons">
@@ -424,7 +475,7 @@
                 <button onclick="ok()">Ok</button>
             </div>
         </div>
-        <div class="step" id="step__7">
+        <div class="step" id="step__6">
             <div class="overlay">
                 <div class="alert">
                     <div class="alert__title"></div>
@@ -441,21 +492,21 @@
                 </div>
             </div>
         </div>    
-        <div class="step" id="step__8">
+        <div class="step" id="step__7">
             <h1>Fin du parcours</h1>
             Bravo, vous avez évité tous les dangers&nbsp;!<br><br>
             Le mot est <span id="answer"></span>.
         </div>    
         <div class="step" id="error">
             <h1>Attention</h1>
-            <div class="reason" id="reason__2">
+            <div class="reason" id="reason__1">
                 En aucun cas, une page sur Internet ne peut détecter un virus sur votre ordinateur !<br><br>
                 Ne téléchargez pas de programme sur Internet, sans être certain de l'identité du site sur lequel vous êtes.
             </div>
-            <div class="reason" id="reason__4">
+            <div class="reason" id="reason__3">
                 Ne transmettez pas de données sensibles sur Internet, à moins d'être sur un site de confiance dont l'identité est certifiée.
             </div>
-            <div class="reason" id="reason__6">
+            <div class="reason" id="reason__5">
                 Ne transmettez pas de données sensibles sur Internet, à moins d'être sur un site de confiance dont l'identité est certifiée.
             </div>
             Vous pouvez recommencer le parcours en cliquant sur le bouton ci-dessous&nbsp;: 
