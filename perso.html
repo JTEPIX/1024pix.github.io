@@ -52,6 +52,8 @@
 
         window.onload = function() {
             message = document.getElementById("login__message");
+            document.getElementById("password").onkeydown = init;
+            document.getElementById("password").onkeypress = key;
         }
 
     </script>
@@ -99,7 +101,7 @@
     <div id="login" class="main">
         <div class="title">Accès protégé</div>
         <div class="info">Veuillez entrer votre mot de passe</div>
-        <input type="password" onkeydown="init()" onkeypress="key()" id="password"></input>
+        <input type="password" id="password"></input>
         <button onclick="check()">Valider</button>
         <div id="login__message"></div>
     </div>
