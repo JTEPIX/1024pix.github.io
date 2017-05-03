@@ -30,7 +30,11 @@
                 document.getElementById("login").style.display = "none";
                 document.getElementById("welcome").style.display = "block";
                 d = new Date();
-                document.getElementById("time").innerHTML = d.getHours()+":"+d.getMinutes();
+                var hours = "00"+d.getHours();
+                var minutes = "00"+d.getMinutes();
+                hours = hours.slice(-2);
+                minutes = minutes.slice(-2);
+                document.getElementById("time").innerHTML = hours+":"+minutes;
             } else {
                 error.style.visibility = "visible";
                 inError = true;
