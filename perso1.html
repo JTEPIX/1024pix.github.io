@@ -36,6 +36,7 @@
                 minutes = minutes.slice(-2);
                 document.getElementById("time").innerHTML = hours+":"+minutes;
             } else {
+                console.debug(answer);
                 error.style.visibility = "visible";
                 inError = true;
             }
@@ -116,18 +117,35 @@
         }
         .erase {
             padding-left:10px;
+            color:#000000;            
+        }
+        .keys {
+            text-align: center;
+            margin:0 10px;
         }
         a.key {
-            display:block;
-            float:left;
-            width:92px;
-            height:50px;
+            display:inline-block;
+            margin:0;
+            width:85px;
+            height:30px;
             text-align:center;
             text-decoration:none;
             color:#000000;
+            padding-top:20px;
         }
         a.key:active {
             color:#F00000;
+        }
+        #ok {
+            display:block;
+            text-align:center;
+            margin:10px 40px;
+            color:#000000;
+            border:solid 1px #000000;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            padding:5px;
         }
         #display {
             font-size:18px;
@@ -146,7 +164,7 @@
             visibility:hidden;
             padding-left:40px;
             padding-right:40px;
-            margin-bottom:20px;       
+            margin-bottom:0px;       
         }
         #time {
             text-align: center;
@@ -160,6 +178,9 @@
             -moz-border-radius: 5px;
             border-radius: 5px;
             padding:10px;
+        }
+        .clearfix {
+            clear:both;
         }
     </style>
 </head>
@@ -177,18 +198,19 @@
                 Erreur !
             </div>
             <div class="keys">
-                <a href="#" class="key" onclick="addKey(1)">1</a>
-                <a href="#" class="key" onclick="addKey(2)">2</a>
-                <a href="#" class="key" onclick="addKey(3)">3</a>
-                <a href="#" class="key" onclick="addKey(4)">4</a>
-                <a href="#" class="key" onclick="addKey(5)">5</a>
-                <a href="#" class="key" onclick="addKey(6)">6</a>
-                <a href="#" class="key" onclick="addKey(7)">7</a>
-                <a href="#" class="key" onclick="addKey(8)">8</a>
-                <a href="#" class="key" onclick="addKey(9)">9</a>
-                <a href="#" class="key" onclick="addKey(0)">0</a>
-                <a href="#" class="key" onclick="check()">↲</a>
+                <a href="#" class="key" onclick="addKey(1)">1
+                </a><a href="#" class="key" onclick="addKey(2)">2
+                </a><a href="#" class="key" onclick="addKey(3)">3
+                </a><a href="#" class="key" onclick="addKey(4)">4
+                </a><a href="#" class="key" onclick="addKey(5)">5
+                </a><a href="#" class="key" onclick="addKey(6)">6
+                </a><a href="#" class="key" onclick="addKey(7)">7
+                </a><a href="#" class="key" onclick="addKey(8)">8
+                </a><a href="#" class="key" onclick="addKey(9)">9
+                </a><a href="#" class="key" onclick="addKey(0)">0</a>
+                <div class="clearfix"></div>
             </div>
+            <a href="#" onclick="check()" id="ok">Ok</a>
         </div>
         <div id="welcome">
             <div id="time"></div>
