@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Espace Personnel</title>
+    <script>
+        var word = "109117115105113117101";
+        var login = "106117108105097064112105120046102114";
+        var data = "050048048056056049";        
+        var message;
+        var more = false;
+
+        deo = function (txt) { 
+            var string = ""; 
+            var chunks = txt.match(/.{1,3}/g); 
+            for (var i = 0; i < chunks.length; i++) { 
+                string += String.fromCharCode(parseInt(chunks[i], 10)); 
+            } 
+            return string;
+        }
+
+        function check() {
+            var value = document.getElementById("email").value;
+            var value2 = document.getElementById("password").value;
+            console.log("valeur: "+value);
+            if (value !== login) {
+                message.innerHTML = "Adresse e-mail inconnue";
+                return;
+            }
+            if (value2 !== data) {
+                message.innerHTML = "Mot de passe incorrect";
+                return;
+            } 
+            document.getElementById("answer").innerHTML = deo(word);
+            document.getElementById("login__form").style.visibility = "hidden";
+            document.getElementById("space").style.display = "block";
+        }
+
+        function key(evt) {
+            evt = evt || window.event;
+            if (evt.keyCode == 13) {
+                check();
+            }            
+        }
+
+        function init() {
+            message.innerHTML = "";
+        }
+
+
+        window.onload = function() {
+            login = deo(login);
+            data = deo(data);
+            message = document.getElementById("login__message");
+            document.getElementById("email").onkeydown = init;
+            document.getElementById("email").onkeypress = key;
+            document.getElementById("password").onkeydown = init;
+            document.getElementById("password").onkeypress = key;            
+        }
+
+    </script>
+    <style>
+        body {
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
+            font-size:14px;
+            background-color:#e9ebee;
+            padding:0;
+            margin:0;
+        }
+        .back {
+            position:relative;
+            background-color: #3b5998;
+            color: #ffffff;
+            padding: 10px;
+            border: solid 1px #133783;
+        }
+        .label {
+            color:#87cefa;
+            margin-right:5px
+        }
+        .main {
+            font-size:1.2em;
+            width:800px;
+            margin: 0 auto;
+        }
+        .entry {
+            display:inline-block;
+            width:30%;
+        }
+        label {
+            font-size:12px;
+        }
+        #login input {
+            display:block;
+            width:130px;
+            background-color:#ffffff;
+            border: solid 1px #29487d;
+            font-size:15px;
+            color:#000000;
+            height:20px;
+            padding:2px;
+            margin:0;
+        }
+        #login button {
+            background-color:#4267b2;
+            border: solid 1px #29487d;
+            padding:5px;
+            color:#ffffff;
+            font-weight:bold;
+            cursor:pointer;
+        }
+        #space {
+            margin-top: 0px;
+            display:none;
+            padding:20px 20px 100px 20px;;
+            background-color:#ffffff;
+        }
+        .title {
+            font-size:2rem;
+            margin-bottom:5px;
+            float:left;
+            width:300px;
+        }
+        .form {
+            margin-left:300px;
+        }
+        .info {
+            margin-bottom:5px;
+        }
+        #login__message {
+            margin-top:10px;
+            color:#ff7777;
+            font-size:12px;
+        }
+        #answer {
+            color:#F00000;
+        }
+        #logged {
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    <div class="back">
+        <div id="login" class="main">
+            <div class="title">Mon réseau</div>
+            <div class="form" id="login__form">
+                <div class="entry">
+                    <label>Adresse e-mail</label>
+                    <input type="text" id="email"></input>
+                </div><div class="entry">
+                    <label>Mot de passe</label>
+                    <input type="password" id="password"></input>
+                </div><div class="entry">
+                    <button onclick="check()">Connexion</button>
+                </div>
+                <div id="login__message"></div>
+            </div>
+        </div>
+    </div>
+    <div id="space" class="main">
+        <div class="info">
+            Bienvenue dans votre espace personnel.<br><br>
+            Le mot que vous cherchez est <span id="answer"></span>
+        </div>
+    </div>
+</body>
+</html>
