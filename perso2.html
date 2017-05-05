@@ -83,6 +83,10 @@
             padding-bottom: 10px;
             outline: none;
             font-weight: 100;
+            background-color:#ffffff;
+        }
+        #login input#email {
+            border-bottom:none;
         }
         #login button {
             display:block;
@@ -128,8 +132,9 @@
 <body>
     <div id="login" class="main">
         <div class="title">Accès Messagerie</div>
-        <div class="info">Bonjour pix@pix.fr</div>
-        <input type="password" id="password" placeholder="Mot de passe"></input>
+        <div class="info">Bonjour Julien</div>
+        <input type="text" id="email" value="julien@pmail.fr" disabled="disabled">
+        <input type="password" id="password" placeholder="Mot de passe">
         <div id="login__message"></div>
         <button onclick="check()">Connexion</button>
     </div>
