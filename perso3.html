@@ -8,7 +8,7 @@
     <script>
         var word = "102101117116114101";
         var login = "106117108105097064112109097105108046102114";
-        var data = "050048048056056049";        
+        var data = "050048048056049057056049";        
         var message;
         var more = false;
 
@@ -24,7 +24,6 @@
         function check() {
             var value = document.getElementById("email").value;
             var value2 = document.getElementById("password").value;
-            console.log("valeur: "+value);
             if (value !== login) {
                 message.innerHTML = "Adresse e-mail inconnue";
                 return;
