@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Espace Personnel</title>
     <script>
-        var word = "102101117116114101";
-        var login = "106117108105097064112109097105108046102114";
-        var data = "050048048056049057056049";        
+        var word = "076101032067114233100105116032065103114105099111108101";
+        var login = "106117108105097064112109097105108046099111109";
+        var data = "050048048056049057056049";
         var message;
         var more = false;
 
@@ -135,10 +135,18 @@
             font-size:12px;
         }
         #answer {
-            color:#F00000;
+            color:#009B9D;
         }
         #logged {
             display:none;
+        }
+        .alert {
+            background-image:url('data:image/png;base64,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');
+            background-repeat:no-repeat;
+            padding:20px 20px 10px 60px;
+            border:solid 1px #3b5998;
+            min-height:30px;
+            background-position: 0 5px;
         }
     </style>
 </head>
@@ -164,7 +172,9 @@
     <div id="space" class="main">
         <div class="info">
             Bienvenue dans votre espace personnel.<br><br>
-            Le nom de l'objet que vous cherchez est <span id="answer"></span>
+            <div class="alert">
+                <span id="answer"></span> vous a demandé en ami !
+            </div>
         </div>
     </div>
 </body>
