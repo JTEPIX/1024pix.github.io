@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mobile</title>
     <script>
-        var word = "102111117114099104101116116101";
+        var word = "108101032122233098114101";
         var data1 = "048048048048";
         var data2 = "049050051052";
         var display, error;
@@ -178,6 +178,31 @@
             -moz-border-radius: 5px;
             border-radius: 5px;
             padding:10px;
+            margin-top:20px;
+            position:relative;
+        }
+        .left {
+            margin-right:40px;
+        }
+        .bottom__left {
+            width:9px;
+            height:8px;
+            background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTZEaa/1AAAAY0lEQVQoU22KwREAIQgDbYt+6MYiLMCP3fjw4cNCcoAnN54ykwTIBgAuGYlv3tv8CjHzCfXe1xMpJQdUDrXWrMg5W9ZaTyjGaOUfUJnpcwFjjA1QTZMgIln3csmslCJxBwCEBzkGxCFo6iiuAAAAAElFTkSuQmCC');
+            position:absolute;
+            left:0;
+            bottom:-8px;
+        }
+
+        .bottom__right {
+            width:9px;
+            height:8px;
+            background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTZEaa/1AAAAaklEQVQoU22LwQ3AIAwDsxb7sA1DZAA+bMODB48MksZuaStBJCt2fBF3l5hY3zyZHeN9E885o+AcIZqwqhqWweectIzL9N5Z1lq5xxg7BC0QKqXE6QBBZvaCeMJtg5ZSSgTht/Kv1loslwtwzsQhKwZcZQAAAABJRU5ErkJggg==');
+            position:absolute;
+            right:0;
+            bottom:-8px;
+         }
+        .right {
+            margin-left:40px;
         }
         .clearfix {
             clear:both;
@@ -214,8 +239,12 @@
         </div>
         <div id="welcome">
             <div id="time"></div>
-            <div class="message">
-                Bravo !<br>La réponse est <span id="answer"></span>
+            <div class="message left">Quel est ton animal préféré ?
+                <div class="bottom__left"></div>
+            </div>
+            <div class="message right">
+                <span id="answer"></span>
+                <div class="bottom__right"></div>
             </div>
         </div>
     </div>
