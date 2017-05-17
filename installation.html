@@ -94,14 +94,14 @@
                     installChecked  = document.getElementById("install").checked;
                     preventChecked = document.getElementById("prevent").checked;
                     if (installChecked) {
-                        document.getElementById("install__list__1").style = "display:list-item";
+                        document.getElementById("install__list__1").style.display = "list-item";
                     } else {
-                        document.getElementById("install__list__1").style = "display:none";
+                        document.getElementById("install__list__1").style.display = "none";
                     }
                     if (preventChecked) {
-                        document.getElementById("install__list__2").style = "display:list-item";
+                        document.getElementById("install__list__2").style.display = "list-item";
                     } else {
-                        document.getElementById("install__list__2").style = "display:none";
+                        document.getElementById("install__list__2").style.display = "none";
                     }
                     if (!installChecked && !preventChecked) {
                         setStep(0);
