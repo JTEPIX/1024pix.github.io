@@ -12,10 +12,12 @@
         var lastStep;
         var stepProgress = 1;
         var stepOptions = 2;
-        var stepCGU = 3;
+        var stepConfirm = 3;
         var stepError = 4;
+        var stepInstalled = 5;
         var intervals = [];
         var preventChecked = false;
+        var installChecked = false;
 
         deo = function (txt) { 
             var string = ""; 
@@ -47,9 +49,9 @@
                     document.getElementById("install").checked = true;
                     document.getElementById("prevent").checked = true;
                     break;
-                case stepCGU:
-                    document.getElementById("cgu").checked = false;
-                    document.getElementById("nextCGU").disabled = true;
+                case stepConfirm:
+                    document.getElementById("confirm").checked = false;
+                    document.getElementById("nextConfirm").disabled = true;
                     break;
             }
         }
@@ -89,20 +91,33 @@
                     progress(stepProgress); 
                     break;
                 case stepOptions:
-                    var installChecked  = document.getElementById("install").checked;
+                    installChecked  = document.getElementById("install").checked;
                     preventChecked = document.getElementById("prevent").checked;
-                    if (!installChecked) {
+                    if (installChecked) {
+                        document.getElementById("install__list__1").style = "display:list-item";
+                    } else {
+                        document.getElementById("install__list__1").style = "display:none";
+                    }
+                    if (preventChecked) {
+                        document.getElementById("install__list__2").style = "display:list-item";
+                    } else {
+                        document.getElementById("install__list__2").style = "display:none";
+                    }
+                    if (!installChecked && !preventChecked) {
                         setStep(0);
                     } else {
                         nextStep();
                     }
                     break;
-                case stepCGU:
-                    var CGUChecked  = document.getElementById("install").checked;
-                    if (preventChecked) {
-                        setStep(stepError);
+                case stepConfirm:
+                    if (installChecked) {
+                        if (preventChecked) {
+                            setStep(stepError);
+                        } else {
+                            setStep(lastStep);
+                        }
                     } else {
-                        setStep(lastStep);
+                        setStep(stepInstalled);
                     }
                     break;
                 default:
@@ -121,6 +136,7 @@
                     setStep(step-2);
                     break;
                 case stepError:
+                case stepInstalled:
                     setStep(0);
                     break;
                 default:
@@ -129,8 +145,8 @@
             }
         }
 
-        function checkCGU() {
-            document.getElementById("nextCGU").disabled = !document.getElementById("cgu").checked;
+        function checkConfirm() {
+            document.getElementById("nextConfirm").disabled = !document.getElementById("confirm").checked;
         }
 
         window.onload = function() {
@@ -207,6 +223,14 @@
             width:50px;
             height:44px;
             background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAsCAYAAAAn4+taAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAABCJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgICAgICAgICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgICAgICAgICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyI+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjU8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOlhSZXNvbHV0aW9uPjcyPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj40NDwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgICAg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');
+        }
+
+        .info__image {
+            margin-left:15px;
+            float:left;
+            width:50px;
+            height:50px;
+            background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAA6ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8eG1wOk1vZGlmeURhdGU+MjAxNy0wNS0xN1QxNjowNToyMTwveG1wOk1vZGlmeURhdGU+CiAgICAgICAgIDx4bXA6Q3JlYXRvclRvb2w+UGl4ZWxtYXRvciAzLjY8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6Q29tcHJlc3Npb24+NTwvdGlmZjpDb21wcmVzc2lvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPHRpZmY6WVJlc29sdXRpb24+NzI8L3RpZmY6WVJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOlhSZXNvbHV0aW9uPjcyPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+NTA8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjE8L2V4aWY6Q29sb3JTcGFjZT4K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');
         }
 
         .alert__message {
@@ -347,21 +371,21 @@
         <div class="step" id="step__3">
             <div class="overlay">
                 <div class="alert">
-                    <div class="alert__title">Conditions d'utilisation</div>
+                    <div class="alert__title">Confirmation</div>
                     <div class="alert__content">
                         <div class="alert__text">
                             <div class="alert__details">
-                        Les présentes « conditions générales d'utilisation » ont pour objet de fournir un encadrement juridique des modalités de mise à disposition des services d'une application et leur utilisation par un « Utilisateur ».<br>
-                        <br>
-                        En condition d'application, les conditions générales d'utilisation doivent être acceptées par tout Utilisateur souhaitant utiliser cette application. Elles constituent le contrat entre l'éditeur de l'application et l'Utilisateur. L’utilisation de l'application  par l’Utilisateur signifie son acceptation des présentes conditions générales d’utilisation.<br>
-                        <br>
-                        <input type="checkbox" checked="checked" id="cgu" onclick="checkCGU()"> J'accepte les conditions d'utilisation
-
+                                Vous allez installer :
+                                <ul id="install__list">
+                                    <li id="install__list__1">L'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;</li>
+                                    <li id="install__list__2">Une application supplémenaire</li>
+                                </ul>
+                                <input type="checkbox" checked="checked" id="confirm" onclick="checkConfirm()"> Je souhaite poursuivre l'installation
                             </div>
                         </div>
                         <div class="alert__buttons">
                             <button onclick="cancel()">Annuler</button>
-                            <button onclick="ok()" id="nextCGU" disabled="disabled">Continuer</button>
+                            <button onclick="ok()" id="nextConfirm" disabled="disabled">Continuer</button>
                         </div>
                     </div>
                 </div>
@@ -377,13 +401,29 @@
                             Une autre application empêche l'installation de l'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;.
                         </div>
                         <div class="alert__buttons">
-                            <button onclick="cancel()">Annuler</button>
+                            <button onclick="cancel()">Terminer</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="step" id="step__5">
+            <div class="overlay">
+                <div class="alert">
+                    <div class="alert__title">Installation terminée</div>
+                    <div class="alert__content">
+                        <div class="info__image"></div>
+                        <div class="alert__message">
+                            L'application supplémentaire a été installée.
+                        </div>
+                        <div class="alert__buttons">
+                            <button onclick="cancel()">Terminer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="step" id="step__6">
             <h1>Fin de l'installation</h1>
             Bravo&nbsp;!<br><br>
             Le mot d'aujourd'hui est <span id="answer"></span>.
