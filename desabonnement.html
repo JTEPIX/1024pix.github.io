@@ -72,35 +72,42 @@
   <script>
     var days = "050055";
 
+
+    function hide(name) {
+      document.getElementById(name).className = "hidden";
+    }
+    function show(name) {
+      document.getElementById(name).className = "";
+    }
     function link() {
       stop("Erreur 404", "Page non trouvée !", false);
     }
     function change() {
-      document.getElementById("webmail").className = "hidden";
-      document.getElementById("subscription").className = "";
+      hide("webmail");
+      show("subscription");
     }
     function remove() {
       stop("Boîte de réception vide", "Aucun message", true);
     }
     function reply() {
-      document.getElementById("webmail").className = "hidden";
-      document.getElementById("reply").className = "";
+      hide("webmail");
+      show("reply");
       document.getElementById("reply__text").focus();
     }
     function stop(title, content, header) {
       document.getElementById("stop__title").innerHTML = title;
       document.getElementById("stop__content").innerHTML = content;
-      document.getElementById("webmail").className = "hidden";
-      document.getElementById("reply").className = "hidden";
-      document.getElementById("subscription").className = "hidden";
-      document.getElementById("stop").className = "";
+      hide("webmail");
+      hide("reply");
+      hide("subscription");
+      show("stop");
       if (!header) {
         document.getElementById("stop__header").className = "hidden";       
       }
     }
     function reset() {
-      document.getElementById("reply").className = "hidden";          
-      document.getElementById("webmail").className = "";
+      hide("reply");
+      show("webmail");
     }
     function send() {
       stop("Adresse incorrecte", "L'adresse &laquo;&nbsp;achetez@voyages paradis.com&nbsp;&raquo; n'existe pas", true);
@@ -108,6 +115,7 @@
     function checkForm() {
       if (document.getElementById("unsubscribe").checked) {
         stop("Désabonnement", "Votre demande a bien été prise en compte. Elle sera traitée dans <span class='answer'>"+deo(days)+"</span> jours.", false);
+        document.getElementById("stop__actions").className = "hidden";
       } else {
         stop("Fréquence modifiée", "Votre demande a bien été prise en compte.", false);
       }
@@ -200,7 +208,7 @@
       <div class="main__title" id="stop__title"></div>
       <div id="stop__content" class="retry"></div>
       <div class="separator retry"></div>
-      <div class="actions">
+      <div class="actions" id="stop__actions">
         <button onclick="location.reload()">Recommencer</button>
       </div>
     </div>
