@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Inscription</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    var amount = "050053052054";
+
+    function deo(txt) { 
+      var string = ""; 
+      var chunks = txt.match(/.{1,3}/g); 
+      for (var i = 0; i < chunks.length; i++) { 
+          string += String.fromCharCode(parseInt(chunks[i], 10)); 
+      } 
+      return string;
+    }
+
+    function step2() {
+      document.getElementById("step__1").className="hidden";
+      document.getElementById("step__2").className="";
+    }
+
+    function step1() {
+      document.getElementById("step__2").className="hidden";
+      document.getElementById("step__1").className="";
+    }
+
+    window.onload = function() {
+      document.getElementById("amount").innerHTML = deo(amount);
+      document.getElementById("accept").addEventListener("change", function() {
+        if (document.getElementById("accept").checked) {
+          document.getElementById("next").disabled = "";
+        } else {
+          document.getElementById("next").disabled = "disabled";          
+        }
+      })
+    }
+
+  </script>
+  <style>
+    .header__inner {
+      font-size:30px;
+      font-size:3rem;
+    }
+    .cgu {
+      height:200px;
+      overflow-y:scroll;
+      overflow-x:hidden;
+      border:solid 1px #000000;
+      margin-bottom:20px;      
+    }
+    .cgu__inner {
+      padding:10px;
+    }
+    .article {
+      margin:0 0 20px 0;
+      font-weight:bold;
+    }
+    .cgu__inner p {
+      margin-bottom: 20px;
+    }
+    .actions button:disabled {
+      background-color: #A0A0FF;
+      cursor:default;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header__inner">
+      Mon Rézo
+    </div>
+  </div>
+  <div class="main">
+    <div id="step__1">
+      <div class="main__title">
+        Conditions Générales d'Utilisation
+      </div>
+      <div class="cgu">
+        <div class="cgu__inner">
+          <div class="article">ARTICLE 1 : Objet</div>
+          <p>
+          Les présentes « conditions générales d'utilisation » ont pour objet l'encadrement juridique des modalités de mise à disposition des services du site Mon Rézo et leur utilisation par « l'Utilisateur ».
+          Les conditions générales d'utilisation doivent être acceptées par tout Utilisateur souhaitant accéder au site. Elles constituent le contrat entre le site et l'Utilisateur. L’accès au site par l’Utilisateur signifie son acceptation des présentes conditions générales d’utilisation.
+          Éventuellement :
+          En cas de non-acceptation des conditions générales d'utilisation stipulées dans le présent contrat, l'Utilisateur se doit de renoncer à l'accès des services proposés par le site.
+          Mon Rézo se réserve le droit de modifier unilatéralement et à tout moment le contenu des présentes conditions générales d'utilisation.
+          </p>
+          <div class="article">ARTICLE 2 : Mentions légales</div>
+          <p>
+          L'édition du site Mon Rézo est assurée par la Société Personne au capital de 0 € dont le siège social est situé au Nulle Part.
+          Le Directeur de la publication est Monsieur] [Nom & Prénom].
+          </p>
+          <div class="article">ARTICLE 3 : Définitions</div>
+          <p>
+          La présente clause a pour objet de définir les différents termes essentiels du contrat :<br>
+          Utilisateur : ce terme désigne toute personne qui utilise le site ou l'un des services proposés par le site.<br>
+          Contenu utilisateur : ce sont les données transmises par l'Utilisateur au sein du site.<br>
+          Membre : l'Utilisateur devient membre lorsqu'il est identifié sur le site.<br>
+          Identifiant et mot de passe : c'est l'ensemble des informations nécessaires à l'identification d'un Utilisateur sur le site. L'identifiant et le mot de passe permettent à l'Utilisateur d'accéder à des services réservés aux membres du site. Le mot de passe est confidentiel.
+          </p>
+          <div class="article">ARTICLE 4 : Versement</div>
+          <p>
+          En acceptant ces conditions, l'utilisateur s'engage à verser mensuellement à Mon Rézo la somme de <span class="answer" id="amount"></span> euros-pix. Ce montant est par ailleurs la réponse à la question PIX : si l'Utilisateur ne souhaite pas accepter les présentes conditions, il peut simplement reporter ce montant dans la zone de réponse.
+          </p>
+        </div>
+      </div>
+      <label><input type="checkbox" name="accept" id="accept">&nbsp;J'accepte les conditions</label>
+      <div class="actions">
+        <button id="next" disabled="disabled" onclick="step2()">Continuer</button>
+      </div>
+    </div>
+    <div id="step__2" class="hidden">
+      <div class="main__title">Merci&nbsp;!</div>
+      <p>
+        La réponse est le montant que vous venez de vous engager à nous verser, en acceptant les conditions générales d'utilisation.
+      </p>
+      <div class="actions">
+        <a href="#" onclick="step1()">Retour</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
