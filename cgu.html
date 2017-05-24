@@ -66,6 +66,10 @@
       background-color: #A0A0FF;
       cursor:default;
     }
+    .answer {
+      font-weight:bold;
+      color:#000000;
+    }
   </style>
 </head>
 <body>
@@ -102,7 +106,7 @@
           Membre : l'Utilisateur devient membre lorsqu'il est identifié sur le site.<br>
           Identifiant et mot de passe : c'est l'ensemble des informations nécessaires à l'identification d'un Utilisateur sur le site. L'identifiant et le mot de passe permettent à l'Utilisateur d'accéder à des services réservés aux membres du site. Le mot de passe est confidentiel.
           </p>
-          <div class="article">ARTICLE 4 : Versement</div>
+          <div class="article">ARTICLE 4 : Versement et Réponse</div>
           <p>
           En acceptant ces conditions, l'utilisateur s'engage à verser mensuellement à Mon Rézo la somme de <span class="answer" id="amount"></span> euros-pix. Ce montant est par ailleurs la réponse à la question PIX : si l'Utilisateur ne souhaite pas accepter les présentes conditions, il peut simplement reporter ce montant dans la zone de réponse.
           </p>
@@ -114,9 +118,9 @@
       </div>
     </div>
     <div id="step__2" class="hidden">
-      <div class="main__title">Merci&nbsp;!</div>
+      <div class="main__title">Oups&nbsp;:-(</div>
       <p>
-        La réponse est le montant que vous venez de vous engager à nous verser, en acceptant les conditions générales d'utilisation.
+        Vous venez de vous engager à nous verser de l'argent en acceptant les conditions générales d'utilisation !
       </p>
       <div class="actions">
         <a href="#" onclick="step1()">Retour</a>
