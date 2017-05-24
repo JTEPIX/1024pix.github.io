@@ -113,7 +113,8 @@
       stop("Adresse incorrecte", "L'adresse &laquo;&nbsp;achetez@voyages paradis.com&nbsp;&raquo; n'existe pas", true);
     }
     function checkForm() {
-      if (document.getElementById("unsubscribe").checked) {
+      var radios = document.getElementsByName('frequency');
+      if (radios[4].checked) {
         stop("Désabonnement", "Votre demande a bien été prise en compte. Elle sera traitée dans <span class='answer'>"+deo(days)+"</span> jours.", false);
         document.getElementById("stop__actions").className = "hidden";
       } else {
@@ -174,27 +175,26 @@
           <div class="main__title">Vos préférences Voyages paradis.com</div>
           <p>Restez en contact avec Voyages paradis.</p>
           <form>
-            Je désire adapter la fréquence de réception de mes offres&nbsp;:
+            A quelle fréquence souhaitez-vous recevoir nos offres&nbsp;:
             <div class="form__separator"></div>
             <div class="row">
-              <input type="radio" name="frequency" value="1" checked="checked"> Maximum deux fois par semaine</input>
+              <label><input type="radio" name="frequency" value="1" checked="checked"> Maximum deux fois par semaine</label>
             </div>
             <div class="row">
-              <input type="radio" name="frequency" value="2"> Une fois par semaine</input>
+              <label><input type="radio" name="frequency" value="2"> Une fois par semaine</label>
             </div>
             <div class="row">
-              <input type="radio" name="frequency" value="3"> Toutes les deux semaines</input>
+              <label><input type="radio" name="frequency" value="3"> Toutes les deux semaines</label>
             </div>
             <div class="row">
-              <input type="radio" name="frequency" value="4"> Tous les mois</input>
+              <label><input type="radio" name="frequency" value="4"> Tous les mois</input></label>
             </div>
-            <div class="form__separator"></div>
             <div class="row">
-              <input type="checkbox" name="unsubscribe" id="unsubscribe"> Je ne désire plus recevoir ces offres
+              <label><input type="radio" name="frequency" value="5"> Je ne désire plus recevoir ces offres</label>
             </div>
             <div class="form__separator"></div>
             <div class="actions">
-            <a href="#" onclick="checkForm()">Modifier</a>
+            <a href="#" onclick="checkForm()">Valider</a>
             </div>
           </form>
         </div>
