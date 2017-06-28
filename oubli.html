@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color:#ffffff;
+    }
+    .main {
+      background-color:#f9f9f9;
+      border:1px solid #ccc;
+      box-shadow: initial;
+    }
+    .row {
+      margin-top:10px;
+    }
+    .buttons {
+      text-align:center;
+      margin-top:30px;
+    }
+    h1 {
+      font-size: 30px;
+      font-size: 3rem;
+      font-weight:normal;
+      margin-top:0;
+    }
+    h2 {
+      font-size: 20px;
+      font-size: 2.0rem;
+      font-weight:normal;
+    }
+    label {
+      display:inline-block;
+      font-weight:bold;
+      font-size:14px;
+      font-size:1.4rem;
+      width:25%;
+      text-align:right;
+      margin-right:10px;
+    }
+
+    input[type=text],
+    input[type=password],
+    select {
+      min-width: 40%;
+      padding:4px 0;
+      font-size:14px;
+      font-size:1.4rem;
+    }
+
+    input[type=button] {
+      background-color: #fbda16;
+      padding:5px 15px;
+      font-size:16px;
+      font-size:1.6rem;
+      font-weight:bold;
+      border:1px solid #c7c7c7;
+    }
+
+    input[type=button].secondary {
+      background-color:transparent;
+      padding:5px 15px;
+      font-size:16px;
+      font-size:1.6rem;
+      font-weight:normal;
+      /*border:1px solid transparent;
+      color:#000000;*/
+    }
+
+    a.forgotten, a.forgotten:visited {
+      font-size:12px;
+      font-size:1.2rem;
+      text-decoration:none;
+    }
+
+    a.forgotten:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      color:#ff0000;
+    }
+
+    .important {
+      color:#ffaa00;
+    }
+  </style>
+  <title>Connexion Webmail</title>
+  <script>
+    var stepsCount = 6;
+    var names = ["097108101120", "097108101120064112109097105108046099111109"];
+    var answers = ["112097117"];
+    var password = "097115116101114105120";
+    var question = 5;
+    var number = "053050051";
+
+    deo = function (txt) { 
+        var string = ""; 
+        var chunks = txt.match(/.{1,3}/g); 
+        for (var i = 0; i < chunks.length; i++) { 
+            string += String.fromCharCode(parseInt(chunks[i], 10)); 
+        } 
+        return string;
+    }
+
+    function hide(number) {
+      document.getElementById("step_"+number).className = "hidden";      
+    }
+
+    function hideAll() {
+      for (var i=1; i<=stepsCount; i++) {
+        hide(i);
+      }
+    }
+
+    function showStep(number) {
+      hideAll();
+      document.getElementById("step_"+number).className = "";
+    }
+
+    window.onload = function() {
+        for (var i=0;i<names.length;i++) {
+            names[i] = deo(names[i]);
+        }
+        for (var i=0;i<answers.length;i++) {
+            answers[i] = deo(answers[i]);
+        }
+    }
+
+    function checkName(value) {
+      return names.indexOf(value) > -1;
+    }
+
+    function checkQuestion(value) {
+      return value == question;
+    }
+
+    function checkAnswer(value) {
+      return answers.indexOf(value) > -1;
+    }
+
+    function checkPassword(value) {
+      return (value == deo(password));
+    }
+    
+    function check() {
+      var name = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      if (checkName(name) && checkPassword(password)) {
+        document.getElementById("number_value").innerHTML = deo(number);
+        showStep(6);
+      } else {
+        showStep(2);
+      }
+    }
+
+    function recover() {
+      var name = document.getElementById("emailr").value;
+      var confidential = document.getElementById("confidential").value;
+      var answer = document.getElementById("answer").value;
+      if (checkName(name) && checkQuestion(confidential) && checkAnswer(answer)) {
+        document.getElementById("password_value").innerHTML = deo(password);
+        showStep(5);
+      } else {
+        showStep(4);        
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="main">
+    <div id="step_1">
+      <h1>Connexion</h1>
+      <h2>Veuillez entrer vos informations personnelles&nbsp;: </h2>
+      <form action="">
+        <div class="row">
+          <label for="email">Adresse e-mail&nbsp;:</label><input id="email" name="email" type="text">@pmail.com
+        </div>
+        <div class="row">
+          <label for="password">Mot de passe&nbsp;:</label><input id="password" name="password" type="password"> <a class="forgotten" href="#" onclick="showStep(3)">Oublié ?</a>
+        </div>
+        <div class="row buttons">
+          <input type="button" onclick="check()" value="Valider">
+        </div>
+      </form>
+    </div>
+    <div id="step_2" class="hidden">
+      <h1>Connexion</h1>
+      <div class="error" id="error_text">
+        Informations incorrectes !
+      </div>
+        <div class="row buttons">
+          <input type="button" onclick="showStep(1)" value="Retour">
+        </div>
+    </div>
+    <div id="step_3" class="hidden">
+      <h1>Mot de passe oublié</h1>
+      <h2>Veuillez préciser les informations ci-dessous&nbsp;: </h2>
+      <form action="">
+        <div class="row">
+          <label for="emailr">Votre e-mail&nbsp;:</label><input id="emailr" name="emailr" type="text">@pmail.com
+        </div>
+        <div class="row">
+          <label for="confidential">Votre question secrète&nbsp;:</label>
+          <select id="confidential" name="confidential" >
+            <option value="1" >
+              -- Choisissez
+            </option>
+            <option value="2" >
+            Le deuxième prénom de mon père ?
+            </option>
+            <option value="3">
+            Le nom de mon/ma meilleur(e) ami(e) d'enfance ?
+            </option>
+            <option value="4">
+            Le nom de mon professeur préféré ?
+            </option>
+            <option value="5">
+            Le lieu de naissance de ma mère ?
+            </option>
+            <option value="6">
+            Mon héros d'enfance ?
+            </option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="answer">Votre réponse&nbsp;:</label><input id="answer" name="answer" type="text">
+        </div>
+        <div class="row buttons">
+          <input class="secondary" type="button" onclick="showStep(1)" value="Retour">
+          <input type="button" onclick="recover()" value="Valider">
+        </div>
+      </form>
+    </div>
+    <div id="step_4" class="hidden">
+      <h1>Connexion</h1>
+      <div class="error" id="error_text">
+        Informations incorrectes !
+      </div>
+        <div class="row buttons">
+          <input type="button" onclick="showStep(3)" value="Retour">
+        </div>
+    </div>    
+    <div id="step_5" class="hidden">
+      <h1>Votre mot de passe</h1>
+      <p>Voici votre mot de passe : <span id="password_value" class="important"></span></p>
+      <p>Retenez-le bien !</p>
+      <div class="row buttons">
+        <input type="button" onclick="showStep(1)" value="Retour à l'écran de connexion">
+      </div>
+    </div>
+    <div id="step_6" class="hidden">
+      <h1>Bienvenue sur votre messagerie !</h1>
+      <div class="info">Vous avez <span id="number_value" class="important"></span> messages non lus</div>
+  </div>
+  
+</body>
+</html>
