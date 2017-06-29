@@ -131,7 +131,7 @@
     }
 
     function checkName(value) {
-      return names.indexOf(value) > -1;
+      return names.indexOf(value.toLowerCase()) > -1;
     }
 
     function checkQuestion(value) {
@@ -139,11 +139,11 @@
     }
 
     function checkAnswer(value) {
-      return answers.indexOf(value) > -1;
+      return answers.indexOf(value.toLowerCase()) > -1;
     }
 
     function checkPassword(value) {
-      return (value == deo(password));
+      return (value.toLowerCase() == deo(password));
     }
     
     function check() {
@@ -256,7 +256,6 @@
       <h1>Bienvenue sur votre messagerie !</h1>
       <div class="info">Vous avez <span id="number_value" class="important"></span> messages non lus</div>
     </div>
-  </div>
-  
+  </div>  
 </body>
 </html>
