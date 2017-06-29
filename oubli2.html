@@ -131,7 +131,7 @@
     }
 
     function checkEmails(value) {
-      return emails.indexOf(value) > -1;
+      return emails.indexOf(value.toLowerCase()) > -1;
     }
 
     function recover() {
@@ -207,6 +207,5 @@
       </div>
     </div>
   </div>
-  
 </body>
 </html>
