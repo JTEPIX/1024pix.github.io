@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="webix/webix.js"></script>
+  <link rel="stylesheet" href="webix/webix.css">
+  <!--<link rel="stylesheet" href="webix/skins/terrace.css">-->
+  <title>Travaux d'impression</title>
+  <style>
+  .webix_column>div, .webix_table_cell {
+    border:none;
+  }
+ .webix_dtable { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }  
+  .webix_column>div.webix_row_select {
+    background-color:#fff3a1;
+    color:#000000;
+  }
+  </style>
+
+</head>
+<body>
+  <script>
+    var taches = [
+      {"name":"document 1","status":"en cours","pages":2},
+      {"name":"document 2","status":"en pause","pages":3},
+      {"name":"document 3","status":"annulé","pages":1}
+    ]
+  webix.ready(function() {
+    webix.ui({
+      view:"window",
+      move:true,
+      resize:true,
+      id:"fenetre",
+      hidden:false,
+      height:400,
+      width:400,
+      position:"center",      
+      head:{
+        view:"toolbar",
+        cols:[{
+            view: "label",
+            label: "Travaux d'impression"
+          },
+          {
+            view:"icon",
+            icon:"times-circle",
+            click:"$$('fenetre').close();"
+          }
+        ]
+      },
+      body:{
+        view:"layout",
+        rows:[{
+          view:"datatable",
+          id:"liste",
+          type:"clean",
+          select:"row",
+          columns: [
+            {id:"name", header:"Nom du document", sort:"string", adjust:true},
+            {id:"status", header:"Etat", sort:"string", adjust:true},
+            {id:"pages", header:"Pages", sort:"int", adjust:true, fillspace:true}
+          ],
+				  resizeColumn:true,
+          data:taches,
+          onContext:{}, //required for context menu
+          on: {
+            onBeforeContextMenu:function(id, e) {
+              this.select(id.row);
+            }
+          }
+        }]
+      }
+    });
+    webix.ui({
+        view:"contextmenu",
+  	    id:"cmenu",
+        data:["Annuler","Mettre en pause","Reprendre",{ $template:"Separator" },"Propriétés"],
+          on:{
+            onItemClick:function(id, e){
+                var context = this.getContext();
+                var list = context.obj;
+                var rowId = context.id.row;
+                var item = list.getItem(rowId);
+                item.status="cliqué !";
+                list.updateItem(rowId, item);
+                webix.html.preventEvent(e)
+            }
+        }
+    });
+
+    $$("cmenu").attachTo($$("liste"));
+
+    
+  });
+
+  </script>
+</body>
+</html>
