@@ -17,21 +17,97 @@
     background-color:#fff3a1;
     color:#000000;
   }
+
+  .webix_last > .webix_cell {
+    text-align:right;
+  }
+
+  .action-play {
+    display:none;
+  }
+  .paused > .action-pause {
+    display:none;
+  }
+  .paused > .action-play {
+    display:inline;
+  }
+
+  .webix_confirm {
+    padding: 5px 20px;
+  }
+
+  .webix_popup_button.confirm div {
+    border-color:#3498db;
+    background-color:#3498db;
+  }
+
+  .important {
+    color:orange;
+  }
   </style>
 
 </head>
 <body>
   <script>
+    var number = "050051055";
+
     var taches = [
-      {"name":"document 1","status":"en cours","pages":2},
-      {"name":"document 2","status":"en pause","pages":3},
-      {"name":"document 3","status":"annulé","pages":1}
+      {"name":"IMG_4569.jpg","status":"en pause","pages":1},
+      {"name":"Rapport 2015.docx","status":"en pause","pages":253},
+      {"name":"CV.docx","status":"en pause","pages":2},
+      {"name":"CV.docx","status":"en pause","pages":2},
+      {"name":"IMG_4571.jpg","status":"en cours","pages":1}
     ]
-  webix.ready(function() {
-    webix.ui({
+    webix.ready(function() {
+      webix.ui({
       view:"layout",
-      rows:[{}]
+      rows:[{
+        id:"restart",
+        view:"button",
+        value:"Recommencer ?",
+        click:"location.reload()",
+        hidden:true
+      }]
     })
+    var pauseAction="<span class='webix_icon fa-pause-circle-o action-pause'></span>";
+    var playAction="<span class='webix_icon fa-play-circle-o action-play'></span>";
+    var cancelAction="<span class='webix_icon fa-remove action-remove'></span>";
+
+    function deo(txt) { 
+      var string = ""; 
+      var chunks = txt.match(/.{1,3}/g); 
+      for (var i = 0; i < chunks.length; i++) { 
+          string += String.fromCharCode(parseInt(chunks[i], 10)); 
+      } 
+      return string;
+    }
+
+    function isPaused(value, item) {
+      if (item.status=="en pause") {
+        return "paused";
+      } else {
+        return "";
+      }
+    }
+
+    function pause(id) {
+      var list = $$("liste");
+      var item = list.getItem(id);
+      item.status="en pause";
+      list.updateItem(id, item);
+    }
+
+    function play(id) {
+      var list = $$("liste");
+      var item = list.getItem(id);
+      item.status="en cours";
+      list.updateItem(id, item);      
+    }
+
+    function cancel(id) {
+      var list = $$("liste");
+      list.remove(id);      
+    }
 
     webix.ui({
       view:"window",
@@ -63,41 +139,85 @@
           type:"clean",
           select:"row",
           columns: [
-            {id:"name", header:"Nom du document", sort:"string", adjust:true},
+            {id:"name", header:"Nom du document", sort:"string", adjust:true, fillspace:true},
             {id:"status", header:"Etat", sort:"string", adjust:true},
-            {id:"pages", header:"Pages", sort:"int", adjust:true, fillspace:true}
+            {id:"pages", header:"Pages", sort:"int", adjust:true},
+            {id:"actions", header:"", sort:"int", adjust:true, template:pauseAction+playAction+cancelAction, cssFormat:isPaused}
           ],
 				  resizeColumn:true,
           data:taches,
           onContext:{}, //required for context menu
           on: {
-            onBeforeContextMenu:function(id, e) {
-              this.select(id.row);
+            onBeforeContextMenu:function(id, e, node) {
+              this.select(id);
+              var item = this.getItem(id);
+              var menu = $$("cmenu");
+              var menu1 = menu.getItem("menu1");
+              var menu2 = menu.getItem("menu2");
+              if (item.status == "en pause") {
+                menu.hideItem("menu1");
+                menu.showItem("menu2");
+              } else {
+                menu.hideItem("menu2");
+                menu.showItem("menu1");
+              }
+            }
+          },
+          onClick: {
+            "action-pause":function(event, id, node) {
+              pause(id);
+            },
+            "action-play":function(event, id, node) {
+              play(id);
+            },
+            "action-remove":function(event, id, node) {
+              cancel(id);
+              return false;
             }
           }
         }]
+      },
+      on: {
+        "onDestruct":function(){
+          $$("restart").show();
+        }
       }
     });
     webix.ui({
         view:"contextmenu",
   	    id:"cmenu",
-        data:["Annuler","Mettre en pause","Reprendre",{ $template:"Separator" },"Propriétés"],
+        data:[{value:"Mettre en pause", $css:"menu-pause", id:"menu1"},{value:"Reprendre", $css:"menu-play", id:"menu2"},{value:"Annuler", $css:"menu-cancel", id:"menu3"}],
           on:{
             onItemClick:function(id, e){
                 var context = this.getContext();
-                var list = context.obj;
                 var rowId = context.id.row;
-                var item = list.getItem(rowId);
-                item.status="cliqué !";
-                list.updateItem(rowId, item);
-                webix.html.preventEvent(e)
+                if (id == "menu3") {
+                  cancel(rowId);
+                } else if (id== "menu1") {
+                  pause(rowId);
+                } else if (id== "menu2") {
+                  play(rowId);
+                }
+                webix.html.preventEvent(e);
             }
         }
     });
 
     $$("cmenu").attachTo($$("liste"));
-
-    
+    $$("liste").data.attachEvent("onStoreUpdated", function(id, obj, operation){
+      var list = $$("liste");
+      if (list.count()==1) {
+        var first = list.getFirstId();
+        var item = list.getItem(first);
+        if (item.name=="CV.docx" && item.status=="en cours") {
+          webix.alert({
+            title:"Impression en cours",
+            ok:"Ok",
+            text:"Le document CV.docx s'imprime.<br><br><span class='webix_icon fa-info-circle'></span> Il reste <span class='important'>"+deo(number)+"</span> feuilles dans le bac de l'imprimante."
+          })
+        }
+      }
+    });
   });
 
   </script>
