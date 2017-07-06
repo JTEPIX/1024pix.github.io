@@ -50,7 +50,7 @@
           }
         }
       });
-			$$("editor").setValue("Mettez tous les mots &laquo; gras &raquo; en <b>gras</b> et tous les mots &laquo; italique &raquo; en <i>italique</i> dans le texte suivant&nbsp;:<br><br>Ceci est un texte d'exemple. Le texte peut être mis en gras ou en italique.<br>Généralement, un texte est mis en gras pour insister sur son contenu. Quand on le met en italique, on insiste de manière plus discrète.");
+      $$("editor").setValue("Mettez tous les mots &laquo; gras &raquo; en <b>gras</b> et tous les mots &laquo; italique &raquo; en <i>italique</i> dans le texte suivant&nbsp;:<br><br>Ceci est un texte d'exemple. Le texte peut être mis en gras ou en italique.<br>Généralement, un texte est mis en gras pour insister sur son contenu. Quand on le met en italique, on insiste de manière plus discrète.");
       var waitEditor = $$("editor").getEditor(true);
       waitEditor.then(function(editor) {
         editor.on('Change', function (e) {
