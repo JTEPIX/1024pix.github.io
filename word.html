@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="webix/webix.css">
+  <script src="webix/webix.js"></script>
+  <script src="webix/tinymce/tinymce.js"></script>
+  <title>Word</title>
+</head>
+<body>
+    <script>
+    var target = "<p>Mettez tous les mots &laquo; gras &raquo; en <strong>gras</strong> et tous les mots &laquo; italique &raquo; en <em>italique</em> dans le texte suivant&nbsp;:<br /><br />Ceci est un texte d'exemple. Le texte peut &ecirc;tre mis en <strong>gras</strong> ou en <em>italique</em>.<br />G&eacute;n&eacute;ralement, un texte est mis en <strong>gras</strong> pour insister sur son contenu. Quand on le met en <em>italique</em>, on insiste de mani&egrave;re plus discr&egrave;te.</p>";
+   
+    webix.codebase = "./webix/tinymce/";
+    webix.ready(function() {
+      webix.ui({
+        view:"layout",
+        rows:[{}]
+      });
+      webix.ui({
+        view:"window",
+        id:"fenetre",
+        hidden:false,
+        position:"center",
+        move:true,
+        width:800,
+        height:400,
+        resize:true,
+        head:{
+          view:"toolbar",
+          cols:[{
+              view: "label",
+              label: "Word (ou presque)"
+            },
+            {
+              view:"icon",
+              icon:"times-circle",
+              click:"$$('fenetre').close();"
+            }
+          ]
+        },
+        body:{
+          id:"editor",
+          view:"tinymce-editor",
+          config: { 
+            theme:"modern",
+            language:"fr_FR"
+          }
+        }
+      });
+			$$("editor").setValue("Mettez tous les mots &laquo; gras &raquo; en <b>gras</b> et tous les mots &laquo; italique &raquo; en <i>italique</i> dans le texte suivant&nbsp;:<br><br>Ceci est un texte d'exemple. Le texte peut être mis en gras ou en italique.<br>Généralement, un texte est mis en gras pour insister sur son contenu. Quand on le met en italique, on insiste de manière plus discrète.");
+      var waitEditor = $$("editor").getEditor(true);
+      waitEditor.then(function(editor) {
+        editor.on('Change', function (e) {
+          if ($$("editor").getValue(false) == target) {
+            webix.alert("gagné !");
+          }
+        });
+      })
+    });
+
+    
+  </script>
+</body>
+</html>

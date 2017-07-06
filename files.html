@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="webix/webix.css">
+  <link rel="stylesheet" href="webix/filemanager/filemanager.css">
+  <script src="webix/webix.js"></script>
+  <script src="webix/filemanager/filemanager.js"></script>
+  <style>
+    .webix_column>div, .webix_table_cell {
+      border-right:none;
+      border-bottom:none;
+    }
+  
+  </style>
+  <title>Fichiers</title>
+</head>
+<body>
+  <script>
+    webix.ready(function() {
+      webix.ui({
+        view:"layout",
+        rows:[{}]
+      });
+
+      webix.i18n.filemanager = {
+          actions: "Actions",
+          back: "Retour",
+          forward: "Forward",
+          levelUp: "Dossier parent",
+          name: "Nom",
+          size: "Taille",
+          type: "Type",
+          date: "Date",
+          copy: "Copier",
+          cut: "Couper",
+          paste: "Coller",
+          upload: "Upload",
+          remove: "Supprimer",
+          create: "Nouveau dossier",
+          rename: "Renommer",
+          location: "Emplacement",
+          select: "Selectionner Fichiers",
+          sizeLabels: ["o","Ko","Mo","Go"],
+          iconsView: "Icônes",
+          tableView: "Grille",
+          hideTree: "Arbre",
+          showTree: "Afficher arbre",
+          collapseTree: "Fermer",
+          expandTree: "Ouvrir",
+          saving: "Enregistrement...",
+          errorResponse: "Erreur: modifications non enregistrées !",
+          replaceConfirmation: "Voulez-vous remplacer les fichiers existants ?",
+          createConfirmation: "Le dossier existe déjà. Voulez-vous le remplacer ?",
+          renameConfirmation: "Le fichier existe déjà. Voulez-vous le remplacer ?",
+          yes: "Oui",
+          no: "non",
+          newFolder: "Nouveau dossier",
+          types:{
+              folder: "Dossier",
+              doc: "Document",
+              excel: "Excel",
+              pdf: "PDF",
+              pp: "PowerPoint",
+              text: "Fichier texte",
+              video: "Vidéo",
+              image: "Image",
+              code: "Code",
+              audio: "Audio",
+              archive: "Archive",
+              file: "Fichier"
+          }
+      };
+      webix.i18n.setLocale();
+
+      var filemanagerData = [
+        {id: "pix", value: "PIX", open: true,  type: "folder", date:  new Date(2014,2,10,16,10), data:[
+          { id: "equipe", value: "Equipe", date:  new Date(2014,2,10,16,10),  type: "folder", open: true, data:[
+            {id: "product owners", value: "Product owners", type: "folder", date:  new Date(2014,2,10,16,10), data:[
+              {id: "benjamin", value: "Benjamin.zip", type:"archive", date: new Date(2014,2,10,16,10), size: "12830"},
+              {id: "nathalie", value: "Nathalie.ppt",  type:"pp", date:  new Date(2014,2,10,16,10), size: "20100"}
+            ]},
+            {id: "developpeurs", value: "Developpeurs",  type: "folder", date:  new Date(2014,2,10,16,10), data:[
+                {id: "jeremy", value: "Jérémy.xls",  type:"excel", date: new Date(2014,2,10,16,10), size: "12830"},
+                {id: "adrien", value: "Adrien.doc",  type:"doc", date:  new Date(2014,2,10,16,10), size: "15030"},
+                {id: "Brandone", value: "Brandone.ppt", type:"excel",  date:  new Date(2014,2,10,16,10), size: "15830"},
+                {id: "Florian", value: "Florian.ppt",  type:"excel", date:  new Date(2014,2,10,16,10), size: "20830"}
+            ]},
+            {id: "contributeurs", value: "Contributeurs externes",  type: "folder", date:  new Date(2014,2,10,16,10), data:[
+                {id: "eric", value: "Eric.ppt",  type:"pp", date:  new Date(2014,2,10,16,10), size: "12830"},
+                {id: "catherine", value: "Catherine.ppt", type:"pp",  date:  new Date(2014,2,10,16,10), size: "15830"},
+                {id: "bertrand", value: "Bertrand.ppt", type:"pp",  date:  new Date(2014,2,10,16,10), size: "20830"},
+              {id: "bertille", value: "Bertille.doc",  type:"doc", date:  new Date(2014,2,10,16,10), size: "15030"}
+            ]},
+            {id: "producteurs", value: "Producteurs",  type: "folder", date:  new Date(2014,2,10,16,10), data:[
+              {id: "karine", value: "Karine.ppt", type:"pp",  date:  new Date(2014,2,10,16,10), size: "12083"},
+              {id: "sophie", value: "Sophie.ppt",  type:"pp", date:  new Date(2014,2,10,16,10), size: "15830"},
+              {id: "karine", value: "Nathalie.doc",  type:"doc", date:  new Date(2014,2,10,16,10), size: "15030"},
+              {id: "benoit", value: "Benoit.ppt",  type:"excel", date:  new Date(2014,2,10,16,10), size: "20830"},
+              {id: "nicolas", value: "Nicolas.ppt",  type:"pp", date:  new Date(2014,2,10,16,10), size: "20830"},
+              {id: "jerome", value: "Jérôme.xls",  type:"excel", date:  new Date(2014,2,10,16,10), size: "20830"}
+            ]}
+          ]},
+          { id: "documents", value: "Documents", type: "folder", date:  new Date(2014,2,10,16,12), open: true, data:[
+            {id: "textes", value: "Textes", type: "folder", date:  new Date(2014,2,10,16,12), data:[
+              {id: "thumbnails2", value: "E.docx", type:"doc", date:  new Date(2014,2,10,16,12), size: 2235000},
+              {id: "thumbnails3", value: "G.docx", type:"doc", date:  new Date(2014,2,10,16,12), size: 200750},
+              {id: "thumbnails1", value: "E.doc", type:"doc", date:  new Date(2014,2,10,16,12), size: 543000}
+            ]},
+            {id: "images", value: "Images", type: "folder", date:  new Date(2014,2,10,16,12), data:[
+              {id: "base1", value: "T.jpg", type:"image", date:  new Date(2014,2,10,16,12), size: 740830},
+              {id: "base2", value: "R.jpg", type:"image", date:  new Date(2014,2,10,16,12), size: 120100},
+              {id: "base3", value: "O.jpg", type:"image", date:  new Date(2014,2,10,16,12), size: 73750}
+            ]},
+            { id: "videos", value: "Vidéos", type: "folder", date:  new Date(2014,2,10,16,12), data:[
+              {id: "video1", value: "C.avi", icon: "file-video-o", type:"video", date:  new Date(2014,2,10,16,12), size: 12, pId: "video" },
+              {id: "video2", value: "U.avi", icon: "file-video-o",type:"video", date:  new Date(2014,2,10,16,12), size: 110720 , pId: "video"},
+              {id: "video3", value: "T.avi", icon: "file-video-o", type:"video", date:  new Date(2014,2,10,16,12), size: 1125600, pId: "video" }
+            ]}
+          ]}
+        ]}
+      ];
+
+      webix.ui({
+        view:"window",
+        id:"fenetre",
+        hidden:false,
+        position:"center",
+        move:true,
+        width:800,
+        height:400,
+        resize:true,
+        head:{
+          view:"toolbar",
+          cols:[{
+              view: "label",
+              label: "Explorateur de fichier"
+            },
+            {
+              view:"icon",
+              icon:"times-circle",
+              click:"$$('fenetre').close();"
+            }
+          ]
+        },
+        body:{
+          view:"filemanager",
+          data:filemanagerData
+        },
+
+      })
+    });
+  </script>
+  
+</body>
+</html>
