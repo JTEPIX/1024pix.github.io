@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Copier Coller</title>
+  <link rel="stylesheet" href="./webix/webix.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>  
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;">
+  <script>
+    var texte = "Ce texte doit être copié puis collé dans la zone ci-dessous. Petit précision : le glisser-déposer ne fonctionne pas. Ce serait aussi pratique de pouvoir utiliser le menu contextuel, malheureusement celui-ci ne fonctionne pas ici... il faudra donc trouver une autre solution. Les raccourcis clavier peut-être ?";
+    webix.ready(function() {
+      webix.ui({
+        view:"layout",
+        rows:[
+          {
+            view:"label",
+            label:"Recopiez le texte de la zone n°1, puis collez-le dans la zone n°2",
+          },
+          {
+            label:"Zone n°1",
+            view:"textarea",
+            value:texte,
+          },
+          {
+            label:"Zone n°2",
+            view:"textarea",
+            keyPressTimeout:100,
+            value:"",
+            on: {
+              onTimedKeyPress: function() {
+                if (this.$getValue() === texte) {
+                  webix.alert("bravo, le mot que vous cherchez est &laquo;&nbsp;baleine&nbsp;&raquo;");
+                }
+              }
+            }
+          }
+        ]
+      });
+
+    });
+  </script>
+</body>
+</html>
