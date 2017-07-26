@@ -16,6 +16,16 @@
 .pix-desktop .webix_list_item {
   cursor:default;
   line-height:inherit;
+  border-bottom:none;
+  padding:5px 10px;
+}
+
+.pix-desktop .webix_list .webix_list_item.webix_selected {
+  padding:5px 10px;
+}
+
+.webix_view div:focus {
+      outline:none;
 }
 
 .pix-desktop .webix_list {

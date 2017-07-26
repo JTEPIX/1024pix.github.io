@@ -8,20 +8,6 @@
   <link rel="stylesheet" href="./webix/pix.css">
   <script src="./webix/webix.js"></script>
   <script src="./webix/pix.js"></script>
-  <style>
-    .webix_list_item {
-      border-bottom:none;
-      padding:5px 10px;
-    }
-
-    .webix_view div:focus {
-      outline:none;
-    }
-    .webix_list .webix_list_item.webix_selected {
-      padding:5px 10px;
-    }
-
-  </style>
   <title>Ouverture</title>
 </head>
 <body>
@@ -35,8 +21,6 @@
           open: function(id) {
             if (id === "fichier") {
               $$('content').open();
-            } else {
-              $$('content2').open();
             }
           },
           background:"images/collioure.jpg",
