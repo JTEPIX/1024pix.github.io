@@ -5,118 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="./webix/webix.css">
+  <link rel="stylesheet" href="./webix/pix.css">
   <script src="./webix/webix.js"></script>
   <script src="./webix/pix.js"></script>
-  <style>
-    .file-icon {
-      background-image:url('data:image/png;base64,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');
-      width:100px;
-      height:100px;
-    }
-    .file-name {
-      text-align:center;
-      font-weight:bold;
-    }
-
-    .webix_list_item {
-      border-bottom:none;
-      padding:5px 10px;
-    }
-
-    .webix_view div:focus {
-      outline:none;
-    }
-    .webix_list .webix_list_item.webix_selected {
-      padding:5px 10px;
-    }
-
-    .webix_list_item.webix_selected {
-      background-color: #ebebeb;
-      color:#000000;
-    }
-
-    .webix_el_text input {
-      border:none;
-    }
-
-  </style>
   <title>Propriétés</title>
 </head>
 <body>
   <script>
-      function openFile() {
-        $$('content').show();
-      }
-
-      var selected = false;
-
       webix.ready(function() {
         webix.ui({
-        view:"layout",
-        padding:10,
-        rows:[{
-          view:"list",
-          borderless:true,          
-          id:"files",
-          width:"100",
-          css:"file",
-          select:true,
-          type:{
-            height:140,
-            width:120,
-            template: "<div class='desktop-item-inner'><div class='file-icon'></div><div class='file-name'> #value#</div></div>",
-            css:"file",
-          },
-          onContext:{},
-          drag:true,
-          data:[{id:"file1", value:"fichier.txt"}],
-          on: {
-            onItemDblClick: openFile,
-            onItemClick: function(e) {
-              selected = true;
+          view:"pixDesktop",
+          data:[{id:"fichier", name:"fichier.txt", img:"file.png"}],
+          open: function(id) {
+            if (id === "fichier") {
+              $$('content').open();
             }
-          }
-        }]
-        });
-
-        webix.ui({
-          view:"pixWindow",
-          id:"properties",
-          height:300,
-          width:250,
-          label:"Propriétés",
-          body:{
-            view:"layout",
-            padding:10,
-            rows:[{
-                view:"text",
-                label:"Nom",
-                value: "fichier.txt",
-                readonly: true
-              },
-              {
-                view:"text",
-                label:"Taille",
-                value: "20 octets"
-              },
-              {
-                view:"text",
-                label:"Date",
-                value: "19 juillet 2017"
-              },
-              {
-                view:"text",
-                label:"Auteur",
-                value: "Nathalie"
-              }            
-            ]
-          }
+          },
+          background:"images/benji.jpg",
+          taskbar:true
         });
 
         webix.ui({
           view:"pixWindow",
           id:"content",
           label:"fichier.txt",
+          icon:"file",          
           body:{
             view:"layout",
             padding:10,
@@ -129,28 +42,60 @@
         });
 
         webix.ui({
+          view:"pixWindow",
+          id:"properties",
+          height:300,
+          width:250,
+          label:"Propriétés",
+          icon:"info-circle",
+          body:{
+            view:"layout",
+            padding:10,
+            rows:[{
+                view:"text",
+                label:"Nom",
+                value: "fichier.txt",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Taille",
+                value: "20 octets",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Date",
+                value: "19 juillet 2017",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Auteur",
+                value: "Nathalie",
+                readonly: true
+              }            
+            ]
+          }
+        });        
+
+        webix.ui({
           view:"contextmenu",
-    	    id:"cmenu",
+          id:"cmenu",
           data:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
             on:{
               onItemClick:function(id, e){
                 if (id == "menu2") {
                   $$('files').clearAll();
                 } else if (id == "menu1") {
-                  $$('properties').show();
+                  $$('properties').open();
                 }
               }
           }
         });
 
-        $$("cmenu").attachTo($$("files"));
+        $$("cmenu").attachTo($$("pixDesktopItems"));
 
-        webix.attachEvent("onClick", function(mode){
-          if (!selected) {
-            $$('files').unselectAll();
-          }
-          selected = false;
-        });
       });
   </script>
 </body>
