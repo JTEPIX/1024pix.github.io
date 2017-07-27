@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./webix/webix.css">
+  <link rel="stylesheet" href="./webix/pix.css">
+  <link rel="stylesheet" href="./webix/pix-apps.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>
+  <script src="./webix/pix-apps.js"></script>
+  <title>Propriétés</title>
+</head>
+<body>
+  <script>
+      var open = {
+        date: function() {
+          webix.message("date");
+        }
+      }        
+
+      webix.ready(function() {
+        webix.ui({
+          view:"pixDesktop",
+          items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"fichier.txt", image:"file.png"}],
+          open: open,
+          contextMenu: {
+            items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+            click: {
+              menu1: function(e, context) {
+                $$('properties').open();
+              },
+              menu2: function(e, context) {
+                $$('files').clearAll();              
+              }
+            }
+          },
+          background:"images/benji.jpg",
+          taskbar:true
+        });
+
+        webix.ui({
+          view:"pixWindow",
+          id:"fichier_window",
+          label:"fichier.txt",
+          icon:"file",          
+          body:{
+            view:"layout",
+            padding:10,
+            rows:[{
+                view:"textarea",
+                value: "Ceci est un exemple de fichier texte. Pour afficher les propriétés du fichier, utilisez le menu contextuel en faisant un clic droit sur le fichier."
+              }
+            ]
+          }
+        });
+
+        webix.ui({
+          view:"pixFolder",
+          id:"parametres_window",
+          label:"Paramètres",
+          icon:"cogs",
+          items: [
+            {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
+            {id:"date", name:"Date et heure", icon:"fa-calendar"},
+            {id:"display", name:"Affichage", icon:"fa-desktop"},
+          ],
+          open:open
+          /*,
+          label:"Date et heure",
+          icon:"cog"*/
+        });
+
+        webix.ui({
+          view:"pixWindow",
+          id:"properties",
+          height:300,
+          width:250,
+          label:"Propriétés",
+          icon:"info-circle",
+          body:{
+            view:"layout",
+            padding:10,
+            rows:[{
+                view:"text",
+                label:"Nom",
+                value: "fichier.txt",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Taille",
+                value: "20 octets",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Date",
+                value: "19 juillet 2017",
+                readonly: true
+              },
+              {
+                view:"text",
+                label:"Auteur",
+                value: "Nathalie",
+                readonly: true
+              }            
+            ]
+          }
+        });
+
+        pixApps.load(["users", "display"]);
+
+      });
+  </script>
+</body>
+</html>
