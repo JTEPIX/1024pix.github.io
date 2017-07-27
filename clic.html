@@ -17,19 +17,14 @@
       webix.ready(function() {
         webix.ui({
           view:"pixDesktop",
-          data:[{id:"fichier", name:"fichier.txt", img:"file.png"}],
-          open: function(id) {
-            if (id === "fichier") {
-              $$('content').open();
-            }
-          },
+          items:[{id:"file", name:"fichier.txt", image:"file.png"}],
           background:"images/collioure.jpg",
           taskbar:true
         });
 
         webix.ui({
           view:"pixWindow",
-          id:"content",
+          id:"file_window",
           label:"fichier.txt",
           icon:"file",          
           body:{

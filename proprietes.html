@@ -15,19 +15,25 @@
       webix.ready(function() {
         webix.ui({
           view:"pixDesktop",
-          data:[{id:"fichier", name:"fichier.txt", img:"file.png"}],
-          open: function(id) {
-            if (id === "fichier") {
-              $$('content').open();
-            }
-          },
+          items:[{id:"file", name:"fichier.txt", image:"file.png"}],
           background:"images/benji.jpg",
-          taskbar:true
+          taskbar:true,
+          contextMenu:{
+            items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+            click: {
+              menu1: function(e, context) {
+                $$('properties').open();
+              },
+              menu2: function(e, context) {
+                $$('pixDesktopItems').clearAll();                
+              }
+            }
+          }
         });
 
         webix.ui({
           view:"pixWindow",
-          id:"content",
+          id:"file_window",
           label:"fichier.txt",
           icon:"file",          
           body:{
@@ -77,25 +83,8 @@
               }            
             ]
           }
-        });        
-
-        webix.ui({
-          view:"contextmenu",
-          id:"cmenu",
-          data:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
-            on:{
-              onItemClick:function(id, e){
-                if (id == "menu2") {
-                  $$('files').clearAll();
-                } else if (id == "menu1") {
-                  $$('properties').open();
-                }
-              }
-          }
         });
-
-        $$("cmenu").attachTo($$("pixDesktopItems"));
-
+        
       });
   </script>
 </body>
