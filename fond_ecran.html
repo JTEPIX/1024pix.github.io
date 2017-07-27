@@ -14,17 +14,11 @@
 </head>
 <body>
   <script>
-      var open = {
-        date: function() {
-          webix.message("date");
-        }
-      }        
 
       webix.ready(function() {
         webix.ui({
           view:"pixDesktop",
           items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"fichier.txt", image:"file.png"}],
-          open: open,
           contextMenu: {
             items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
             click: {
@@ -65,11 +59,7 @@
             {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
             {id:"date", name:"Date et heure", icon:"fa-calendar"},
             {id:"display", name:"Affichage", icon:"fa-desktop"},
-          ],
-          open:open
-          /*,
-          label:"Date et heure",
-          icon:"cog"*/
+          ]
         });
 
         webix.ui({
@@ -110,7 +100,7 @@
           }
         });
 
-        pixApps.load(["users", "display"]);
+        pixApps.load(["users", "display", "date"]);
 
       });
   </script>

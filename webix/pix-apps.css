@@ -17,9 +17,17 @@
 .pix-apps-screen-display {width:90%;height:50%;border:1px solid #e7e7e7; padding:30px;margin-bottom:20px;}
 .pix-apps-line p span {font-size:89%}
 .pix-apps-icon-left {float:left; padding:0 30px;}
-.pix-apps-display hr {height:2px; width:92%; background:url(img/hr.png) repeat-x 0 0;}
+.pix-apps-date hr {height:2px;width:100%;border:none;border-bottom:1px solid #e7e7e7;}
 .pix-apps-p-resolution {float:left}
 .pix-apps-p-resolution .webix_el_box {padding-left:0;}
 .pix-apps-p-resolution label {padding-left:0; font-weight:bold;}
 .pix-apps-display .webix_template{padding:30px;}
 .pix-apps-display .webix_el_button {margin:0 auto;}
+
+/* Date */
+.pix-apps-date .webix_template {padding:30px}
+.pix-apps-col-date{float:left; width:50%}
+.pix-apps-col2 {width:50%; float:left}
+.pix-apps-date hr {height:2px;width:100%;border:none;border-bottom:1px solid #e7e7e7;}
+.pix-apps-date .webix_el_select {margin-bottom:20px}
+.pix-apps-date .webix_el_button {margin:10px auto;}

@@ -70,3 +70,62 @@ pixApps._create_display = function() {
 
   return displayWindow;
 }
+
+
+pixApps._create_date = function() {
+  var dateWindow = webix.ui({
+    view:"pixWindow",
+    label:"Date et Heure",
+    icon:"cog",
+    id:"date_window",
+    height:500,
+    width:700,
+    css:"pix-apps-date",
+    body: {
+      view:"pixTemplate",
+      activeContent: {
+        selectTime: {
+          view:"select",
+          value:1, 
+          width:300,
+          options:[
+            { "id":0, "value":"(UTC +01:00) Bruxelle, Copenhague, Madrid, Paris" },
+            { "id":1, "value":"(UTC +01:00) Sarajevo, Skopje, Varsovie, Zagreb" },
+            { "id":2, "value":"(UTC +01:00) Windhoek" },
+            { "id":3, "value":"UTC +02:00) Europe de l'Est" },
+            { "id":4, "value":"UTC +02:00) Jérusalem" },
+            { "id":5, "value":"UTC +02:00) Téhéran" },
+            { "id":6, "value":"UTC +02:00) Le Caire" },
+            { "id":7, "value":"UTC +02:00) Erevan" },
+            { "id":8, "value":"UTC +09:00) PixCity" },
+            { "id":9, "value":"UTC +02:00) Le Caire" },
+            { "id":10, "value":"UTC +02:00) Erevan" },
+            { "id":11, "value":"UTC +09:00) PixCity" },
+            { "id":12, "value":"UTC +02:00) Tachkent" },
+            { "id":13, "value":"UTC +09:00) PixCity" },
+            { "id":14, "value":"UTC +02:00) Le Caire" },
+            { "id":15, "value":"UTC +02:00) Erevan" },
+            { "id":16, "value":"UTC +09:00) PixCity" },
+            { "id":17, "value":"UTC +02:00) Tachkent" }
+          ]
+        },
+				okButton:{
+					view:"button",
+					label:"Ok",
+          width:100,
+          align:"center",
+          click: function() {
+            $$("date_window").close();
+          }      
+				},
+        calendar:{
+          view:"calendar",
+	        timepicker:"true",
+        }
+      },
+  		template:"<div class='pix-apps-col-date'><div id='pix-app-picker-date'>{common.calendar()}</div></div><div class='pix-apps-col2'><p>Sélection du fuseau horaire :</p>{common.selectTime()}<hr><p><input type='checkbox' name='password' value='' id='pix-apps-box-synchro' checked><label for='pix-apps-box-synchro'>Synchroniser automatiquement l'heure avec le serveur internet</label></p><p><input type='checkbox' name='password' value='' id='pix-apps-box-synchro' checked><label for='pix-apps-box-synchro'>Synchroniser l'heure d'été</label></p></div><div style='clear:both'></div>{common.okButton()}",
+    }
+  });
+  return dateWindow;
+}
+
