@@ -1,3 +1,34 @@
+.pix-desktop {
+  background-size:cover;
+  width:100%;
+  height:100%;
+}
+
+.webix_view div:focus {
+  outline:none;
+}
+
+.pix-items{
+  background-color:transparent;
+  padding:5px;
+  box-sizing:border-box;
+}
+
+.pix-items .webix_list_item {
+  display:inline-block;
+  cursor:default;
+  line-height:inherit;
+  border-right:none;
+  padding:5px 10px;
+}
+
+.pix-items .webix_list_item.webix_selected{
+  padding:5px 10px;
+  background-color:rgba(204, 204, 255, 0.3);
+  box-shadow: 0 0 0 1px rgba(120, 120, 120, 0.5) inset;
+  border:none;
+}
+
 .pix-item-inner {
   text-align:center;
 }
@@ -25,37 +56,6 @@ span.pix-item-icon + div {
 .pix-desktop .pix-item-name {
   color:#fff;
   text-shadow: 1px 1px #000;
-}
-.pix-desktop {
-  background-size:cover;
-  width:100%;
-  height:100%;
-}
-
-.pix-items .webix_list_item {
-  display:inline-block;
-  cursor:default;
-  line-height:inherit;
-  border-right:none;
-  padding:5px 10px;
-}
-
-.pix-items .webix_list_item.webix_selected {
-  padding:5px 10px;
-}
-
-.webix_view div:focus {
-  outline:none;
-}
-
-.pix-items{
-  background-color:transparent;
-}
-
-.pix-items .webix_list_item.webix_selected{
-  background-color:rgba(204, 204, 255, 0.3);
-  box-shadow: 0 0 0 1px rgba(120, 120, 120, 0.5) inset;
-  border:none;
 }
 
 .pix-desktop .pix-items .webix_list_item.webix_selected{

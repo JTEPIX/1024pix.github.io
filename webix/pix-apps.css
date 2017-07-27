@@ -19,5 +19,7 @@
 .pix-apps-icon-left {float:left; padding:0 30px;}
 .pix-apps-display hr {height:2px; width:92%; background:url(img/hr.png) repeat-x 0 0;}
 .pix-apps-p-resolution {float:left}
-#pix-apps-select-resolution {width:39%; float:left;}
+.pix-apps-p-resolution .webix_el_box {padding-left:0;}
+.pix-apps-p-resolution label {padding-left:0; font-weight:bold;}
 .pix-apps-display .webix_template{padding:30px;}
+.pix-apps-display .webix_el_button {margin:0 auto;}
