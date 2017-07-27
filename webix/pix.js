@@ -1,17 +1,21 @@
-var pixFileSelected = false;
+var pixItemSelected = false;
+
+/**
+ * pixWindow
+ */
 
 webix.protoUI({
   name:"pixWindow",
   $init:function(config) {
     var view = this;
-    if (typeof config.label !== "undefined") {
+    webix.extend(config,this.getUI());
+    if (config.label||this.defaults.label) {
       this.$ready.push(function() {
         var head = view.getChildViews()[0];
         var label = head.getChildViews()[0];
-        label.define("label", config.label);
+        label.define("label", view.config.label);
       });
     }
-    webix.extend(config,this.getUI());
     this.$ready.push(function() {
       if ($$("pixTaskbar")) {
         // there is a taskbar: show minimize icon
@@ -19,17 +23,18 @@ webix.protoUI({
       }
     })
   },
+  defaults: {
+    move:true,
+    resize:true,
+    hidden:true,
+    height:400,
+    width:400,
+    position:"center",
+    css:'pix-window',
+    toFront:true
+  },
   getUI: function() {
     return {
-      label:"",
-      move:true,
-      resize:true,
-      hidden:true,
-      height:400,
-      width:400,
-      position:"center",
-      css:'pix-window',
-      toFront:true,
       head:{
         view:"toolbar",
         cols:[{
@@ -128,8 +133,15 @@ webix.protoUI({
     if (taskbar) {
       taskbar.removeTask(this);
     }
+  },
+  getBody: function() {
+    return this.getChildViews()[1];
   }
 }, webix.ui.window);
+
+/**
+ * pixTaskBar
+ */
 
 webix.protoUI({
   name: "pixTaskbar",
@@ -268,28 +280,95 @@ webix.protoUI({
 	},
 }, webix.ui.toolbar);
 
+/**
+ * pixItemList
+ */
+
+webix.protoUI({
+  name:"pixItemList",
+  $init: function(config) {
+    //webix.extend(config,this.getUI());
+  },
+  defaults: {
+    borderless:true,
+    autowidth:false,
+    autoheight:false,
+    css:"pix-items",
+    select:true,
+    layout:"x",
+    type:{
+      height:"auto",
+      width:"auto",
+      css:"pix-item",
+      template: function(obj) {
+        if (obj.image) {
+          return "<div class='pix-item-inner'><img class='pix-item-icon' src='"+obj.image+"'><div class='pix-item-name'> "+obj.name+"</div></div>";
+        } else if (obj.icon) {
+          return "<div class='pix-item-inner'><span class='pix-item-icon webix_icon "+obj.icon+"'></span><div class='pix-item-name'>"+obj.name+"</div></div>";
+        }
+      }
+    },
+    drag:true,
+    open: function(name){},
+    on: {
+      onItemDblClick: function(id, e) {
+        if (this.config.open && this.config.open[id]) {
+          this.config.open[id].call(this, e);
+        } else if ($$(id+"_window")) {
+          $$(id+"_window").open();
+        }
+      },
+      onItemClick: function(e) {
+        pixItemSelected = true;
+      }
+    }
+  },
+  /*$dragHTML:function(obj, e){
+		if (this._settings.layout == "y" && this.type.width == "auto"){
+			this.type.width = this._content_width;
+			var node = this._toHTML(obj);
+			this.type.width = "auto";
+			return node;
+		}
+		return this._toHTML(obj);
+  },*/  
+  setContextMenu: function(data) {
+    var element = this;
+    var menu = webix.ui({
+      view:"contextmenu",
+      id:"test",
+      data:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],//data.items,
+      on:{
+        onItemClick:function(id, e){
+          if (data.click && data.click[id]) {
+            data.click[id].call(this, e);
+          }
+        }
+      },
+      master:element
+    });
+  },
+}, webix.ui.list);
+
+/**
+ * pixDesktop
+ */
+
 webix.protoUI({
   name:"pixDesktop",
   id:"pixDesktop",
   $init:function(config) {
     var view = this;
     var node = this.$view;
-    if (typeof config.data !== "undefined") {
-      this.$ready.push(function() {
-        var list = view.getChildViews()[0];
-        list.define("data", config.data);
-        if (typeof config.open !== "undefined") {
-          list.define("open", config.open);
-        }
-      });
+    this.$ready.push(function() {
       webix.attachEvent("onClick", function(mode){
-        if (!pixFileSelected) {
+        if (!pixItemSelected) {
           $$('pixDesktopItems').unselectAll();
         }
         pixFileSelected = false;
       });
-    }
-    if (typeof config.background !== "undefined") {
+    })
+    if (config.background) {
       this.$ready.push(function() {
         node.style.backgroundImage = "url('"+config.background+"')";
       });
@@ -299,37 +378,66 @@ webix.protoUI({
         view.addView({view: "pixTaskbar", id: "pixTaskbar"});
       });
     }
+    if (config.items) {
+      this.$ready.push(function() {
+        var items = $$("pixDesktopItems");
+        items.define("data", config.items);
+        if (config.open) {
+          items.define("open", config.open);
+        }
+        if (config.contextMenu) {
+          items.setContextMenu(config.contextMenu);
+        }
+      });
+    }
   },
   defaults:{
-    css:"pix-desktop",  
+    css:"pix-desktop",
     rows:[{
-      view:"list",
-      borderless:true,
-      autowidth:false,        
+      view:"pixItemList",
       id:"pixDesktopItems",
-      width:80,
-      css:"pix-desktop-items",
-      select:true,
-      type:{
-        height:120,
-        width:100,
-        template: "<div class='pix-desktop-item-inner'><img class='pix-desktop-item-icon' src='#img#'><div class='pix-desktop-item-name'> #name#</div></div>",
-        css:"pix-file",
-      },
-      onContext:{},
-      drag:true,
-      data:[],
-      open: function(name){},
-      on: {
-        onItemDblClick: function(id, e) {
-          this.config.open(id);
-        },
-        onItemClick: function(e) {
-          pixFileSelected = true;
-        }
-      }
-    }],
+      // mandatory here, otherwise list is not correctly initialized regarding
+      // context menu
+      onContext:{}
+    },{}],
     taskbar:false
    }  
 }, webix.ui.layout);
 
+/**
+ * pixFolder
+ */
+
+webix.protoUI({
+  name:"pixFolder",
+  $init: function(config) {
+    var view = this;
+    if (config.items) {
+      this.$ready.push(function() {
+        var list = view.getBody();
+        list.define("data", config.items);
+        if (config.open) {
+          list.define("open", config.open);
+        }
+        if (config.contextMenu) {
+          list.setContextMenu(config.contextMenu);
+        }
+      });
+    }
+  },
+  defaults: {
+    css:"pix-folder",
+    width:400,
+    height:300,
+    body: {
+      view:"pixItemList",
+      // mandatory here, otherwise list is not correctly initialized regarding
+      // context menu
+      onContext:{}
+    }
+  }
+}, webix.ui.pixWindow);
+
+webix.protoUI({
+  name:"pixTemplate"
+}, webix.ui.template, webix.ActiveContent)
