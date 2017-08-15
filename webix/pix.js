@@ -438,6 +438,11 @@ webix.protoUI({
   }
 }, webix.ui.pixWindow);
 
+
+webix.protoUI({
+  name:"pixList"
+},webix.ui.list, webix.ActiveContent);
+
 webix.protoUI({
   name:"pixTemplate"
 }, webix.ui.template, webix.ActiveContent);

@@ -16,3 +16,11 @@
 
 /* Date */
 .pix-apps-date-sync label {line-height:20px;white-space:normal;width:250px;}
+
+/* Storage */
+.pix-apps-storage-icon {float:left; padding: 0 30px; width: 75px; height: 75px;}
+.pix-apps-storage-name {font-weight:bold}
+.pix-apps-storage .webix_list_item {padding:10px 0;}
+.pix-apps-storage .webix_list_item.webix_selected {padding:10px 0;background-color:#fdfce0;color:#000000;}
+.pix-apps-storage-bar {margin-left:135px;border:1px solid #ddd;border-radius:6px;width:300px;height:20px;margin-top:10px;}
+.pix-apps-storage-used {background-color:#3498db;height:100%;border-top-left-radius:6px;border-bottom-left-radius:6px;}

@@ -273,6 +273,31 @@ pixApps._create_date = function() {
   });
   return dateWindow;
 };
-  
 
-
+pixApps._create_storage = function() {
+  var storageWindow = webix.ui({
+    view:"pixWindow",
+    label:"Disques",
+    icon:"cog",
+    id:"storage_window",
+    height:500,
+    width:700,
+    css:"pix-apps-storage",
+    body: {
+      view:"pixList",
+      data: [
+        {icon:"hdd.png", name:"Disque dur système", free:329.97, total:931.56},
+        {icon:"dvd.png", name:"Lecteur disque optique", free:1.73, total:8.43},
+        {icon:"usb.png", name:"Disque USB", free:19.82, total:31.72}
+      ],
+      type: {
+        height:"auto"
+      },
+      template: function (obj, common) {
+        return "<img src='images/"+obj.icon+"' class='pix-apps-storage-icon'><div class='pix-apps-storage-details'><span class='pix-apps-storage-name'>"+obj.name+"</span> - <span class='pix-apps-storage-free'>"+obj.free+" Go libres sur "+obj.total+" Go</span></div><div class='pix-apps-storage-bar'><div class='pix-apps-storage-used' style='width:"+(obj.free/obj.total)*100+"%'></div></div>";
+      },
+      select:1
+    }
+  });
+  return storageWindow;
+};
