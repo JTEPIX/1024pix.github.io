@@ -1,33 +1,18 @@
 /* Common */
-.pix-apps-button-ok {display:block; padding: 10px; width:10%; background-color:#3498db; text-align:center;font-weight:bold;color:#FFF; text-decoration:none; border-radius:5px; float:right}
+.webix_layout_space {background-color:#ffffff;}
 
 /* Users */
-.pix-apps-col-users {width:33%;border:1px solid #e7e7e7;padding:30px;margin:0 20px 20px 0;float:left;}
-.pix-apps-col-users p {margin:0}
-.pix-apps-line {border-bottom: 1px solid #e7e7e7; height:80px; padding-top:10px}
-.pix-apps-icon-user {float:left; padding:0 15px 20px 0;}
+.pix-apps-users-list .webix_list_item {padding:10px 0;}
+.pix-apps-users-list .webix_list_item.webix_selected {padding:10px 0;background-color:#fdfce0;color:#000000;}
+.pix-apps-users input {border:none;}
+.pix-apps-users input:focus {border:none;box-shadow:none}
+.pix-apps-icon-user {float:left; padding:0 15px;}
 .pix-apps-name-user {margin:0px;font-size:1em; font-weight:bold}
-.pix-apps-col-users p.pix-apps-type-user {font-size:0.9em;margin:1em 0;}
-.pix-apps-users .webix_template {padding:30px}
-.pix-apps-avatar {padding:0 20px 20px 20px; float:left}
-.pix-apps-desc-user{padding: 10px 0}
-.pix-apps-head-desc-user {height:80px;}
 
 /* Display */
-.pix-apps-screen-display {width:90%;height:50%;border:1px solid #e7e7e7; padding:30px;margin-bottom:20px;}
-.pix-apps-line p span {font-size:89%}
-.pix-apps-icon-left {float:left; padding:0 30px;}
-.pix-apps-date hr {height:2px;width:100%;border:none;border-bottom:1px solid #e7e7e7;}
-.pix-apps-p-resolution {float:left}
-.pix-apps-p-resolution .webix_el_box {padding-left:0;}
-.pix-apps-p-resolution label {padding-left:0; font-weight:bold;}
-.pix-apps-display .webix_template{padding:30px;}
-.pix-apps-display .webix_el_button {margin:0 auto;}
+.pix-apps-display label, .pix-apps-display .webix_el_label {font-weight:bold;}
+.pix-apps-display input {padding:0; border:none;}
+.pix-apps-display input:focus {border:none;box-shadow:none}
 
 /* Date */
-.pix-apps-date .webix_template {padding:30px}
-.pix-apps-col-date{float:left; width:50%}
-.pix-apps-col2 {width:50%; float:left}
-.pix-apps-date hr {height:2px;width:100%;border:none;border-bottom:1px solid #e7e7e7;}
-.pix-apps-date .webix_el_select {margin-bottom:20px}
-.pix-apps-date .webix_el_button {margin:10px auto;}
+.pix-apps-date-sync label {line-height:20px;white-space:normal;width:250px;}
