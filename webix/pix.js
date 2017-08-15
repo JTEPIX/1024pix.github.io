@@ -21,7 +21,7 @@ webix.protoUI({
         // there is a taskbar: show minimize icon
         view.getChildViews()[0].getChildViews()[1].show();
       }
-    })
+    });
   },
   defaults: {
     move:true,
@@ -440,4 +440,74 @@ webix.protoUI({
 
 webix.protoUI({
   name:"pixTemplate"
-}, webix.ui.template, webix.ActiveContent)
+}, webix.ui.template, webix.ActiveContent);
+
+
+/**
+ * i18n
+ */
+
+webix.i18n.locales["fr-FR"]= {
+  filemanager: {
+    actions: "Actions",
+    back: "Retour",
+    forward: "Forward",
+    levelUp: "Dossier parent",
+    name: "Nom",
+    size: "Taille",
+    type: "Type",
+    date: "Date",
+    copy: "Copier",
+    cut: "Couper",
+    paste: "Coller",
+    upload: "Upload",
+    remove: "Supprimer",
+    create: "Nouveau dossier",
+    rename: "Renommer",
+    location: "Emplacement",
+    select: "Selectionner Fichiers",
+    sizeLabels: ["o","Ko","Mo","Go"],
+    iconsView: "Icônes",
+    tableView: "Grille",
+    hideTree: "Arbre",
+    showTree: "Afficher arbre",
+    collapseTree: "Fermer",
+    expandTree: "Ouvrir",
+    saving: "Enregistrement...",
+    errorResponse: "Erreur: modifications non enregistrées !",
+    replaceConfirmation: "Voulez-vous remplacer les fichiers existants ?",
+    createConfirmation: "Le dossier existe déjà. Voulez-vous le remplacer ?",
+    renameConfirmation: "Le fichier existe déjà. Voulez-vous le remplacer ?",
+    yes: "Oui",
+    no: "non",
+    newFolder: "Nouveau dossier",
+    types:{
+        folder: "Dossier",
+        doc: "Document",
+        excel: "Excel",
+        pdf: "PDF",
+        pp: "PowerPoint",
+        text: "Fichier texte",
+        video: "Vidéo",
+        image: "Image",
+        code: "Code",
+        audio: "Audio",
+        archive: "Archive",
+        file: "Fichier"
+    }
+  },
+  calendar:{
+    monthFull:["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+    monthShort:["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aôu", "Sep", "Oct", "Nov", "Déc"],	
+    dayFull:["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+      dayShort:["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+    hours: "Heures",
+    minutes: "Minutes",
+    done:"Valider",
+    clear: "Effacer",
+    today: "Aujourd'hui"
+  }
+};
+webix.Date.startOnMonday = true;
+webix.i18n.setLocale("fr-FR");
+
