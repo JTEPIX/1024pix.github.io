@@ -190,51 +190,6 @@ pixApps._create_display = function() {
   return displayWindow;
 };
 
-pixApps._create_display_old = function() {
-  var displayWindow = webix.ui({
-    view:"pixWindow",
-    label:"Affichage",
-    icon:"cog",
-    id:"display_window",
-    height:500,
-    width:700,
-    css:"pix-apps-display",
-    body: {
-      view:"pixTemplate",
-      activeContent: {
-        selectResolution: {
-          view:"select",
-          value:1, 
-          width:300,
-          labelWidth:100,
-          label:"Résolution :",
-          options:[
-            { id:0, value:"1920 x 1200" },
-            { id:1, value:"1600 x 1200" },
-            { id:2, value:"1600 x 1080" },
-            { id:3, value:"1400 x 1050" },
-            { id:4, value:"1280 x 1024" },
-            { id:5, value:"1024 x 768" }
-          ]
-        },
-				okButton:{
-					view:"button",
-					label:"Ok",
-          width:100,
-          align:"center",
-          click: function() {
-            $$("display_window").close();
-          }      
-				},
-        
-      },
-      template:"<div class='pix-apps-screen-display'><img src='images/screen.png' width='171' height='171' class='pix-apps-icon-left' /><p><strong>Ecran Plug and Play - 24 pouces </strong></p><p><strong>Orientation :</strong> Paysage</p><p><strong>Fréquence rafraichissement :</strong> 60 Hz</p><p><strong>Luminosité :</strong> Automatique</p><div class='pix-apps-p-resolution'>{common.selectResolution()}</div></div>{common.okButton()}",
-    }
-  });
-
-  return displayWindow;
-};
-
 
 pixApps._create_date = function() {
   var dateWindow = webix.ui({
