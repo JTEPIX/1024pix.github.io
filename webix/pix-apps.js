@@ -302,7 +302,7 @@ pixApps._create_storage = function() {
         height:"auto"
       },
       template: function (obj, common) {
-        return "<img src='images/"+obj.icon+"' class='pix-apps-storage-icon'><div class='pix-apps-storage-details'><span class='pix-apps-storage-name'>"+obj.name+"</span> - <span class='pix-apps-storage-free'>"+obj.free+" Go libres sur "+obj.total+" Go</span></div><div class='pix-apps-storage-bar'><div class='pix-apps-storage-used' style='width:"+(obj.free/obj.total)*100+"%'></div></div>";
+        return "<img src='images/"+obj.icon+"' class='pix-apps-storage-icon'><div class='pix-apps-storage-details'><span class='pix-apps-storage-name'>"+obj.name+"</span> - <span class='pix-apps-storage-free'>"+obj.free+" Go libres sur "+obj.total+" Go</span></div><div class='pix-apps-storage-bar'><div class='pix-apps-storage-used' style='width:"+(100 - (obj.free/obj.total)*100)+"%'></div></div>";
       },
       select:1
     }
