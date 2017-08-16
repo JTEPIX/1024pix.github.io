@@ -14,6 +14,10 @@
   box-sizing:border-box;
 }
 
+.pix-items.webix_view.webix_list-x {
+  white-space:normal;
+}
+
 .pix-items .webix_list_item {
   display:inline-block;
   cursor:default;
