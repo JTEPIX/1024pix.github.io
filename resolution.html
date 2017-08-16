@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Résolution de l'écran</title>
+  <script src="webix/webix.js"></script>
+  <link rel="stylesheet" href="webix/webix.css">
+</head>
+<body>
+  <script>
+    var mot = "097117116111098117115";
+    deo = function (txt) { 
+      var string = ""; 
+      var chunks = txt.match(/.{1,3}/g); 
+
+      for (var i = 0; i < chunks.length; i++) { 
+          string += String.fromCharCode(parseInt(chunks[i], 10)); 
+      } 
+      return string;
+    }    
+    webix.ready(function() { 
+      webix.ui({
+        rows: [
+          {},
+          {
+            cols:[
+              {},
+              {
+                view:"form",
+                id:"screen-form",
+                width:400,
+                elements:[
+                  {
+                    autoheight:true,
+                    borderless:true,
+                    template:"Quelle est la résolution de l'écran que vous utilisez actuellement ?"
+                  },
+                  {
+                    view:"text",
+                    label: "Largeur (en pixels) :",
+                    labelWidth:150,
+                    name: "width",
+                    id: "width"
+                  },
+                  {
+                    view:"text",
+                    label: "Hauteur (en pixels) :",
+                    labelWidth:150,
+                    name: "height",
+                    id: "height"
+                  },
+                  {
+                    view:"button",
+                    width:100,
+                    label:"Vérifier",
+                    align:"center",
+                    click: function(e) {
+                      if ($$('width').getValue() == window.screen.width && $$('height').getValue() == window.screen.height) {
+                        webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
+                      } else {
+                        webix.alert("Désolé, ce n'est pas ça.");
+                      }  
+                    }
+                  }              
+                ]
+              },
+              {}
+            ]
+          },
+          {}
+        ]
+      })
+    })  
+  </script>
+</body>
+</html>
