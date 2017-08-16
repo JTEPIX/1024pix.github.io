@@ -42,14 +42,16 @@
                     label: "Largeur (en pixels) :",
                     labelWidth:150,
                     name: "width",
-                    id: "width"
+                    id: "width",
+                    validate: webix.rules.isNumber
                   },
                   {
                     view:"text",
                     label: "Hauteur (en pixels) :",
                     labelWidth:150,
                     name: "height",
-                    id: "height"
+                    id: "height",
+                    validate: webix.rules.isNumber
                   },
                   {
                     view:"button",
@@ -57,11 +59,15 @@
                     label:"Vérifier",
                     align:"center",
                     click: function(e) {
-                      if ($$('width').getValue() == window.screen.width && $$('height').getValue() == window.screen.height) {
-                        webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
+                      if ($$('screen-form').validate()) {
+                          if ($$('width').getValue() == window.screen.width && $$('height').getValue() == window.screen.height) {
+                          webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
+                        } else {
+                          webix.alert("Désolé, ce n'est pas ça.");
+                        }  
                       } else {
-                        webix.alert("Désolé, ce n'est pas ça.");
-                      }  
+                        webix.alert("Vous devez entrer des nombres entiers.");
+                      }
                     }
                   }              
                 ]
