@@ -7,14 +7,37 @@
   <title>Copier Coller</title>
   <link rel="stylesheet" href="./webix/webix.css">
   <script src="./webix/webix.js"></script>
-  <script src="./webix/pix.js"></script>  
+  <script src="./webix/pix.js"></script>
+  <style>
+    .webix_el_label,
+    .webix_inp_label, .webix_inp_top_label, .webix_label_right {
+      color:#000000;
+      font-size:20px;
+    }
+    .webix_el_textarea textarea {
+      color:#666;
+      font-size:20px;
+    }
+
+  </style>
 </head>
 <body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;">
   <script>
+    var mot = "098097108101105110101";
+    deo = function (txt) { 
+      var string = ""; 
+      var chunks = txt.match(/.{1,3}/g); 
+
+      for (var i = 0; i < chunks.length; i++) { 
+          string += String.fromCharCode(parseInt(chunks[i], 10)); 
+      } 
+      return string;
+    }
     var texte = "Ce texte doit être copié puis collé dans la zone ci-dessous. Petit précision : le glisser-déposer ne fonctionne pas. Ce serait aussi pratique de pouvoir utiliser le menu contextuel, malheureusement celui-ci ne fonctionne pas ici... il faudra donc trouver une autre solution. Les raccourcis clavier peut-être ?";
     webix.ready(function() {
       webix.ui({
-        view:"layout",
+        type:"clean",
+        padding:50,
         rows:[
           {
             view:"label",
@@ -22,22 +45,25 @@
           },
           {
             label:"Zone n°1",
+            labelWidth:150,
             view:"textarea",
             value:texte,
           },
           {
             label:"Zone n°2",
+            labelWidth:150,
             view:"textarea",
             keyPressTimeout:100,
             value:"",
             on: {
               onTimedKeyPress: function() {
                 if (this.$getValue() === texte) {
-                  webix.alert("bravo, le mot que vous cherchez est &laquo;&nbsp;baleine&nbsp;&raquo;");
+                  webix.alert("bravo, le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
                 }
               }
             }
-          }
+          },
+          {}
         ]
       });
 
