@@ -18,18 +18,7 @@
       webix.ready(function() {
         webix.ui({
           view:"pixDesktop",
-          items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"fichier.txt", image:"file.png"}],
-          contextMenu: {
-            items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
-            click: {
-              menu1: function(e, context) {
-                $$('properties').open();
-              },
-              menu2: function(e, context) {
-                $$('files').clearAll();              
-              }
-            }
-          },
+          items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}],
           background:"images/benji.jpg",
           taskbar:true
         });
@@ -37,14 +26,14 @@
         webix.ui({
           view:"pixWindow",
           id:"fichier_window",
-          label:"fichier.txt",
+          label:"notes.txt",
           icon:"file",          
           body:{
             view:"layout",
             padding:10,
             rows:[{
                 view:"textarea",
-                value: "Ceci est un exemple de fichier texte. Pour afficher les propriétés du fichier, utilisez le menu contextuel en faisant un clic droit sur le fichier."
+                value: "Ne pas oublier de changer mon fond d'écran."
               }
             ]
           }
@@ -59,49 +48,13 @@
             {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
             {id:"date", name:"Date et heure", icon:"fa-calendar"},
             {id:"display", name:"Affichage", icon:"fa-desktop"},
-            {id:"storage", name:"Disques", icon:"fa-hdd-o"},
+            {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
+            {id:"storage", name:"Disques", icon:"fa-hdd-o"}
           ]
         });
 
-        webix.ui({
-          view:"pixWindow",
-          id:"properties",
-          height:300,
-          width:250,
-          label:"Propriétés",
-          icon:"info-circle",
-          body:{
-            view:"layout",
-            padding:10,
-            rows:[{
-                view:"text",
-                label:"Nom",
-                value: "fichier.txt",
-                readonly: true
-              },
-              {
-                view:"text",
-                label:"Taille",
-                value: "20 octets",
-                readonly: true
-              },
-              {
-                view:"text",
-                label:"Date",
-                value: "19 juillet 2017",
-                readonly: true
-              },
-              {
-                view:"text",
-                label:"Auteur",
-                value: "Nathalie",
-                readonly: true
-              }            
-            ]
-          }
-        });
-
-        pixApps.load(["users", "display", "date", "storage"]);
+        pixApps.load(["users", "display", "date", "appearance", "storage"]);
+        pixApps.get("appearance").addBackground({id:"images/gamma.jpg", value:"Californie"});
 
       });
   </script>
