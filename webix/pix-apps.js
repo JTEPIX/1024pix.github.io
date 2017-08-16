@@ -10,6 +10,14 @@ pixApps.load = function(types) {
   }
 };
 
+pixApps.get = function(type) {
+  if (typeof pixApps[type] !== 'undefined') {
+    return pixApps[type];
+  } else {
+    return false;
+  }
+};
+
 pixApps._create_users = function() {
   var usersWindow = webix.ui({
     view:"pixWindow",
@@ -300,4 +308,112 @@ pixApps._create_storage = function() {
     }
   });
   return storageWindow;
+};
+
+pixApps._create_appearance = function() {
+  var appearanceWindow = webix.ui({
+    view:"pixWindow",
+    label:"Apparence",
+    icon:"cog",
+    id:"appearance_window",
+    height:500,
+    width:700,
+    css:"pix-apps-appearance",
+    body: {
+      type:"clean",
+      padding:10,
+      rows: [{
+        type:"clean",
+        cols:[{
+          template:"<img src='images/appearance.png'>",
+          width:127
+        },
+        {
+          width:400,
+          view:"form",
+          elements: [{
+            view:"colorpicker",
+            label:"Couleur du texte",
+            labelWidth:200,
+            value:"#606060",
+            on: {
+              onChange: function(newV) {
+                webix.html.addStyle(".webix_inp_label, .webix_inp_top_label, .webix_label_right{ color:"+newV+"; }");
+                webix.html.addStyle(".pix-item-name{ color:"+newV+"; }");
+                webix.html.addStyle("span.pix-item-icon{ color:"+newV+"; }");
+              }
+            }
+          },
+          {
+            view:"colorpicker",
+            label:"Couleur des fenêtres",
+            labelWidth:200,
+            value:"#3498db",
+            on: {
+              onChange: function(newV) {
+                webix.html.addStyle(".webix_layout_toolbar.webix_toolbar{ background-color:"+newV+"; }");
+                webix.html.addStyle(".webixbutton, .webixtype_base, .webixtype_next, .webixtype_prev{ background-color:"+newV+"; }");
+              }
+            }
+          },
+          {
+            view:"select",
+            label:"Taille du texte",
+            labelWidth:200,
+            options:[
+              {"id":12, "value":"12"},
+              {"id":15, "value":"15"},
+              {"id":16, "value":"16"},
+              {"id":18, "value":"18"},
+              {"id":20, "value":"20"}
+            ],
+            value:15,
+            on: {
+              onChange: function(newV) {
+                webix.html.addStyle(".webix_inp_label, .webix_inp_top_label, .webix_label_right{ font-size:"+newV+"px; }");
+                webix.html.addStyle(".webix_view{ font-size:"+newV+"px; }");
+                webix.html.addStyle(".webix_el_button button, .webix_el_button input, .webix_el_toggle button, .webix_el_toggle input, .webixbutton{ font-size:"+newV+"px; }");
+              }
+            }
+          },
+          {
+            view:"select",
+            labelWidth:200,
+            id: "appearance_window_backgrounds",
+            options:[
+              { "id":"images/collioure.jpg", "value":"Collioure" },
+              { "id":"images/benji.jpg", "value":"Plage" }
+            ],
+            value:$$("pixDesktop").getBackground(),
+            label:"Fond d'écran",
+            on: {
+              onChange: function(newV) {
+                $$("pixDesktop").setBackground(newV);
+              }
+            }
+          }]
+        }]
+      },
+      {
+        height:10
+      },
+      {
+        view:"button",
+        label:"Ok",
+        width:100,
+        align:"center",
+        click: function() {
+          $$("appearance_window").close();
+        }
+      }]
+    }
+  });
+
+  appearanceWindow.addBackground = function(value) {
+    var select = $$("appearance_window_backgrounds");
+    select.config.options.push(value);
+    select.refresh();
+  };
+
+  return appearanceWindow;
 };
