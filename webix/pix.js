@@ -260,7 +260,7 @@ webix.protoUI({
         }
       });
       view.startTime();      
-    })
+    });
   },
   updateTime: function(){
     // almost entirely from webix desktop demo
@@ -323,21 +323,11 @@ webix.protoUI({
       }
     }
   },
-  /*$dragHTML:function(obj, e){
-		if (this._settings.layout == "y" && this.type.width == "auto"){
-			this.type.width = this._content_width;
-			var node = this._toHTML(obj);
-			this.type.width = "auto";
-			return node;
-		}
-		return this._toHTML(obj);
-  },*/  
   setContextMenu: function(data) {
     var element = this;
     var menu = webix.ui({
       view:"contextmenu",
-      id:"test",
-      data:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],//data.items,
+      data:data.items,
       on:{
         onItemClick:function(id, e){
           if (data.click && data.click[id]) {
@@ -356,7 +346,6 @@ webix.protoUI({
 
 webix.protoUI({
   name:"pixDesktop",
-  id:"pixDesktop",
   $init:function(config) {
     var view = this;
     var node = this.$view;
@@ -367,7 +356,7 @@ webix.protoUI({
         }
         pixFileSelected = false;
       });
-    })
+    });
     if (config.background) {
       this.$ready.push(function() {
         node.style.backgroundImage = "url('"+config.background+"')";
@@ -390,6 +379,7 @@ webix.protoUI({
         }
       });
     }
+    config.id = "pixDesktop";
   },
   defaults:{
     css:"pix-desktop",
@@ -401,7 +391,14 @@ webix.protoUI({
       onContext:{}
     },{}],
     taskbar:false
-   }  
+   },
+   getBackground: function() {
+    return this.config.background;
+   },
+   setBackground: function(image) {
+     this.config.background = image;
+     this.getNode().style.backgroundImage = "url('"+image+"')";
+   }
 }, webix.ui.layout);
 
 /**
