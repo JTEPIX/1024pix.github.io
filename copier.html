@@ -18,6 +18,11 @@
       color:#666;
       font-size:20px;
     }
+    .answer {
+      color:#0000FF;
+      font-size:20px;
+      margin-top:10px !important;
+    }
 
   </style>
 </head>
@@ -33,7 +38,9 @@
       } 
       return string;
     }
-    var texte = "Ce texte doit être copié puis collé dans la zone ci-dessous. Petit précision : le glisser-déposer ne fonctionne pas. Ce serait aussi pratique de pouvoir utiliser le menu contextuel, malheureusement celui-ci ne fonctionne pas ici... il faudra donc trouver une autre solution. Les raccourcis clavier peut-être ?";
+    var texte = "Ce texte doit être copié puis collé dans la zone ci-dessous. Attention : le glisser-déposer ne fonctionne pas. Ce serait aussi pratique de pouvoir utiliser le menu contextuel ou le menu du navigateur, malheureusement ceux-ci ne fonctionnent pas ici... il faudra donc trouver une autre solution. Les raccourcis clavier peut-être ?";
+    var keyPressed = false;
+    var cancelKeyPressed;
     webix.ready(function() {
       webix.ui({
         type:"clean",
@@ -48,6 +55,16 @@
             labelWidth:150,
             view:"textarea",
             value:texte,
+            id:'zone1',
+            on: {
+              onKeyPress: function() {
+                keyPressed = true;
+                window.clearTimeout(cancelKeyPressed);
+                cancelKeyPressed = window.setTimeout(function() {
+                  keyPressed = false;
+                }, 100);
+              }              
+            }
           },
           {
             label:"Zone n°2",
@@ -55,18 +72,43 @@
             view:"textarea",
             keyPressTimeout:100,
             value:"",
+            id:'zone2',            
             on: {
+              onKeyPress: function() {
+                keyPressed = true;
+                window.clearTimeout(cancelKeyPressed);
+                cancelKeyPressed = window.setTimeout(function() {
+                  keyPressed = false;
+                }, 100);                
+              },
               onTimedKeyPress: function() {
                 if (this.$getValue() === texte) {
-                  webix.alert("bravo, le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
+                  $$('answer').config.label = "Bravo ! Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;";
+                  $$('answer').refresh();
                 }
               }
             }
           },
+          {
+            view:"label",
+            id:"answer",
+            css:"answer",
+            align:"center",
+            label:""
+          },
           {}
         ]
       });
-
+      webix.event($$('zone1').getInputNode(), "copy", function(e) {
+        if (!keyPressed) {
+          e.preventDefault();
+        }
+      });
+      webix.event($$('zone2').getInputNode(), "paste", function(e) {
+        if (!keyPressed) {
+          e.preventDefault();
+        }
+      });
     });
   </script>
 </body>
