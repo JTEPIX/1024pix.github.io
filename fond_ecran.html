@@ -20,7 +20,28 @@
           view:"pixDesktop",
           items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}],
           background:"images/benji.jpg",
-          taskbar:true
+          taskbar:true,
+          contextMenu: {
+            items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+            click: {
+              menu1: function(e, context) {
+                $$('proprietes_nom').config.value = context.obj.getItem(context.id).name;
+                $$('proprietes_nom').refresh();
+                $$('proprietes_window').show();
+              },
+              menu2: function(e, context) {
+                context.obj.remove(context.id);
+              }
+            }
+          },
+          backContextMenu:{
+            items:[{value:"Modifier le fond...", id:"menu1"}],
+            click: {
+              menu1: function(e, context) {
+                $$('appearance_window').open();
+              }
+            }
+          }          
         });
 
         webix.ui({
@@ -57,6 +78,40 @@
         pixApps.get("appearance").addBackground({id:"images/gamma.jpg", value:"Californie"});
 
       });
+
+      webix.ui({
+        view:"pixWindow",
+        id:"proprietes_window",
+        height:300,
+        width:250,
+        label:"Propriétés",
+        icon:"info-circle",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"text",
+              label:"Nom",
+              id:"proprietes_nom",
+              value: "",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Date",
+              value: "19 juillet 2017",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Auteur",
+              value: "PIX",
+              readonly: true
+            }            
+          ]
+        }
+      });
+      
   </script>
 </body>
 </html>
