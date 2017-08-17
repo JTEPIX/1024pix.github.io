@@ -348,7 +348,7 @@ pixApps._create_appearance = function() {
             view:"colorpicker",
             label:"Couleur des fenêtres",
             labelWidth:200,
-            value:"#3498db",
+            value:"#9999aa",
             on: {
               onChange: function(newV) {
                 webix.html.addStyle(".webix_layout_toolbar.webix_toolbar{ background-color:"+newV+"; }");

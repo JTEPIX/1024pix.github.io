@@ -78,6 +78,10 @@ span.pix-item-icon + div {
   box-shadow:none;
 }
 
+.webix_layout_toolbar.webix_toolbar {
+  background-color:#9999aa;
+}
+
 .webix_toolbar.pix_taskbar .webix_el_box {
   padding-top:0;
   padding-bottom:0;
