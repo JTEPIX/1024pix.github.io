@@ -60,7 +60,13 @@
                     align:"center",
                     click: function(e) {
                       if ($$('screen-form').validate()) {
-                          if ($$('width').getValue() == window.screen.width && $$('height').getValue() == window.screen.height) {
+                          var width = window.screen.width;
+                          var height = window.screen.height;
+                          if (window.devicePixelRatio) {
+                            width = width*window.devicePixelRatio;
+                            height = height*window.devicePixelRatio;
+                          }
+                          if ($$('width').getValue() == width && $$('height').getValue() == height) {
                           webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;");
                         } else {
                           webix.alert("Désolé, ce n'est pas ça.");
@@ -78,9 +84,6 @@
           {}
         ]
       });
-      console.log("ratio: "+window.devicePixelRatio);
-      console.log("largeur1: "+window.screen.width*window.devicePixelRatio);
-      console.log("largeur2: "+window.screen.width/window.devicePixelRatio);
     });
   </script>
 </body>
