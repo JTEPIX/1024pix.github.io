@@ -331,7 +331,7 @@ webix.protoUI({
       on:{
         onItemClick:function(id, e){
           if (data.click && data.click[id]) {
-            data.click[id].call(this, e);
+            data.click[id].call(this, e, this.getContext());
           }
         }
       },
@@ -377,6 +377,9 @@ webix.protoUI({
         if (config.contextMenu) {
           items.setContextMenu(config.contextMenu);
         }
+        if (config.backContextMenu) {
+          this.setContextMenu(config.backContextMenu);
+        }
       });
     }
     config.id = "pixDesktop";
@@ -390,7 +393,8 @@ webix.protoUI({
       // context menu
       onContext:{}
     },{}],
-    taskbar:false
+    taskbar:false,
+    onContext:{}    
    },
    getBackground: function() {
     return this.config.background;
@@ -398,7 +402,22 @@ webix.protoUI({
    setBackground: function(image) {
      this.config.background = image;
      this.getNode().style.backgroundImage = "url('"+image+"')";
-   }
+   },
+   setContextMenu: function(data) {
+    var element = this;
+    var menu = webix.ui({
+      view:"contextmenu",
+      data:data.items,
+      on:{
+        onItemClick:function(id, e){
+          if (data.click && data.click[id]) {
+            data.click[id].call(this, e);
+          }
+        }
+      },
+      master:element.$view
+    });
+  }   
 }, webix.ui.layout);
 
 /**
