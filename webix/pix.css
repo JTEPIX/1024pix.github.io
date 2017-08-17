@@ -12,6 +12,7 @@
   background-color:transparent;
   padding:5px;
   box-sizing:border-box;
+  overflow-y:auto;
 }
 
 .pix-items.webix_view.webix_list-x {
