@@ -10,7 +10,7 @@
   <script src="./webix/pix.js"></script>
   <style>
     .webix_el_label,
-    .webix_inp_label, .webix_inp_top_label, .webix_label_right {
+    .webix_inp_label, .webix_inp_top_label, .webix_label_right, .webix_template {
       color:#000000;
       font-size:20px;
     }
@@ -71,12 +71,17 @@
     .instructions {
       color:#0000FF;
       margin-top:20px !important;
-      margin-bottom:30px;      
+      margin-bottom:30px;
+      border:none;     
+    }
+
+    .instructions .webix_template {
+      color:#0000FF;
     }
 
   </style>
 </head>
-<body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;" onmousemouve="mouseDetection()">
+<body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;">
   <div id="main">
     <div id="no-cursor"></div>
   </div>
@@ -131,8 +136,8 @@
       {
         label:"",
         start:function() {
-          $$('instructions').config.label = "Bravo ! Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;";
-          $$('instructions').refresh();
+          $$('instructions').setHTML("Bravo ! Le mot que vous cherchez est &laquo;&nbsp;<b>"+deo(mot)+"</b>&nbsp;&raquo;");
+          document.getElementById("main").removeChild(document.getElementById("no-cursor"));
         }
       }
     ];
@@ -147,8 +152,7 @@
       }
       step = nextStep;
       var instructions = $$('instructions');
-      instructions.config.label = steps[step-1].label;
-      instructions.refresh();
+      instructions.setHTML(steps[step-1].label);
       if (typeof steps[step-1].start !== 'undefined') {
         steps[step-1].start();
       }
@@ -195,13 +199,14 @@
           {
             view:"label",
             height:40,
-            template:"<div id='sommaire'><ul><li id='etape_1'>Etape 1</li><li>&gt;</li><li id='etape_2'>Etape 2</li><li>&gt;</li><li id='etape_3'>Terminé</li></ul></div>"
+            label:"<div id='sommaire'><ul><li id='etape_1'>Etape 1</li><li>&gt;</li><li id='etape_2'>Etape 2</li><li>&gt;</li><li id='etape_3'>Terminé</li></ul></div>"
           },
           {
-            view:"label",
+            view:"template",
             id:"instructions",
             css:"instructions",
-            label:"",
+            template:"coucou<br>ça va ?",
+            autoheight:true,
             on: {
               onAfterRender: function() {
                 label = this.$view;
