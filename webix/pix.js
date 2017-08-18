@@ -335,7 +335,8 @@ webix.protoUI({
           }
         }
       },
-      master:element
+      master:element,
+      autowidth:true      
     });
   },
 }, webix.ui.list);
@@ -415,6 +416,7 @@ webix.protoUI({
           }
         }
       },
+      autowidth:true,
       master:element.$view
     });
   }   
