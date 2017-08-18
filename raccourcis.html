@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Copier Coller</title>
+  <link rel="stylesheet" href="./webix/webix.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>
+  <style>
+    .webix_el_label,
+    .webix_inp_label, .webix_inp_top_label, .webix_label_right {
+      color:#000000;
+      font-size:20px;
+    }
+    .webix_el_textarea textarea {
+      color:#666;
+      font-size:20px;
+    }
+    .no-select textarea {
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+    }
+    #main {
+      position: relative;
+      z-index:1;
+    }
+    #no-cursor {
+      position: absolute;
+      z-index:2;
+      top:0;
+      left: 0;
+      right:0;
+      bottom:0;
+      cursor:none;
+    }
+    .answer {
+      color:#0000FF;
+      font-size:20px;
+      margin-top:10px !important;
+    }
+    .note {
+      font-style:italic;
+    }
+
+  </style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;" onmousemouve="mouseDetection()">
+  <div id="main">
+    <div id="no-cursor"></div>
+  </div>
+  <script>
+    var mot = "099111105102102101117114";
+    var handler;
+    var texte1 = "Ce texte est composé de plusieurs lignes.\nCe qui le rend assez long.\nIl doit être copié pour être collé dans la zone 2.";
+    var texte2 = "Ce texte doit être remplacé par le texte de la zone 1."; 
+    var label;
+    var blue = 0;
+    var keyPressed = false;
+    var cancelKeyPressed;
+    function transition() {
+      blue = 255;
+      label.style.color="rgb(0,0,"+blue+")";
+      var timer = window.setInterval(function() {
+        blue-=5;
+        if (blue>=0) {
+          label.style.color="rgb(0,0,"+blue+")";
+        } else {
+          window.clearInterval(timer);
+        }
+      }, 100);
+    }   
+    var steps = [
+      {
+        label:"Etape 1 : en n'utilisant que le clavier, copiez le texte de la zone 1 et collez-le dans la zone 2, en remplaçant son contenu.",
+        start:function() {
+          handler = $$('zone2').attachEvent("onTimedKeyPress", function(newV) {
+            if ($$('zone2').getValue() == texte1) {
+              nextStep();
+            }
+          })
+        },
+        stop: function() {
+          $$('zone2').detachEvent(handler);
+        }
+      },
+      {
+        label:"Etape 2 : en n'utilisant que le clavier, annulez le collage pour rétablir le texte initial dans la zone 2.",
+        start:function() {
+          handler = $$('zone2').attachEvent("onTimedKeyPress", function(newV) {
+            if ($$('zone2').getValue() == texte2) {
+              nextStep();
+            }
+          });
+        },
+        stop:function() {
+          $$('zone2').detachEvent(handler);
+        }
+      },
+      {
+        label:"Terminé !",
+        start:function() {
+          $$('answer').config.label = "Bravo ! Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;";
+          $$('answer').refresh();
+        }
+      }
+    ];
+
+    var step = 0;
+
+    function setStep(nextStep) {
+      if (step>0 && typeof steps[step-1].stop !== 'undefined') {
+        steps[step-1].stop();
+      }
+      step = nextStep;
+      if (typeof steps[step-1].start !== 'undefined') {
+        steps[step-1].start();
+      }
+      var instructions = $$('instructions');
+      instructions.config.label = steps[step-1].label;
+      instructions.refresh();
+      transition();
+    }
+
+    function nextStep() {
+      setStep(step+1);
+    }
+
+    function reset() {
+      if (step>0 && typeof steps[step-1].stop !== 'undefined') {
+        steps[step-1].stop();
+      }
+      step = 0;
+      nextStep();
+      $$('zone1').focus();
+    }
+
+    function stop() {
+      webix.alert("Vous ne devez utiliser que le clavier.<br>Retour au début.", function() {
+        reset();
+      });
+    }
+
+    deo = function (txt) { 
+      var string = ""; 
+      var chunks = txt.match(/.{1,3}/g); 
+
+      for (var i = 0; i < chunks.length; i++) { 
+          string += String.fromCharCode(parseInt(chunks[i], 10)); 
+      } 
+      return string;
+    }
+    webix.ready(function() {
+      webix.ui(        
+      {
+        type:"clean",
+        padding:50,
+        container:"main",
+        rows:[
+          {
+            view:"label",
+            id:"instructions",
+            label:"",
+            on: {
+              onAfterRender: function() {
+                label = this.$view;
+              }
+            }
+          },
+          {
+            label:"Zone n°1",
+            labelWidth:150,
+            view:"textarea",
+            value:texte1,
+            keyPressTimeout:100,
+            id:"zone1",
+            height:100,
+            on: {
+              onKeyPress: function() {
+                keyPressed = true;
+                window.clearTimeout(cancelKeyPressed);
+                cancelKeyPressed = window.setTimeout(function() {
+                  keyPressed = false;
+                }, 100);
+              }              
+            }
+          },
+          {
+            label:"Zone n°2",
+            labelWidth:150,
+            view:"textarea",
+            value:texte2,
+            keyPressTimeout:100,
+            id:"zone2",
+            height:100,
+            on: {
+              onKeyPress: function() {
+                keyPressed = true;
+                window.clearTimeout(cancelKeyPressed);
+                cancelKeyPressed = window.setTimeout(function() {
+                  keyPressed = false;
+                }, 100);
+              }
+            }
+          },
+          {
+            view:"label",
+            id:"note",
+            css:"note",
+            label:"Note : certaines fonctions (souris, menu) ont été désactivées."
+          },
+          {
+            view:"label",
+            id:"answer",
+            css:"answer",
+            align:"center",
+            label:""
+          },
+          {}
+        ]
+      });
+      nextStep();
+      $$('zone1').focus();
+      webix.event("no-cursor", "click", function() {
+        $$('zone1').focus();
+      });
+
+      webix.event($$('zone1').getInputNode(), "copy", function(e) {
+        if (!keyPressed) {
+          e.preventDefault();
+          stop();
+        }
+      });
+      webix.event($$('zone2').getInputNode(), "paste", function(e) {
+        if (!keyPressed) {
+          e.preventDefault();
+          stop();
+        }
+      });
+      webix.event($$('zone2').getInputNode(), "input", function() {
+        if (!keyPressed) {
+          stop();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
