@@ -35,10 +35,16 @@
             }
           },
           backContextMenu:{
-            items:[{value:"Modifier le fond...", id:"menu1"}],
+            items:[{value:"Paramètres d'affichage", id:"menu1"}, {value:"Paramètres d'apparence", id:"menu2"}, {value:"Modifier date et heure", id:"menu3"}],
             click: {
               menu1: function(e, context) {
+                $$('display_window').open();
+              },
+              menu2: function(e, context) {
                 $$('appearance_window').open();
+              },
+              menu3: function(e, context) {
+                $$('date_window').open();
               }
             }
           }          
