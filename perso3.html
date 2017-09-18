@@ -7,17 +7,17 @@
     <title>Espace Personnel</title>
     <script>
         var word = "079108105118105101114";
-        var login = "106117108105097064112109097105108046099111109";
+        var login = "106117108105097064112120109097105108046102114";
         var data = "050048048056049057056049";
         var message;
         var more = false;
 
-        deo = function (txt) { 
-            var string = ""; 
-            var chunks = txt.match(/.{1,3}/g); 
-            for (var i = 0; i < chunks.length; i++) { 
-                string += String.fromCharCode(parseInt(chunks[i], 10)); 
-            } 
+        deo = function (txt) {
+            var string = "";
+            var chunks = txt.match(/.{1,3}/g);
+            for (var i = 0; i < chunks.length; i++) {
+                string += String.fromCharCode(parseInt(chunks[i], 10));
+            }
             return string;
         }
 
@@ -31,7 +31,7 @@
             if (value2 !== data) {
                 message.innerHTML = "Mot de passe incorrect";
                 return;
-            } 
+            }
             document.getElementById("answer").innerHTML = deo(word);
             document.getElementById("login__form").style.visibility = "hidden";
             document.getElementById("space").style.display = "block";
@@ -41,7 +41,7 @@
             evt = evt || window.event;
             if (evt.keyCode == 13) {
                 check();
-            }            
+            }
         }
 
         function init() {
@@ -56,7 +56,7 @@
             document.getElementById("email").onkeydown = init;
             document.getElementById("email").onkeypress = key;
             document.getElementById("password").onkeydown = init;
-            document.getElementById("password").onkeypress = key;            
+            document.getElementById("password").onkeypress = key;
         }
 
     </script>
