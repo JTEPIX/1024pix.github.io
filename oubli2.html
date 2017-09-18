@@ -97,20 +97,20 @@
   <title>Ma boutique en ligne</title>
   <script>
     var stepsCount = 5;
-    var emails = ["107097114105109064112109097105108046099111109", "107097114105109064103109097105108046099111109"];
+    var emails = ["107097114105109064112120109097105108046102114"];
     var number = "052051053";
 
-    deo = function (txt) { 
-        var string = ""; 
-        var chunks = txt.match(/.{1,3}/g); 
-        for (var i = 0; i < chunks.length; i++) { 
-            string += String.fromCharCode(parseInt(chunks[i], 10)); 
-        } 
+    deo = function (txt) {
+        var string = "";
+        var chunks = txt.match(/.{1,3}/g);
+        for (var i = 0; i < chunks.length; i++) {
+            string += String.fromCharCode(parseInt(chunks[i], 10));
+        }
         return string;
     }
 
     function hide(number) {
-      document.getElementById("step_"+number).className = "hidden";      
+      document.getElementById("step_"+number).className = "hidden";
     }
 
     function hideAll() {
@@ -197,7 +197,7 @@
         <div class="row buttons">
           <input type="button" onclick="showStep(3)" value="Retour">
         </div>
-    </div>    
+    </div>
     <div id="step_5" class="hidden">
       <h1>Mot de passe envoyé</h1>
       <p>Votre mot de passe vous a été envoyé par mail.</p>
