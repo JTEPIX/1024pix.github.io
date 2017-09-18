@@ -6,13 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <script src="webix/webix.js"></script>
   <link rel="stylesheet" href="webix/webix.css">
-  <!--<link rel="stylesheet" href="webix/skins/terrace.css">-->
   <title>Travaux d'impression</title>
   <style>
   .webix_column>div, .webix_table_cell {
     border:none;
   }
- .webix_dtable { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }  
+ .webix_dtable { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
   .webix_column>div.webix_row_select {
     background-color:#fff3a1;
     color:#000000;
@@ -73,12 +72,12 @@
     var playAction="<span class='webix_icon fa-play-circle-o action-play'></span>";
     var cancelAction="<span class='webix_icon fa-remove action-remove'></span>";
 
-    function deo(txt) { 
-      var string = ""; 
-      var chunks = txt.match(/.{1,3}/g); 
-      for (var i = 0; i < chunks.length; i++) { 
-          string += String.fromCharCode(parseInt(chunks[i], 10)); 
-      } 
+    function deo(txt) {
+      var string = "";
+      var chunks = txt.match(/.{1,3}/g);
+      for (var i = 0; i < chunks.length; i++) {
+          string += String.fromCharCode(parseInt(chunks[i], 10));
+      }
       return string;
     }
 
@@ -101,12 +100,12 @@
       var list = $$("liste");
       var item = list.getItem(id);
       item.status="en cours";
-      list.updateItem(id, item);      
+      list.updateItem(id, item);
     }
 
     function cancel(id) {
       var list = $$("liste");
-      list.remove(id);      
+      list.remove(id);
     }
 
     webix.ui({
@@ -117,7 +116,7 @@
       hidden:false,
       height:400,
       width:400,
-      position:"center",      
+      position:"center",
       head:{
         view:"toolbar",
         cols:[{
@@ -213,7 +212,7 @@
           webix.alert({
             title:"Impression en cours",
             ok:"Ok",
-            text:"Le document CV.docx s'imprime.<br><br><span class='webix_icon fa-info-circle'></span> Il reste <span class='important'>"+deo(number)+"</span> feuilles dans le bac de l'imprimante."
+            text:"Le document CV.docx s'imprime.<br><br><span class='webix_icon fa-info-circle'></span> Vous pourrez le récupérer dans <span class='important'>"+deo(number)+"</span> secondes."
           })
         }
       }
