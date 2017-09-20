@@ -13,6 +13,16 @@
   <script>
     var value;
     var timer = false;
+    var word = "099111110116114101098097115115101";
+
+    function deo() {
+      var string = "";
+      var chunks = txt.match(/.{1,3}/g);
+      for (var i = 0; i < chunks.length; i++) {
+        string += String.fromCharCode(parseInt(chunks[i], 10));
+      }
+      return string;
+    }
 
     function change() {
       if (timer) {
@@ -81,7 +91,7 @@
           var solution = document.getElementById("answer");
           main.style.display = "none";
           solution.style.display = "block";
-          solution.innerHTML = "piano";
+          solution.innerHTML = deo(word);
         }
       }
     }
