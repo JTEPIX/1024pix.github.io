@@ -29,7 +29,10 @@
           var tmp2 = document.createElement ('a');
           tmp2.href   = value;
           if (tmp1.hostname !== tmp2.hostname) {
-            request(value);
+            if (tmp2.protocol !== "https") {
+              tmp2.protocol = "https";
+            }
+            request(tmp2.href);
           } else {
             console.log("hostnames semblables");
           }
@@ -53,17 +56,23 @@
             window.alert("C'est bon");
           }
         } catch (e) {
-          window.console("erreur de récupération de l'adresse");
+          console.log("erreur de récupération de l'adresse");
         }
       }
     }
 
     </script>
+    <style>
+      #chargement {
+        visibility:hidden;
+      }
+    </style>
 </head>
 <body>
   Collez ci-dessous une URL minifiée qui mène vers cette page :
   <br>
   <input type="text" onchange="change()" onkeydown="change()" id="test">
+  <br>
   <iframe src="" frameborder="0" id="chargement" onload="loaded(this)" data-init="1"></iframe>
 </body>
 </html>
