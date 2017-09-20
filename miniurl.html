@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>URL courte</title>
+  <script>
+    var value;
+    var timer = false;
+
+    function change() {
+      if (timer) {
+        window.clearTimeout(timer);
+        timer = false;
+      }
+      timer = window.setTimeout(check, 500);
+    }
+
+    function check() {
+      timer = false;
+      var newValue = document.getElementById("test").value;
+      if (value !== newValue) {
+        value = newValue;
+        var currentURL = document.location.href;
+        if (value.length<currentURL) {
+          var tmp1 = document.createElement ('a');
+          tmp1.href = currentURL;
+          var tmp2 = document.createElement ('a');
+          tmp2.href   = value;
+          if (tmp1.hostname !== tmp2.hostname) {
+            request(value);
+          }
+        }
+      }
+    }
+
+    function request(url) {
+      var element = document.getElementById("chargement");
+      element.removeAttribute("data-init")
+      document.getElementById("chargement").src = url;
+    }
+
+    function loaded() {
+      var element = document.getElementById("chargement");
+      if (!element.hasAttribute("data-init")) {
+        try {
+          if (element.contentWindow.location.href === document.location.href) {
+            window.alert("C'est bon");
+          }
+        } catch (e) {
+          window.console("erreur");
+        }
+      }
+    }
+
+    </script>
+</head>
+<body>
+  Collez ci-dessous une URL minifiée qui mène vers cette page :
+  <br>
+  <input type="text" onchange="change()" onkeydown="change()" id="test">
+  <iframe src="" frameborder="0" id="chargement" onload="loaded(this)" data-init="1"></iframe>
+</body>
+</html>
