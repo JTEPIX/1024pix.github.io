@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #answer {display:none; text-align:center;}
+  </style>
   <title>URL courte</title>
   <script>
     var value;
@@ -53,10 +57,30 @@
       if (!element.hasAttribute("data-init")) {
         try {
           if (element.contentWindow.location.href === document.location.href) {
-            window.alert("C'est bon");
+            document.getElementById("chargement").style.visibility = "visible";
           }
         } catch (e) {
           console.log("erreur de récupération de l'adresse");
+        }
+      }
+    }
+
+    function inIFrame() {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+
+    function init() {
+      if (inIFrame()) {
+        if (window.top.location.href === window.location.href) {
+          var main = document.getElementById("main");
+          var solution = document.getElementById("solution");
+          main.style.display = "hidden";
+          solution.style.display = "block";
+          solution.innerHTML = "piano";
         }
       }
     }
@@ -66,13 +90,22 @@
       #chargement {
         visibility:hidden;
       }
+      #test {
+        margin-top:20px;
+        width:100%;
+        font-size:16px;
+      }
     </style>
 </head>
-<body>
-  Collez ci-dessous une URL minifiée qui mène vers cette page :
-  <br>
-  <input type="text" onchange="change()" onkeydown="change()" id="test">
-  <br>
-  <iframe src="" frameborder="0" id="chargement" onload="loaded(this)" data-init="1"></iframe>
+<body onload="init()">
+  <div class="main" id="main">
+      Collez ci-dessous une URL minifiée qui mène vers cette page :
+      <br>
+      <input type="text" onchange="change()" onkeydown="change()" id="test">
+      <br>
+      <iframe src="" frameborder="0" id="chargement" onload="loaded(this)" data-init="1"></iframe>
+  </div>
+  <div id="answer" class="answer">
+  </div>
 </body>
 </html>
