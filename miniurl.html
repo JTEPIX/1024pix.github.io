@@ -77,8 +77,8 @@
       if (inIFrame()) {
         if (window.top.location.href === window.location.href) {
           var main = document.getElementById("main");
-          var solution = document.getElementById("solution");
-          main.style.display = "hidden";
+          var solution = document.getElementById("answer");
+          main.style.display = "none";
           solution.style.display = "block";
           solution.innerHTML = "piano";
         }
