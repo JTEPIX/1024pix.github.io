@@ -30,7 +30,11 @@
           tmp2.href   = value;
           if (tmp1.hostname !== tmp2.hostname) {
             request(value);
+          } else {
+            console.log("hostnames semblables");
           }
+        } else {
+          console.log("url trop longue");
         }
       }
     }
@@ -49,7 +53,7 @@
             window.alert("C'est bon");
           }
         } catch (e) {
-          window.console("erreur");
+          window.console("erreur de récupération de l'adresse");
         }
       }
     }
