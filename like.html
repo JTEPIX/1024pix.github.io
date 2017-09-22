@@ -215,12 +215,12 @@
         element.className = "message answer waiting";
         element.innerHTML = "...";
         scroll();
-      }, 500);
+      }, 100);
       window.setTimeout(function() {
         element.className = "message answer";
         element.innerHTML = answers[id];
         scroll();
-      }, 2000);
+      }, 1000);
     }
 
     function nextLine() {
