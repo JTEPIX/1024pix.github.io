@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="webix/webix.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="webix/webix.js"></script>
+  <script src="webix/tinymce/tinymce.js"></script>
+  <title>Poème</title>
+</head>
+<body>
+    <script>
+    var target = "Le pont Mirabeau";
+    webix.codebase = "./webix/tinymce/";
+    webix.ready(function() {
+      webix.ui({
+        view:"layout",
+        rows:[{}]
+      });
+      webix.ui({
+        view:"window",
+        id:"fenetre",
+        hidden:false,
+        fullscreen:true,
+        head:{
+          view:"toolbar",
+          cols:[{
+              view: "label",
+              label: "Poème"
+            }
+          ]
+        },
+        body:{
+          id:"editor",
+          view:"tinymce-editor",
+          config: {
+            theme:"modern",
+            language:"fr_FR"
+          }
+        }
+      });
+      $$("editor").setValue("<h2>Le pont Mirabeau</h2><p>Sous le pont Mirabeau coule la Seine<br>Et nos amours<br>Faut-il qu’il m’en souvienne<br>La joie venait toujours après la peine<br><br>Vienne la nuit sonne l’heure<br>Les jours s’en vont je demeure<br><br>Les mains dans les mains restons face à face<br>Tandis que sous<br>Le pont de nos bras passe<br>Des éternels regards l’onde si lasse<br><br>Vienne la nuit sonne l’heure<br>Les jours s’en vont je demeure<br><br>L’amour s’en va comme cette eau courante<br>L’amour s’en va<br>Comme la vie est lente<br>Et comme l’Espérance est violente<br><br>Vienne la nuit sonne l’heure<br>Les jours s’en vont je demeure<br><br>Passent les jours et passent les semaines<br>Ni temps passé<br>Ni les amours reviennent<br>Sous le pont Mirabeau coule la Seine<br><br>Vienne la nuit sonne l’heure<br>Les jours s’en vont je demeure.<br><br>Guillaume Apollinaire.</p>");
+      var waitEditor = $$("editor").getEditor(true);
+      waitEditor.then(function(editor) {
+        var query = editor.$;
+        editor.on('Change', function (e) {
+          var element = query("body").children().first();
+          if (element.css("text-align") == "center" && element.text() == target) {
+            webix.alert("Bravo !<br>Le mot est : <span class='answer'>radiateur</span>");
+          }
+        });
+      })
+    });
+
+
+  </script>
+</body>
+</html>
