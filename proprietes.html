@@ -19,13 +19,16 @@
           background:"images/benji.jpg",
           taskbar:true,
           contextMenu:{
-            items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+            items:[{value:"Ouvrir", id:"menu1"}, {value:"Propriétés", id:"menu2"}, {value:"Supprimer", id:"menu3"}],
             click: {
               menu1: function(e, context) {
-                $$('properties').open();
+                $$('file_window').open();
               },
               menu2: function(e, context) {
-                $$('pixDesktopItems').clearAll();                
+                $$('properties').open();
+              },
+              menu3: function(e, context) {
+                $$('pixDesktopItems').clearAll();
               }
             }
           }
@@ -35,7 +38,7 @@
           view:"pixWindow",
           id:"file_window",
           label:"fichier.txt",
-          icon:"file",          
+          icon:"file",
           body:{
             view:"layout",
             padding:10,
@@ -80,11 +83,11 @@
                 label:"Auteur",
                 value: "Nathalie",
                 readonly: true
-              }            
+              }
             ]
           }
         });
-        
+
       });
   </script>
 </body>

@@ -26,7 +26,7 @@
           view:"pixWindow",
           id:"file_window",
           label:"fichier.txt",
-          icon:"file",          
+          icon:"file",
           body:{
             view:"layout",
             padding:10,
@@ -34,7 +34,7 @@
                 view:"label",
                 label: "jardin"
               },
-              {}            
+              {}
             ]
           }
         });
@@ -42,10 +42,12 @@
         webix.ui({
           view:"contextmenu",
     	    id:"cmenu",
-          data:[{value:"Supprimer", id:"menu1"}],
+          data:[{value:"Ouvrir", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
             on:{
               onItemClick:function(id, e){
                 if (id == "menu1") {
+                  $$('file_window').show();
+                } else if (id == "menu2") {
                   $$('pixDesktopItems').clearAll();
                 }
               }
