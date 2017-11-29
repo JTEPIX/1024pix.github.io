@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dessin</title>
+  <link rel="stylesheet" href="drawingboard/drawingboard.min.css">
+  <style>
+    body {font-family:Arial, Helvetica, sans-serif}
+    #main {margin:auto;width:400px;position:relative;}
+    #instructions {margin:20px 0;}
+    #dessin {width:400px;height:360px;position:realtive;z-index:1;}
+    #texte {color:#ffffff;position:absolute;top:220px;z-index:2;width:400px;text-align:center;pointer-events:none;}
+    #credits {margin-top:30px;font-size:12px;text-align:right;font-style:italic;color:#777777;}
+    #credits a, #credits a:visited {color:#a9baf3;}
+  </style>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="drawingboard/drawingboard.min.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    secret = "DSDSF3341253A?EDSDS'3DDDSSFFSS1";
+    var board;
+    document.addEventListener("DOMContentLoaded", function() {
+      var board = new DrawingBoard.Board("dessin", {background:"images/coeur.png",webStorage: false, eraserColor:'#ffffff', controls: ['Color', 'DrawingMode', 'Size', { Navigation: { reset: false }}]});
+      document.getElementById("texte").innerHTML = getWord();
+    })
+
+  </script>
+</head>
+<body>
+  <div id="main">
+    <div id="instructions">Remplissez le cœur d'une couleur pour voir apparaître le texte.</div>
+    <div id="texte"></div>
+    <div id="dessin"></div>
+    <div id="credits">Page réalisée avec l'appli <a href="https://github.com/Leimi/drawingboard.js">drawingboard.js</a></div>
+  </div>
+</body>
+</html>
