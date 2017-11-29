@@ -1,4 +1,6 @@
 
+var hash;
+
 function getBase() {
   var path = window.location.pathname;
   return path.split("/").pop();
@@ -20,15 +22,14 @@ function decode(value, base) {
 }
 
 function init() {
-  var value = window.location.hash.substr(1);
-  if (value === "config" && window.self !== window.top && typeof window.secret !== "undefined") {
+  hash = window.location.hash.substr(1);
+  if (hash === "config" && window.self !== window.top && typeof window.secret !== "undefined") {
     window.top.postMessage({secret:window.secret}, "*");
   }
 }
 
 function getWord() {
-  var value = window.location.hash.substr(1);
-  return decode(decode(value, window.secret));
+  return decode(decode(hash, window.secret));
 }
 
 document.addEventListener("DOMContentLoaded", init);
