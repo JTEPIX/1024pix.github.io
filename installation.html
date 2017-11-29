@@ -340,13 +340,13 @@
                         <div class="alert__text">
                             En cliquant sur continuer vous allez installer :<br>
                             <div class="alert__choice">
-                                <input type="checkbox" checked="checked" id="install"> L'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;
+                                <input type="checkbox" checked="checked" id="install" name="install"> <label for="install">L'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;</label><br>
                                 <div class="alert__details">
                                     L'installation de cette application vous permettra de découvrir un mot par jour
                                 </div>
                             </div>
                             <div class="alert__choice">
-                                <input type="checkbox" checked="checked" id="prevent"> Une application supplémentaire<br>
+                                <input type="checkbox" checked="checked" id="prevent" name="prevent"> <label for="prevent">Une application supplémentaire</label><br>
                                 <div class="alert__details">
                                     Cette application empêchera l'installation de l'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;
                                 </div>
@@ -372,7 +372,7 @@
                                     <li id="install__list__1">L'application &laquo;&nbsp;Un mot par jour&nbsp;&raquo;</li>
                                     <li id="install__list__2">Une application supplémenaire</li>
                                 </ul>
-                                <input type="checkbox" checked="checked" id="confirm" onclick="checkConfirm()"> Je souhaite poursuivre l'installation
+                                <input type="checkbox" checked="checked" id="confirm" onclick="checkConfirm()" name="confirm"> <label for="confirm">Je souhaite poursuivre l'installation</label>
                             </div>
                         </div>
                         <div class="alert__buttons">
