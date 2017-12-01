@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Espace Personnel</title>
+    <script src="js/utils.js"></script>
     <script>
-        var word = "079108105118105101114";
+        secret = "079108105118105101114ABC";
         var login = "106117108105097064112120109097105108046102114";
         var data = "050048048056049057056049";
         var message;
@@ -32,7 +33,7 @@
                 message.innerHTML = "Mot de passe incorrect";
                 return;
             }
-            document.getElementById("answer").innerHTML = deo(word);
+            document.getElementById("answer").innerHTML = getWord();
             document.getElementById("login__form").style.visibility = "hidden";
             document.getElementById("space").style.display = "block";
         }
