@@ -17,7 +17,7 @@
       padding-left:70px;
       padding-top:20px;
       font-size:30px;
-      font-size:3rem;      
+      font-size:3rem;
     }
     .main-link, .main-link:visited {
       background-color:#283e4a;
@@ -50,19 +50,11 @@
       text-align:left;
     }
   </style>
+  <script src="js/utils.js"></script>
   <script>
     var check1 = true;
     var check2 = true;
-    var answer = "066101110106105";
-
-    function deo(txt) { 
-        var string = ""; 
-        var chunks = txt.match(/.{1,3}/g); 
-        for (var i = 0; i < chunks.length; i++) { 
-            string += String.fromCharCode(parseInt(chunks[i], 10)); 
-        } 
-        return string;
-    }
+    secret = "066101110106105AGT";
 
     function show(element) {
       document.getElementById(element).className="";
@@ -96,7 +88,7 @@
         show("step__3__success");
         hide("step__3__failure");
         var name = document.getElementById("name");
-        name.innerHTML = deo(answer);
+        name.innerHTML = getWord();
       }
     }
   </script>
@@ -151,7 +143,7 @@
         </div>
         <div class="row">
           <label><input type="checkbox" name="theme4" id="theme4" checked="checked"> Smart dogs</label>
-        </div>        
+        </div>
       </form>
       <div class="actions">
         <a href="#" onclick="step3()" class="main-link">Poursuivre</a>
