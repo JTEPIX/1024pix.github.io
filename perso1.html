@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mobile</title>
+    <script src="js/utils.js"></script>
     <script>
-        var word = "108101032122232098114101";
+        secret = "108101032122232098114101";
         var data1 = "048048048048";
         var data2 = "049050051052";
         var display, error;
@@ -15,18 +16,18 @@
         var aswer1, answer2;
         var inError = false;
 
-        deo = function (txt) { 
-            var string = ""; 
-            var chunks = txt.match(/.{1,3}/g); 
-            for (var i = 0; i < chunks.length; i++) { 
-                string += String.fromCharCode(parseInt(chunks[i], 10)); 
-            } 
+        deo = function (txt) {
+            var string = "";
+            var chunks = txt.match(/.{1,3}/g);
+            for (var i = 0; i < chunks.length; i++) {
+                string += String.fromCharCode(parseInt(chunks[i], 10));
+            }
             return string;
         }
 
         function check() {
             if (answer === answer1 || answer === answer2) {
-                document.getElementById("answer").innerHTML = deo(word);
+                document.getElementById("answer").innerHTML = getWord();
                 document.getElementById("login").style.display = "none";
                 document.getElementById("welcome").style.display = "block";
                 d = new Date();
@@ -47,7 +48,7 @@
             count = 0;
             inError = false;
             display.innerHTML = "○○○○";
-            error.style.visibility = "hidden";            
+            error.style.visibility = "hidden";
         }
 
         function addKey(key) {
@@ -74,7 +75,7 @@
             evt = evt || window.event;
             if (evt.keyCode == 13) {
                 check();
-            }            
+            }
         }
 
         function init() {
@@ -106,18 +107,18 @@
             padding-top:100px;
         }
         .instructions {
-            padding-left:40px;            
+            padding-left:40px;
             padding-right:40px;
             margin-bottom:20px;
         }
         .entry {
-            padding-left:40px;            
+            padding-left:40px;
             padding-right:40px;
             margin-bottom:20px;
         }
         .erase {
             padding-left:10px;
-            color:#000000;            
+            color:#000000;
         }
         .keys {
             text-align: center;
@@ -164,7 +165,7 @@
             visibility:hidden;
             padding-left:40px;
             padding-right:40px;
-            margin-bottom:0px;       
+            margin-bottom:0px;
         }
         #time {
             text-align: center;
