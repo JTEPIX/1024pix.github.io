@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="style.css">
   <title>Mail</title>
+  <script src="js/utils.js"></script>
   <style>
     .label {
       font-weight:bold;
@@ -68,10 +69,9 @@
       font-size: 2.0rem;
     }
   </style>
-  
-  <script>
-    var days = "050055";
 
+  <script>
+    secret = "050DAYS0575";
 
     function hide(name) {
       document.getElementById(name).className = "hidden";
@@ -102,7 +102,7 @@
       hide("subscription");
       show("stop");
       if (!header) {
-        document.getElementById("stop__header").className = "hidden";       
+        document.getElementById("stop__header").className = "hidden";
       }
     }
     function reset() {
@@ -115,22 +115,12 @@
     function checkForm() {
       var radios = document.getElementsByName('frequency');
       if (radios[4].checked) {
-        stop("Désabonnement", "Votre demande a bien été prise en compte. Elle sera traitée dans <span class='answer'>"+deo(days)+"</span> jours.", false);
+        stop("Désabonnement", "Votre demande a bien été prise en compte. Elle sera traitée dans <span class='answer'>"+getWord()+"</span> jours.", false);
         document.getElementById("stop__actions").className = "hidden";
       } else {
         stop("Fréquence modifiée", "Votre demande a bien été prise en compte.", false);
       }
     }
-
-    function deo(txt) { 
-        var string = ""; 
-        var chunks = txt.match(/.{1,3}/g); 
-        for (var i = 0; i < chunks.length; i++) { 
-            string += String.fromCharCode(parseInt(chunks[i], 10)); 
-        } 
-        return string;
-    }
-
   </script>
 </head>
 <body>
@@ -203,7 +193,7 @@
   <div id="stop" class="hidden">
     <div class="header" id="stop__header">
       <div class="header__inner">Mon webmail</div>
-    </div>    
+    </div>
     <div class="main">
       <div class="main__title" id="stop__title"></div>
       <div id="stop__content" class="retry"></div>
@@ -226,7 +216,7 @@
       </div>
       <div class="row">
         <span class="label">Sujet : </span><span class="subject">Re: Offres incroyables !</span>
-      </div>      
+      </div>
       <div class="separator"></div>
       <div class="email">
         <div class="email__content reply__content">
