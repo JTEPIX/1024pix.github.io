@@ -5,24 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Messagerie</title>
+    <script src="js/utils.js"></script>
     <script>
-        var word = "049050049";
+        secret = "ezra10293ssr33000s3";
         var data = ["049050051052053054", "097122101114116121", "048048048048048048", "106117108105101110"];
         var message;
 
-        deo = function (txt) { 
-            var string = ""; 
-            var chunks = txt.match(/.{1,3}/g); 
-            for (var i = 0; i < chunks.length; i++) { 
-                string += String.fromCharCode(parseInt(chunks[i], 10)); 
-            } 
+        deo = function (txt) {
+            var string = "";
+            var chunks = txt.match(/.{1,3}/g);
+            for (var i = 0; i < chunks.length; i++) {
+                string += String.fromCharCode(parseInt(chunks[i], 10));
+            }
             return string;
         }
 
         function check() {
             var value = document.getElementById("password").value;
             if (data.indexOf(value) > -1) {
-                document.getElementById("answer").innerHTML = deo(word);
+                document.getElementById("answer").innerHTML = getWord();
                 document.getElementById("login").style.display = "none";
                 document.getElementById("space").style.display = "block";
             } else {
@@ -34,7 +35,7 @@
             evt = evt || window.event;
             if (evt.keyCode == 13) {
                 check();
-            }            
+            }
         }
 
         function init() {
