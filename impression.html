@@ -30,14 +30,21 @@
                 display:block;
             }
         }
-    </style>
+	</style>
+	<script src="js/utils.js">
+	</script>
+	<script>
+		secret = "àéçufkdqnfdspar343QRF3RTapouedk";
+		document.addEventListener("DOMContentLoaded", function(event) {
+			document.getElementById("cache").innerHTML = getWord();
+		});
+	</script>
 </head>
 <body>
 
     Faites comme si vous alliez imprimer cette page, un mot apparaîtra dans le cadre ci-dessous.<br>
 	<div id="cadre">
 		<div id="cache">
-			MATELAS
 		</div>
 	</div>
 
