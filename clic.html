@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="./webix/pix.css">
   <script src="./webix/webix.js"></script>
   <script src="./webix/pix.js"></script>
+  <script src="./js/utils.js"></script>
+  <script>
+    secret = "42346DSEAZ5435QQS/SD3";
+  </script>
   <title>Ouverture</title>
 </head>
 <body>
@@ -32,7 +36,7 @@
             padding:10,
             rows:[{
                 view:"label",
-                label: "jardin"
+                label: getWord()
               },
               {}
             ]
