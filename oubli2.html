@@ -95,10 +95,11 @@
     }
   </style>
   <title>Ma boutique en ligne</title>
+  <script src="js/utils.js"></script>
   <script>
+    secret = "AZ123QSDPLMS093LQSDMSDF56";
     var stepsCount = 5;
     var emails = ["107097114105109064112120109097105108046102114"];
-    var number = "052051053";
 
     deo = function (txt) {
         var string = "";
@@ -137,7 +138,7 @@
     function recover() {
       var email = document.getElementById("emailr").value;
       if (checkEmails(email)) {
-        document.getElementById("number_value").innerHTML = deo(number);
+        document.getElementById("number_value").innerHTML = getWord();
         showStep(5);
       } else {
         showStep(4);
