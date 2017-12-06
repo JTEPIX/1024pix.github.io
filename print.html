@@ -44,11 +44,11 @@
     color:orange;
   }
   </style>
-
+<script src="js/utils.js"></script>
 </head>
 <body>
   <script>
-    var number = "050051055";
+    secret = "050051055ERTT2334SVA";
 
     var taches = [
       {"name":"IMG_4569.jpg","status":"en pause","pages":1},
@@ -212,7 +212,7 @@
           webix.alert({
             title:"Impression en cours",
             ok:"Ok",
-            text:"Le document CV.docx s'imprime.<br><br><span class='webix_icon fa-info-circle'></span> Vous pourrez le récupérer dans <span class='important'>"+deo(number)+"</span> secondes."
+            text:"Le document CV.docx s'imprime.<br><br><span class='webix_icon fa-info-circle'></span> Vous pourrez le récupérer dans <span class='important'>"+getWord()+"</span> secondes."
           })
         }
       }
