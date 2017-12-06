@@ -89,11 +89,12 @@
     }
   </style>
   <title>Connexion Webmail</title>
+  <script src="js/utils.js"></script>
   <script>
     var stepsCount = 6;
     var names = ["097108101120", "097108101120064112109097105108046099111109"];
     var answers = ["112097117"];
-    var password = "097115116101114105120";
+    secret = "AB097115116101114105120AB";
     var question = 5;
     var number = "053050051";
 
@@ -143,7 +144,7 @@
     }
 
     function checkPassword(value) {
-      return (value.toLowerCase() == deo(password));
+      return (value.toLowerCase() == getWord());
     }
 
     function check() {
@@ -162,7 +163,7 @@
       var confidential = document.getElementById("confidential").value;
       var answer = document.getElementById("answer").value;
       if (checkName(name) && checkQuestion(confidential) && checkAnswer(answer)) {
-        document.getElementById("password_value").innerHTML = deo(password);
+        document.getElementById("password_value").innerHTML = getWord();
         showStep(5);
       } else {
         showStep(4);
