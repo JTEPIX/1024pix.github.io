@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./webix/webix.css">
   <script src="./webix/webix.js"></script>
   <script src="./webix/pix.js"></script>
+  <script src="js/utils.js"></script>
   <style>
     .webix_el_label,
     .webix_inp_label, .webix_inp_top_label, .webix_label_right {
@@ -28,16 +29,7 @@
 </head>
 <body oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;">
   <script>
-    var mot = "098097108101105110101";
-    deo = function (txt) { 
-      var string = ""; 
-      var chunks = txt.match(/.{1,3}/g); 
-
-      for (var i = 0; i < chunks.length; i++) { 
-          string += String.fromCharCode(parseInt(chunks[i], 10)); 
-      } 
-      return string;
-    }
+    secret = "09809ABC7108101105110101TRU";
     var texte = "Ce texte doit être copié puis collé dans la zone ci-dessous. Attention : le glisser-déposer ne fonctionne pas. Ce serait aussi pratique de pouvoir utiliser le menu contextuel ou le menu du navigateur, malheureusement ceux-ci ne fonctionnent pas ici... il faudra donc trouver une autre solution. Les raccourcis clavier peut-être ?";
     var keyPressed = false;
     var cancelKeyPressed;
@@ -63,7 +55,7 @@
                 cancelKeyPressed = window.setTimeout(function() {
                   keyPressed = false;
                 }, 100);
-              }              
+              }
             }
           },
           {
@@ -72,18 +64,18 @@
             view:"textarea",
             keyPressTimeout:100,
             value:"",
-            id:'zone2',            
+            id:'zone2',
             on: {
               onKeyPress: function() {
                 keyPressed = true;
                 window.clearTimeout(cancelKeyPressed);
                 cancelKeyPressed = window.setTimeout(function() {
                   keyPressed = false;
-                }, 100);                
+                }, 100);
               },
               onTimedKeyPress: function() {
                 if (this.$getValue() === texte) {
-                  $$('answer').config.label = "Bravo ! Le mot que vous cherchez est &laquo;&nbsp;"+deo(mot)+"&nbsp;&raquo;";
+                  $$('answer').config.label = "Bravo ! Le mot que vous cherchez est &laquo;&nbsp;"+getWord()+"&nbsp;&raquo;";
                   $$('answer').refresh();
                 }
               }
