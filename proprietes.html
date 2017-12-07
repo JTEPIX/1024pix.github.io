@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="./webix/pix.css">
   <script src="./webix/webix.js"></script>
   <script src="./webix/pix.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    secret = "132fFSQGDOPRpoi542PoklpP";
+  </script>
   <title>Propriétés</title>
 </head>
 <body>
@@ -81,7 +85,7 @@
               {
                 view:"text",
                 label:"Auteur",
-                value: "Nathalie",
+                value: getWord(),
                 readonly: true
               }
             ]
