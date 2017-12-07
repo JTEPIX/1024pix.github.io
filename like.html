@@ -213,14 +213,14 @@
       scroll();
       window.setTimeout(function() {
         element.className = "message answer waiting";
-        element.innerHTML = "...";
+        element.innerHTML = "<i>Sylvie est en train d'écrire...</i>";
         scroll();
       }, 100);
       window.setTimeout(function() {
         element.className = "message answer";
         element.innerHTML = answers[id];
         scroll();
-      }, 1000);
+      }, 4000);
     }
 
     function nextLine() {
