@@ -90,7 +90,7 @@ pixApps._create_users = function() {
               on:{
                 onItemClick:function() {
                   $$('user_form').save();
-                }                
+                }
               }
             },
             {
@@ -162,7 +162,7 @@ pixApps._create_display = function() {
                 },
                 {
                   view:"select",
-                  value:1, 
+                  value:1,
                   width:300,
                   labelWidth:100,
                   label:"Résolution :",
@@ -173,7 +173,7 @@ pixApps._create_display = function() {
                     { id:3, value:"1400 x 1050" },
                     { id:4, value:"1280 x 1024" },
                     { id:5, value:"1024 x 768" }
-                  ]                          
+                  ]
                 }
               ]
             }
@@ -189,7 +189,7 @@ pixApps._create_display = function() {
           align:"center",
           click: function() {
             $$("display_window").close();
-          }      
+          }
         }
       ]
     }
@@ -223,7 +223,7 @@ pixApps._create_date = function() {
               elements:[
                 {
                   view:"select",
-                  value:1, 
+                  value:1,
                   width:300,
                   label:"Sélection du fuseau horaire :",
                   labelPosition:"top",
@@ -275,7 +275,7 @@ pixApps._create_date = function() {
           click: function() {
             $$("date_window").close();
           }
-        }          
+        }
       ]
     }
   });
@@ -311,6 +311,7 @@ pixApps._create_storage = function() {
 };
 
 pixApps._create_appearance = function() {
+
   var appearanceWindow = webix.ui({
     view:"pixWindow",
     label:"Apparence",
@@ -389,8 +390,13 @@ pixApps._create_appearance = function() {
             on: {
               onChange: function(newV) {
                 $$("pixDesktop").setBackground(newV);
+                for (var i=0 ; i< this.config.listeners.length; i++) {
+                  var listener = this.config.listeners[i];
+                  listener(newV);
+                }
               }
-            }
+            },
+            listeners:[]
           }]
         }]
       },
@@ -409,10 +415,16 @@ pixApps._create_appearance = function() {
     }
   });
 
+
   appearanceWindow.addBackground = function(value) {
     var select = $$("appearance_window_backgrounds");
     select.config.options.push(value);
     select.refresh();
+  };
+
+  appearanceWindow.addBackgroundListener = function(listener) {
+    console.debug($$("appearance_window_backgrounds").config);
+    $$("appearance_window_backgrounds").config.listeners.push(listener);
   };
 
   return appearanceWindow;
