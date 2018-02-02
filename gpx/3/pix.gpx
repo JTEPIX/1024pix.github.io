@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="MyGPSFiles" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <trk>
+    <name>NewTrack</name>
+    <desc>Total: 463.7km</desc>
+    <trkseg>
+      <trkpt lat="64.037832" lon="14.842529"/>
+      <trkpt lat="64.441292" lon="14.839782"/>
+      <trkpt lat="64.253424" lon="15.133665"/>
+      <trkpt lat="64.446031" lon="15.474243"/>
+      <trkpt lat="64.046247" lon="15.493469"/>
+      <trkpt lat="64.048652" lon="15.578613"/>
+      <trkpt lat="64.446031" lon="15.584106"/>
+      <trkpt lat="64.451954" lon="16.045533"/>
+      <trkpt lat="64.444846" lon="15.59784"/>
+      <trkpt lat="64.249846" lon="15.5896"/>
+      <trkpt lat="64.25104" lon="15.828552"/>
+      <trkpt lat="64.247459" lon="15.586853"/>
+      <trkpt lat="64.047449" lon="15.58136"/>
+      <trkpt lat="64.048651" lon="16.100464"/>
+      <trkpt lat="64.454323" lon="16.100464"/>
+      <trkpt lat="64.455804" lon="16.392975"/>
+      <trkpt lat="64.455952" lon="16.443787"/>
+      <trkpt lat="64.453139" lon="16.468506"/>
+      <trkpt lat="64.442348" lon="16.480865"/>
+      <trkpt lat="64.394572" lon="16.492538"/>
+      <trkpt lat="64.300512" lon="16.504211"/>
+      <trkpt lat="64.274583" lon="16.504212"/>
+      <trkpt lat="64.264895" lon="16.496659"/>
+      <trkpt lat="64.26117" lon="16.475373"/>
+      <trkpt lat="64.262069" lon="16.285173"/>
+      <trkpt lat="64.260882" lon="16.103899"/>
+      <trkpt lat="64.043242" lon="16.564636"/>
+      <trkpt lat="64.039034" lon="16.564636"/>
+    </trkseg>
+  </trk>
+</gpx>

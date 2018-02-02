@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="MyGPSFiles" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <trk>
+    <name>20170917174217-z4JR8</name>
+    <desc>Total: 289.8km</desc>
+    <trkseg>
+      <trkpt lat="46.924296" lon="2.16053"/>
+      <trkpt lat="47.10267" lon="2.162246"/>
+      <trkpt lat="47.027367" lon="2.237434"/>
+      <trkpt lat="47.106877" lon="2.300262"/>
+      <trkpt lat="46.930627" lon="2.307816"/>
+      <trkpt lat="47.108746" lon="2.384034"/>
+      <trkpt lat="47.024091" lon="2.436218"/>
+      <trkpt lat="47.022452" lon="2.350387"/>
+      <trkpt lat="47.023857" lon="2.436562"/>
+      <trkpt lat="46.93555" lon="2.48806"/>
+      <trkpt lat="47.111316" lon="2.485313"/>
+      <trkpt lat="47.025495" lon="2.561188"/>
+      <trkpt lat="47.112017" lon="2.620239"/>
+      <trkpt lat="46.938832" lon="2.635688"/>
+      <trkpt lat="47.119493" lon="2.713623"/>
+      <trkpt lat="47.040002" lon="2.765464"/>
+      <trkpt lat="47.037663" lon="2.681008"/>
+      <trkpt lat="47.039301" lon="2.765121"/>
+      <trkpt lat="46.942817" lon="2.816277"/>
+      <trkpt lat="47.119026" lon="2.813186"/>
+      <trkpt lat="47.016366" lon="2.881508"/>
+      <trkpt lat="46.944223" lon="2.930603"/>
+      <trkpt lat="47.117157" lon="2.922363"/>
+    </trkseg>
+  </trk>
+</gpx>
