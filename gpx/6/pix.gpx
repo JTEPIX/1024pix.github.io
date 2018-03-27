@@ -2,10 +2,14 @@
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="MyGPSFiles" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <trk>
     <name>NewTrack</name>
-    <desc>Total: 235.1km</desc>
+    <desc>Total: 234.0km</desc>
     <trkseg>
-      <trkpt lat="44.764726" lon="1.222916"/>
-      <trkpt lat="44.764726" lon="1.004562"/>
+      <trkpt lat="44.764117" lon="1.20884"/>
+      <trkpt lat="44.764238" lon="1.203346"/>
+      <trkpt lat="44.764604" lon="1.196652"/>
+      <trkpt lat="44.763751" lon="1.106873"/>
+      <trkpt lat="44.764848" lon="1.005592"/>
+      <trkpt lat="44.727705" lon="1.003532"/>
       <trkpt lat="44.671778" lon="1.004219"/>
       <trkpt lat="44.672266" lon="1.136741"/>
       <trkpt lat="44.671288" lon="1.004906"/>

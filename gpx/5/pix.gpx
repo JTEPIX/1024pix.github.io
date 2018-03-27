@@ -4,9 +4,10 @@
     <name>NewTrack</name>
     <desc>Total: 55.1km</desc>
     <trkseg>
-      <trkpt lat="47.060106" lon="-2.134051"/>
-      <trkpt lat="47.077265" lon="-2.133579"/>
-      <trkpt lat="47.081415" lon="-2.134438"/>
+      <trkpt lat="47.060194" lon="-2.134093"/>
+      <trkpt lat="47.060972" lon="-2.134007"/>
+      <trkpt lat="47.068182" lon="-2.13375"/>
+      <trkpt lat="47.073144" lon="-2.133922"/>
       <trkpt lat="47.082149" lon="-2.1347"/>
       <trkpt lat="47.082883" lon="-2.135263"/>
       <trkpt lat="47.083829" lon="-2.136245"/>
