@@ -7,8 +7,8 @@
 body{font-family: Arial;text-align:center;}
 /* les flèches */
 .flecheDesc {
-  width: 0; 
-  height: 0; 
+  width: 0;
+  height: 0;
   float:right;
   margin: 10px;
   border-left: 5px solid transparent;
@@ -16,7 +16,7 @@ body{font-family: Arial;text-align:center;}
   border-bottom: 5px solid black;
 }
 .flecheAsc {
-  width: 0; 
+  width: 0;
   height: 0;
   float:right;
   margin: 10px;
@@ -41,7 +41,7 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
 </style>
 
 <script>
-  // Tri dynamique 
+  // Tri dynamique
   function initialiseTab() {
     // Initialise le tableau, la première fois, les fleche sont toutes vers le bas
        [].forEach.call(document.getElementsByTagName("table"), function(monTab) {
@@ -49,9 +49,9 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
            var ncol = 1;
           // maj attribut de chaque colonne selon la capture du clic
           // soit : affichage du picto flèche, attribut sens du tri (0 Asc - 1 Desc), et num colonne
-          
+
           [].forEach.call(sonEntete.querySelectorAll("th"), function(sonTH) {
-            // déclenche la fonction trier au clic sur l'en tête de la colonne 
+            // déclenche la fonction trier au clic sur l'en tête de la colonne
             sonTH.addEventListener("click", trier, false);
             sonTH.setAttribute("data-pos", ncol);
             if(sonTH.getAttribute("data-tri")=="1") {
@@ -80,9 +80,9 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
     // Ajuste la flèche
     this.querySelector("span").className = (sensTri=="0") ? "flecheAsc" : "flecheDesc";
 
-    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets 
+    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets
     // NE PAS MODIFIER STRUCTURE DU TABLEAU
-    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0]; 
+    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0];
     var sesLignes = sonTBody.rows;
     var nNbrLigne = sesLignes.length;
     var laCol = new Array(), i, j, laCel;
@@ -106,7 +106,7 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
     function compareLocale(a, b) {return a[nCol-1].localeCompare(b[nCol-1]);}
     // Renverse la matrice dans le cas d’un tri descendant
     if (sensTri==0) laCol.reverse();
-    
+
     // Construit les colonne du nouveau tableau
     for(i = 0; i < nNbrLigne; i++){
       laCol[i] = "<td>"+laCol[i].join("</td><td>")+"</td>";
@@ -125,9 +125,9 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
     <caption>Les communes du Pays de Loire</caption>
   <thead>
     <tr>
-        <th data-pos="1" data-tri="0">Département <span class="flecheAsc"></span></th>
-        <th data-pos="2" data-tri="0">Communes<span class="flecheAsc"></span></th>
-        <th data-type="num" data-pos="3" data-tri="0">Population<span class="flecheAsc"></span></th>
+        <th>Département</th>
+        <th>Communes</th>
+        <th data-type="num">Population</th>
     </tr>
   </thead>
   <tbody>
@@ -1492,7 +1492,7 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
       </tbody>
 </table>
     <p>Source : Insee, Recensement de la population 2014</a></p>
-    
-    
-    
+
+
+
 </body></html>
