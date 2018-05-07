@@ -29,7 +29,6 @@ body{font-family: Arial;text-align:center;}
 table {table-layout: fixed;border-collapse: collapse;text-align:left;margin-left:auto;margin-right:auto;}
 td {padding:.5rem}
 tr {background-color: #F1EDEB;border-bottom:1px solid #ccc;color:#444;}
-//tr: nth-child(even)  tr: nth-child(odd)
 .bande tbody tr:hover:nth-child(odd) {background-color: #7F8A8C;color:#ffffff;}
 .bande tbody tr:hover:nth-child(even) {background-color: #7F8A8C;color:#ffffff;}
 th {text-align:center;padding:5px 0 0 5px;vertical-align: middle;background-color:#4B5259;color:#F1EDEB;cursor:pointer;
@@ -125,7 +124,7 @@ caption{text-align:center; font-size: 1.5em;padding:1em}
     <caption>Les communes de Bretagne</caption>
   <thead>
     <tr>
-        <th>Département</th>
+        <th data-type="num">Département</th>
         <th>Communes</th>
         <th data-type="num">Population</th>
     </tr>
