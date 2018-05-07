@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>PIX - trier un tableau</title>
+
+<style>
+body{font-family: Arial;text-align:center;}
+/* les flèches */
+.flecheDesc {
+  width: 0; 
+  height: 0; 
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+.flecheAsc {
+  width: 0; 
+  height: 0;
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+/* le tableau */
+table {table-layout: fixed;border-collapse: collapse;text-align:left;margin-left:auto;margin-right:auto;}
+td {padding:.5rem}
+tr {background-color: #F1EDEB;border-bottom:1px solid #ccc;color:#444;}
+//tr: nth-child(even)  tr: nth-child(odd)
+.bande tbody tr:hover:nth-child(odd) {background-color: #7F8A8C;color:#ffffff;}
+.bande tbody tr:hover:nth-child(even) {background-color: #7F8A8C;color:#ffffff;}
+th {text-align:center;padding:5px 0 0 5px;vertical-align: middle;background-color:#4B5259;color:#F1EDEB;cursor:pointer;
+}
+th.choisi {background-color:#5d625c;color:#fff;}
+th.choisi .flecheDesc {border-bottom-color: white;}
+th.choisi .flecheAsc {border-top-color: white;}
+caption{text-align:center; font-size: 1.5em;padding:1em}
+</style>
+
+<script>
+  // Tri dynamique 
+  function initialiseTab() {
+    // Initialise le tableau, la première fois, les fleche sont toutes vers le bas
+       [].forEach.call(document.getElementsByTagName("table"), function(monTab) {
+           var sonEntete = monTab.getElementsByTagName("tr")[0];
+           var ncol = 1;
+          // maj attribut de chaque colonne selon la capture du clic
+          // soit : affichage du picto flèche, attribut sens du tri (0 Asc - 1 Desc), et num colonne
+          
+          [].forEach.call(sonEntete.querySelectorAll("th"), function(sonTH) {
+            // déclenche la fonction trier au clic sur l'en tête de la colonne 
+            sonTH.addEventListener("click", trier, false);
+            sonTH.setAttribute("data-pos", ncol);
+            if(sonTH.getAttribute("data-tri")=="1") {
+             sonTH.innerHTML += "<span class=\"flecheDesc\"></span>";
+            } else {
+              sonTH.setAttribute("data-tri", "0");
+              sonTH.innerHTML += "<span class=\"flecheAsc\"></span>";
+            }
+            // Tri par défaut
+            if (sonTH.className=="choisi") {
+              sonTH.click();
+            }
+            ncol++;
+          });
+        });
+      }
+
+  function trier() {
+    // afficher le tableau dans le tri choisi mémorisé dans data-tri
+    var sensTri = this.getAttribute("data-tri");
+    this.setAttribute("data-tri", (sensTri=="0") ? "1" : "0");
+    // Supprime la classe « choisi » de chaque colonne.
+    [].forEach.call( this.parentNode.querySelectorAll("th"), function(sonTH) {sonTH.classList.remove("choisi");});
+    // Ajoute la classe « choisi » à la colonne cliquée (this).
+    this.className = "choisi";
+    // Ajuste la flèche
+    this.querySelector("span").className = (sensTri=="0") ? "flecheAsc" : "flecheDesc";
+
+    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets 
+    // NE PAS MODIFIER STRUCTURE DU TABLEAU
+    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0]; 
+    var sesLignes = sonTBody.rows;
+    var nNbrLigne = sesLignes.length;
+    var laCol = new Array(), i, j, laCel;
+    for(i = 0; i < nNbrLigne; i++) {
+      laCel = sesLignes[i].cells;
+      laCol[i] = new Array();
+      for(j = 0; j < laCel.length; j++){
+        laCol[i][j] = laCel[j].innerHTML;
+      }
+    }
+
+    // Trier la matrice (array)
+    var nCol = this.getAttribute("data-pos");
+    // Récupère le type de tri (numérique ou par défaut « local »)
+    var sFonctionTri = (this.getAttribute("data-type")=="num") ? "compareNombres" : "compareLocale";
+    // Tri
+    laCol.sort(eval(sFonctionTri));
+    // Tri numérique
+    function compareNombres(a, b) {return a[nCol-1] - b[nCol-1];}
+    // Tri local (pour support utf-8)
+    function compareLocale(a, b) {return a[nCol-1].localeCompare(b[nCol-1]);}
+    // Renverse la matrice dans le cas d’un tri descendant
+    if (sensTri==0) laCol.reverse();
+    
+    // Construit les colonne du nouveau tableau
+    for(i = 0; i < nNbrLigne; i++){
+      laCol[i] = "<td>"+laCol[i].join("</td><td>")+"</td>";
+    }
+
+    // assigne les lignes au tableau
+    sonTBody.innerHTML = "<tr>"+laCol.join("</tr><tr>")+"</tr>";
+  }
+</script>
+</head>
+
+<body onload="initialiseTab()">
+<h1>PIX - trier un tableau</h1>
+
+<table>
+    <caption>Les communes d'Île-de-France (hors Paris)</caption>
+  <thead>
+    <tr>
+        <th data-pos="1" data-tri="0">Département <span class="flecheAsc"></span></th>
+        <th data-pos="2" data-tri="0">Communes<span class="flecheAsc"></span></th>
+        <th data-type="num" data-pos="3" data-tri="0">Population<span class="flecheAsc"></span></th>
+    </tr>
+  </thead>
+  <tbody>
+<tr><td>95</td><td>Villeron</td><td>763</td></tr>
+<tr><td>77</td><td>Chenou</td><td>312</td></tr>
+<tr><td>94</td><td>Choisy-le-Roi</td><td>43781</td></tr>
+<tr><td>93</td><td>Rosny-sous-Bois</td><td>44764</td></tr>
+<tr><td>91</td><td>Monnerville</td><td>401</td></tr>
+<tr><td>77</td><td>Tancrou</td><td>376</td></tr>
+<tr><td>91</td><td>Morsang-sur-Seine</td><td>582</td></tr>
+<tr><td>78</td><td>Montchauvet</td><td>277</td></tr>
+<tr><td>91</td><td>Varennes-Jarcy</td><td>2367</td></tr>
+<tr><td>91</td><td>Ormoy-la-Rivière</td><td>1003</td></tr>
+<tr><td>95</td><td>Seraincourt</td><td>1322</td></tr>
+<tr><td>95</td><td>Chérence</td><td>163</td></tr>
+<tr><td>91</td><td>Savigny-sur-Orge</td><td>37457</td></tr>
+<tr><td>78</td><td>Rolleboise</td><td>414</td></tr>
+<tr><td>78</td><td>Carrières-sur-Seine</td><td>15499</td></tr>
+<tr><td>78</td><td>Freneuse</td><td>4320</td></tr>
+<tr><td>78</td><td>Aigremont</td><td>1171</td></tr>
+<tr><td>91</td><td>Vauhallan</td><td>1982</td></tr>
+<tr><td>78</td><td>Mulcent</td><td>98</td></tr>
+<tr><td>78</td><td>Sonchamp</td><td>1685</td></tr>
+<tr><td>77</td><td>Favières</td><td>1112</td></tr>
+<tr><td>77</td><td>Orly-sur-Morin</td><td>693</td></tr>
+<tr><td>77</td><td>Guermantes</td><td>1180</td></tr>
+<tr><td>94</td><td>Chennevières-sur-Marne</td><td>18221</td></tr>
+<tr><td>78</td><td>Longnes</td><td>1472</td></tr>
+<tr><td>95</td><td>Hérouville</td><td>628</td></tr>
+<tr><td>91</td><td>Champmotteux</td><td>384</td></tr>
+<tr><td>77</td><td>Faremoutiers</td><td>2665</td></tr>
+<tr><td>77</td><td>Donnemarie-Dontilly</td><td>2972</td></tr>
+<tr><td>95</td><td>Piscop</td><td>789</td></tr>
+<tr><td>95</td><td>Boisemont</td><td>786</td></tr>
+<tr><td>93</td><td>Neuilly-sur-Marne</td><td>35190</td></tr>
+<tr><td>95</td><td>Genainville</td><td>564</td></tr>
+<tr><td>95</td><td>Noisy-sur-Oise</td><td>682</td></tr>
+<tr><td>77</td><td>Reuil-en-Brie</td><td>830</td></tr>
+<tr><td>92</td><td>Châtillon</td><td>37480</td></tr>
+<tr><td>77</td><td>Forges</td><td>595</td></tr>
+<tr><td>77</td><td>Montenils</td><td>29</td></tr>
+<tr><td>77</td><td>Iverny</td><td>588</td></tr>
+<tr><td>92</td><td>Montrouge</td><td>49285</td></tr>
+<tr><td>92</td><td>Villeneuve-la-Garenne</td><td>25128</td></tr>
+<tr><td>95</td><td>Saint-Leu-la-Forêt</td><td>15297</td></tr>
+<tr><td>78</td><td>Méricourt</td><td>409</td></tr>
+<tr><td>91</td><td>Boussy-Saint-Antoine</td><td>6993</td></tr>
+<tr><td>77</td><td>Coulommes</td><td>419</td></tr>
+<tr><td>91</td><td>Soisy-sur-École</td><td>1353</td></tr>
+<tr><td>78</td><td>Saint-Martin-de-Bréthencourt</td><td>654</td></tr>
+<tr><td>77</td><td>Égreville</td><td>2213</td></tr>
+<tr><td>77</td><td>Bellot</td><td>789</td></tr>
+<tr><td>95</td><td>Lassy</td><td>176</td></tr>
+<tr><td>77</td><td>Pomponne</td><td>3746</td></tr>
+<tr><td>77</td><td>Machault</td><td>794</td></tr>
+<tr><td>77</td><td>Chauconin-Neufmontiers</td><td>3022</td></tr>
+<tr><td>91</td><td>Champlan</td><td>2734</td></tr>
+<tr><td>78</td><td>Ablis</td><td>3434</td></tr>
+<tr><td>77</td><td>Évry-Grégy-sur-Yerre</td><td>2701</td></tr>
+<tr><td>93</td><td>Tremblay-en-France</td><td>34949</td></tr>
+<tr><td>95</td><td>Marines</td><td>3541</td></tr>
+<tr><td>77</td><td>Saint-Germain-sur-École</td><td>364</td></tr>
+<tr><td>77</td><td>Saint-Cyr-sur-Morin</td><td>1966</td></tr>
+<tr><td>95</td><td>Domont</td><td>15461</td></tr>
+<tr><td>91</td><td>Étréchy</td><td>6609</td></tr>
+<tr><td>77</td><td>Villiers-sur-Morin</td><td>1945</td></tr>
+<tr><td>91</td><td>Boissy-la-Rivière</td><td>600</td></tr>
+<tr><td>95</td><td>Éragny</td><td>16707</td></tr>
+<tr><td>77</td><td>La Rochette</td><td>3375</td></tr>
+<tr><td>78</td><td>Jeufosse</td><td>425</td></tr>
+<tr><td>91</td><td>Saint-Germain-lès-Corbeil</td><td>7594</td></tr>
+<tr><td>95</td><td>Le Plessis-Bouchard</td><td>8175</td></tr>
+<tr><td>91</td><td>Plessis-Saint-Benoist</td><td>318</td></tr>
+<tr><td>78</td><td>Poigny-la-Forêt</td><td>1000</td></tr>
+<tr><td>77</td><td>Rubelles</td><td>2115</td></tr>
+<tr><td>77</td><td>Yèbles</td><td>811</td></tr>
+<tr><td>91</td><td>La Forêt-le-Roi</td><td>516</td></tr>
+<tr><td>93</td><td>Dugny</td><td>10455</td></tr>
+<tr><td>94</td><td>Villeneuve-le-Roi</td><td>19978</td></tr>
+<tr><td>77</td><td>Saint-Barthélemy</td><td>347</td></tr>
+<tr><td>77</td><td>Melun</td><td>40971</td></tr>
+<tr><td>93</td><td>Aulnay-sous-Bois</td><td>82935</td></tr>
+<tr><td>77</td><td>Lésigny</td><td>7523</td></tr>
+<tr><td>77</td><td>Rumont</td><td>129</td></tr>
+<tr><td>77</td><td>Chailly-en-Bière</td><td>2036</td></tr>
+<tr><td>91</td><td>Saint-Yon</td><td>897</td></tr>
+<tr><td>91</td><td>D'Huison-Longueville</td><td>1528</td></tr>
+<tr><td>78</td><td>Le Chesnay</td><td>29197</td></tr>
+<tr><td>78</td><td>Allainville</td><td>310</td></tr>
+<tr><td>77</td><td>Saint-Germain-Laval</td><td>2893</td></tr>
+<tr><td>78</td><td>Villiers-Saint-Frédéric</td><td>2830</td></tr>
+<tr><td>77</td><td>Choisy-en-Brie</td><td>1416</td></tr>
+<tr><td>93</td><td>Neuilly-Plaisance</td><td>21176</td></tr>
+<tr><td>77</td><td>Le Plessis-Feu-Aussoux</td><td>539</td></tr>
+<tr><td>95</td><td>Haute-Isle</td><td>294</td></tr>
+<tr><td>77</td><td>Isles-les-Meldeuses</td><td>805</td></tr>
+<tr><td>77</td><td>Amillis</td><td>814</td></tr>
+<tr><td>78</td><td>Triel-sur-Seine</td><td>12189</td></tr>
+<tr><td>92</td><td>Bois-Colombes</td><td>28808</td></tr>
+<tr><td>77</td><td>Thénisy</td><td>296</td></tr>
+<tr><td>91</td><td>Courdimanche-sur-Essonne</td><td>269</td></tr>
+<tr><td>77</td><td>Montgé-en-Goële</td><td>729</td></tr>
+<tr><td>95</td><td>Charmont</td><td>27</td></tr>
+<tr><td>77</td><td>Villemer</td><td>737</td></tr>
+<tr><td>91</td><td>Avrainville</td><td>932</td></tr>
+<tr><td>77</td><td>Bois-le-Roi</td><td>5828</td></tr>
+<tr><td>95</td><td>Cormeilles-en-Vexin</td><td>1304</td></tr>
+<tr><td>91</td><td>Chauffour-lès-Étréchy</td><td>144</td></tr>
+<tr><td>78</td><td>Villette</td><td>537</td></tr>
+<tr><td>77</td><td>Varreddes</td><td>1929</td></tr>
+<tr><td>77</td><td>Claye-Souilly</td><td>12033</td></tr>
+<tr><td>77</td><td>Trilport</td><td>5037</td></tr>
+<tr><td>91</td><td>Saint-Jean-de-Beauregard</td><td>335</td></tr>
+<tr><td>95</td><td>Villiers-le-Bel</td><td>27917</td></tr>
+<tr><td>94</td><td>Mandres-les-Roses</td><td>4491</td></tr>
+<tr><td>77</td><td>Mitry-Mory</td><td>19820</td></tr>
+<tr><td>77</td><td>La Chapelle-Saint-Sulpice</td><td>238</td></tr>
+<tr><td>77</td><td>Saint-Mard</td><td>3864</td></tr>
+<tr><td>78</td><td>Fourqueux</td><td>4218</td></tr>
+<tr><td>77</td><td>Saint-Augustin</td><td>1785</td></tr>
+<tr><td>77</td><td>Le Plessis-Placy</td><td>280</td></tr>
+<tr><td>93</td><td>Saint-Denis</td><td>111752</td></tr>
+<tr><td>77</td><td>Moussy-le-Vieux</td><td>1161</td></tr>
+<tr><td>78</td><td>Flacourt</td><td>135</td></tr>
+<tr><td>91</td><td>Pecqueuse</td><td>612</td></tr>
+<tr><td>78</td><td>Maisons-Laffitte</td><td>24251</td></tr>
+<tr><td>91</td><td>Juvisy-sur-Orge</td><td>16312</td></tr>
+<tr><td>91</td><td>Auvers-Saint-Georges</td><td>1333</td></tr>
+<tr><td>91</td><td>Briis-sous-Forges</td><td>3701</td></tr>
+<tr><td>77</td><td>Garentreville</td><td>110</td></tr>
+<tr><td>94</td><td>Chevilly-Larue</td><td>19275</td></tr>
+<tr><td>77</td><td>Othis</td><td>6614</td></tr>
+<tr><td>77</td><td>Crisenoy</td><td>664</td></tr>
+<tr><td>78</td><td>Mareil-Marly</td><td>3733</td></tr>
+<tr><td>77</td><td>Soignolles-en-Brie</td><td>2036</td></tr>
+<tr><td>77</td><td>Bussy-Saint-Georges</td><td>26232</td></tr>
+<tr><td>95</td><td>Vigny</td><td>1107</td></tr>
+<tr><td>91</td><td>Chalo-Saint-Mars</td><td>1194</td></tr>
+<tr><td>77</td><td>Villeneuve-les-Bordes</td><td>611</td></tr>
+<tr><td>95</td><td>Saint-Gervais</td><td>978</td></tr>
+<tr><td>77</td><td>Puisieux</td><td>320</td></tr>
+<tr><td>78</td><td>Montigny-le-Bretonneux</td><td>33844</td></tr>
+<tr><td>93</td><td>Le Blanc-Mesnil</td><td>54606</td></tr>
+<tr><td>93</td><td>Gagny</td><td>39455</td></tr>
+<tr><td>91</td><td>Ormoy</td><td>2002</td></tr>
+<tr><td>78</td><td>Sailly</td><td>386</td></tr>
+<tr><td>78</td><td>Saint-Forget</td><td>504</td></tr>
+<tr><td>77</td><td>La Ferté-sous-Jouarre</td><td>9732</td></tr>
+<tr><td>92</td><td>Vaucresson</td><td>9093</td></tr>
+<tr><td>91</td><td>Brétigny-sur-Orge</td><td>26227</td></tr>
+<tr><td>91</td><td>Dannemois</td><td>844</td></tr>
+<tr><td>78</td><td>Thiverval-Grignon</td><td>1113</td></tr>
+<tr><td>92</td><td>Boulogne-Billancourt</td><td>118164</td></tr>
+<tr><td>78</td><td>Mareil-sur-Mauldre</td><td>1797</td></tr>
+<tr><td>78</td><td>Poissy</td><td>37412</td></tr>
+<tr><td>78</td><td>Houdan</td><td>3519</td></tr>
+<tr><td>77</td><td>Marles-en-Brie</td><td>1548</td></tr>
+<tr><td>95</td><td>Vémars</td><td>2395</td></tr>
+<tr><td>77</td><td>Congis-sur-Thérouanne</td><td>1994</td></tr>
+<tr><td>92</td><td>Clichy</td><td>60174</td></tr>
+<tr><td>77</td><td>Paroy</td><td>181</td></tr>
+<tr><td>93</td><td>Villemomble</td><td>29707</td></tr>
+<tr><td>77</td><td>Giremoutiers</td><td>154</td></tr>
+<tr><td>77</td><td>Barbizon</td><td>1261</td></tr>
+<tr><td>92</td><td>Issy-les-Moulineaux</td><td>68256</td></tr>
+<tr><td>77</td><td>Rouvres</td><td>801</td></tr>
+<tr><td>91</td><td>Mondeville</td><td>721</td></tr>
+<tr><td>77</td><td>Jouarre</td><td>4227</td></tr>
+<tr><td>95</td><td>Nesles-la-Vallée</td><td>1823</td></tr>
+<tr><td>77</td><td>Nanteuil-lès-Meaux</td><td>5896</td></tr>
+<tr><td>77</td><td>Condé-Sainte-Libiaire</td><td>1437</td></tr>
+<tr><td>77</td><td>Bezalles</td><td>257</td></tr>
+<tr><td>95</td><td>Cormeilles-en-Parisis</td><td>24075</td></tr>
+<tr><td>95</td><td>Chaussy</td><td>622</td></tr>
+<tr><td>78</td><td>Boissy-Mauvoisin</td><td>630</td></tr>
+<tr><td>78</td><td>La Celle-Saint-Cloud</td><td>21771</td></tr>
+<tr><td>78</td><td>Le Tartre-Gaudran</td><td>33</td></tr>
+<tr><td>91</td><td>Chevannes</td><td>1773</td></tr>
+<tr><td>78</td><td>Émancé</td><td>911</td></tr>
+<tr><td>93</td><td>Le Raincy</td><td>14751</td></tr>
+<tr><td>91</td><td>Torfou</td><td>267</td></tr>
+<tr><td>77</td><td>Coutençon</td><td>298</td></tr>
+<tr><td>78</td><td>Les Loges-en-Josas</td><td>1561</td></tr>
+<tr><td>91</td><td>Milly-la-Forêt</td><td>4888</td></tr>
+<tr><td>92</td><td>La Garenne-Colombes</td><td>29395</td></tr>
+<tr><td>77</td><td>Baby</td><td>99</td></tr>
+<tr><td>77</td><td>Saint-Mesmes</td><td>613</td></tr>
+<tr><td>77</td><td>Le Plessis-l'Évêque</td><td>283</td></tr>
+<tr><td>78</td><td>Aubergenville</td><td>11563</td></tr>
+<tr><td>78</td><td>Voisins-le-Bretonneux</td><td>11687</td></tr>
+<tr><td>78</td><td>Élancourt</td><td>26312</td></tr>
+<tr><td>92</td><td>Le Plessis-Robinson</td><td>29131</td></tr>
+<tr><td>78</td><td>Mézy-sur-Seine</td><td>2025</td></tr>
+<tr><td>94</td><td>Ablon-sur-Seine</td><td>5485</td></tr>
+<tr><td>77</td><td>Buthiers</td><td>768</td></tr>
+<tr><td>77</td><td>Étrépilly</td><td>880</td></tr>
+<tr><td>92</td><td>Malakoff</td><td>30748</td></tr>
+<tr><td>78</td><td>Lainville-en-Vexin</td><td>828</td></tr>
+<tr><td>77</td><td>Montceaux-lès-Provins</td><td>349</td></tr>
+<tr><td>77</td><td>Vaux-sur-Lunain</td><td>208</td></tr>
+<tr><td>95</td><td>Courcelles-sur-Viosne</td><td>296</td></tr>
+<tr><td>77</td><td>Limoges-Fourches</td><td>460</td></tr>
+<tr><td>77</td><td>Saint-Léger</td><td>247</td></tr>
+<tr><td>78</td><td>Grandchamp</td><td>330</td></tr>
+<tr><td>91</td><td>Mennecy</td><td>13980</td></tr>
+<tr><td>77</td><td>Gressy</td><td>893</td></tr>
+<tr><td>77</td><td>Villeparisis</td><td>26107</td></tr>
+<tr><td>78</td><td>Villiers-le-Mahieu</td><td>707</td></tr>
+<tr><td>77</td><td>Pamfou</td><td>961</td></tr>
+<tr><td>78</td><td>Jouars-Pontchartrain</td><td>5401</td></tr>
+<tr><td>91</td><td>Morigny-Champigny</td><td>4498</td></tr>
+<tr><td>95</td><td>Frépillon</td><td>3194</td></tr>
+<tr><td>91</td><td>Fontenay-le-Vicomte</td><td>1293</td></tr>
+<tr><td>78</td><td>Bougival</td><td>8989</td></tr>
+<tr><td>91</td><td>Évry</td><td>54466</td></tr>
+<tr><td>77</td><td>Pringy</td><td>2851</td></tr>
+<tr><td>77</td><td>Samoreau</td><td>2400</td></tr>
+<tr><td>78</td><td>Neauphle-le-Château</td><td>3203</td></tr>
+<tr><td>78</td><td>Flins-sur-Seine</td><td>2335</td></tr>
+<tr><td>95</td><td>Groslay</td><td>8769</td></tr>
+<tr><td>77</td><td>Pontault-Combault</td><td>38421</td></tr>
+<tr><td>91</td><td>Leudeville</td><td>1470</td></tr>
+<tr><td>77</td><td>Féricy</td><td>604</td></tr>
+<tr><td>78</td><td>Hermeray</td><td>971</td></tr>
+<tr><td>77</td><td>Voisenon</td><td>1140</td></tr>
+<tr><td>77</td><td>Maison-Rouge</td><td>908</td></tr>
+<tr><td>95</td><td>Marly-la-Ville</td><td>5673</td></tr>
+<tr><td>94</td><td>Villecresnes</td><td>9771</td></tr>
+<tr><td>77</td><td>Courquetaine</td><td>207</td></tr>
+<tr><td>94</td><td>Bry-sur-Marne</td><td>16743</td></tr>
+<tr><td>77</td><td>Collégien</td><td>3357</td></tr>
+<tr><td>77</td><td>Esmans</td><td>910</td></tr>
+<tr><td>77</td><td>Laval-en-Brie</td><td>466</td></tr>
+<tr><td>77</td><td>Châtres</td><td>639</td></tr>
+<tr><td>78</td><td>Noisy-le-Roi</td><td>7881</td></tr>
+<tr><td>77</td><td>Andrezel</td><td>290</td></tr>
+<tr><td>78</td><td>Mareil-le-Guyon</td><td>369</td></tr>
+<tr><td>77</td><td>Vulaines-sur-Seine</td><td>2731</td></tr>
+<tr><td>77</td><td>Saint-Germain-sous-Doue</td><td>514</td></tr>
+<tr><td>95</td><td>Épinay-Champlâtreux</td><td>67</td></tr>
+<tr><td>95</td><td>Montsoult</td><td>3464</td></tr>
+<tr><td>77</td><td>Poincy</td><td>724</td></tr>
+<tr><td>78</td><td>Fontenay-Saint-Père</td><td>1019</td></tr>
+<tr><td>78</td><td>Les Bréviaires</td><td>1296</td></tr>
+<tr><td>92</td><td>Sceaux</td><td>19896</td></tr>
+<tr><td>93</td><td>Le Pré-Saint-Gervais</td><td>17666</td></tr>
+<tr><td>77</td><td>Vanvillé</td><td>166</td></tr>
+<tr><td>77</td><td>Cerneux</td><td>325</td></tr>
+<tr><td>77</td><td>Bray-sur-Seine</td><td>2270</td></tr>
+<tr><td>95</td><td>Cléry-en-Vexin</td><td>430</td></tr>
+<tr><td>78</td><td>Blaru</td><td>929</td></tr>
+<tr><td>77</td><td>Provins</td><td>12163</td></tr>
+<tr><td>78</td><td>Juziers</td><td>3863</td></tr>
+<tr><td>95</td><td>Brignancourt</td><td>200</td></tr>
+<tr><td>95</td><td>Attainville</td><td>1798</td></tr>
+<tr><td>95</td><td>Frémainville</td><td>485</td></tr>
+<tr><td>95</td><td>Montmagny</td><td>13937</td></tr>
+<tr><td>77</td><td>Cesson</td><td>10001</td></tr>
+<tr><td>78</td><td>Saint-Martin-des-Champs</td><td>327</td></tr>
+<tr><td>77</td><td>Saint-Jean-les-Deux-Jumeaux</td><td>1219</td></tr>
+<tr><td>95</td><td>Boissy-l'Aillerie</td><td>1853</td></tr>
+<tr><td>95</td><td>Goussainville</td><td>31719</td></tr>
+<tr><td>91</td><td>Nainville-les-Roches</td><td>470</td></tr>
+<tr><td>95</td><td>Nointel</td><td>816</td></tr>
+<tr><td>77</td><td>Hondevilliers</td><td>255</td></tr>
+<tr><td>77</td><td>Marolles-en-Brie</td><td>403</td></tr>
+<tr><td>91</td><td>Écharcon</td><td>797</td></tr>
+<tr><td>77</td><td>Poligny</td><td>834</td></tr>
+<tr><td>95</td><td>Commeny</td><td>439</td></tr>
+<tr><td>78</td><td>Boinville-en-Mantois</td><td>318</td></tr>
+<tr><td>77</td><td>Gouaix</td><td>1544</td></tr>
+<tr><td>94</td><td>Alfortville</td><td>45285</td></tr>
+<tr><td>95</td><td>La Frette-sur-Seine</td><td>4678</td></tr>
+<tr><td>77</td><td>Crécy-la-Chapelle</td><td>4350</td></tr>
+<tr><td>95</td><td>Ézanville</td><td>9659</td></tr>
+<tr><td>77</td><td>Seine-Port</td><td>1950</td></tr>
+<tr><td>77</td><td>Saints</td><td>1411</td></tr>
+<tr><td>91</td><td>Congerville-Thionville</td><td>239</td></tr>
+<tr><td>78</td><td>Saulx-Marchais</td><td>926</td></tr>
+<tr><td>78</td><td>Hardricourt</td><td>2101</td></tr>
+<tr><td>95</td><td>Chennevières-lès-Louvres</td><td>320</td></tr>
+<tr><td>93</td><td>Bagnolet</td><td>36237</td></tr>
+<tr><td>91</td><td>Les Granges-le-Roi</td><td>1214</td></tr>
+<tr><td>77</td><td>Méry-sur-Marne</td><td>675</td></tr>
+<tr><td>77</td><td>La Chapelle-la-Reine</td><td>2537</td></tr>
+<tr><td>77</td><td>Mouy-sur-Seine</td><td>364</td></tr>
+<tr><td>95</td><td>Puiseux-Pontoise</td><td>412</td></tr>
+<tr><td>94</td><td>Bonneuil-sur-Marne</td><td>17293</td></tr>
+<tr><td>92</td><td>Fontenay-aux-Roses</td><td>23217</td></tr>
+<tr><td>78</td><td>Trappes</td><td>32158</td></tr>
+<tr><td>77</td><td>Coulommiers</td><td>15238</td></tr>
+<tr><td>77</td><td>Coupvray</td><td>2863</td></tr>
+<tr><td>95</td><td>Ambleville</td><td>407</td></tr>
+<tr><td>93</td><td>Livry-Gargan</td><td>44052</td></tr>
+<tr><td>93</td><td>Noisy-le-Sec</td><td>42754</td></tr>
+<tr><td>77</td><td>Misy-sur-Yonne</td><td>993</td></tr>
+<tr><td>77</td><td>Grez-sur-Loing</td><td>1445</td></tr>
+<tr><td>91</td><td>Saint-Cyr-sous-Dourdan</td><td>1025</td></tr>
+<tr><td>78</td><td>Grosrouvre</td><td>968</td></tr>
+<tr><td>95</td><td>Labbeville</td><td>625</td></tr>
+<tr><td>91</td><td>Épinay-sous-Sénart</td><td>12605</td></tr>
+<tr><td>77</td><td>Villiers-sous-Grez</td><td>768</td></tr>
+<tr><td>78</td><td>Bonnelles</td><td>1997</td></tr>
+<tr><td>91</td><td>Palaiseau</td><td>33318</td></tr>
+<tr><td>77</td><td>Saint-Germain-sur-Morin</td><td>3610</td></tr>
+<tr><td>91</td><td>Blandy</td><td>123</td></tr>
+<tr><td>95</td><td>Montreuil-sur-Epte</td><td>441</td></tr>
+<tr><td>78</td><td>Saint-Cyr-l'École</td><td>18949</td></tr>
+<tr><td>91</td><td>Villiers-sur-Orge</td><td>4360</td></tr>
+<tr><td>77</td><td>Tousson</td><td>388</td></tr>
+<tr><td>77</td><td>Villebéon</td><td>483</td></tr>
+<tr><td>78</td><td>Guerville</td><td>2158</td></tr>
+<tr><td>95</td><td>Bouffémont</td><td>6228</td></tr>
+<tr><td>92</td><td>Marnes-la-Coquette</td><td>1760</td></tr>
+<tr><td>77</td><td>Isles-lès-Villenoy</td><td>938</td></tr>
+<tr><td>91</td><td>Prunay-sur-Essonne</td><td>318</td></tr>
+<tr><td>77</td><td>Maisoncelles-en-Brie</td><td>878</td></tr>
+<tr><td>77</td><td>Bombon</td><td>897</td></tr>
+<tr><td>91</td><td>Chalou-Moulineux</td><td>428</td></tr>
+<tr><td>91</td><td>Boutigny-sur-Essonne</td><td>3046</td></tr>
+<tr><td>91</td><td>Orsay</td><td>16718</td></tr>
+<tr><td>91</td><td>Brunoy</td><td>26598</td></tr>
+<tr><td>91</td><td>Marolles-en-Beauce</td><td>223</td></tr>
+<tr><td>95</td><td>Chaumontel</td><td>3387</td></tr>
+<tr><td>77</td><td>Courtomer</td><td>525</td></tr>
+<tr><td>77</td><td>Vimpelles</td><td>530</td></tr>
+<tr><td>77</td><td>Sognolles-en-Montois</td><td>414</td></tr>
+<tr><td>78</td><td>Vieille-Église-en-Yvelines</td><td>751</td></tr>
+<tr><td>77</td><td>Lieusaint</td><td>12261</td></tr>
+<tr><td>77</td><td>Diant</td><td>182</td></tr>
+<tr><td>78</td><td>Neauphle-le-Vieux</td><td>974</td></tr>
+<tr><td>78</td><td>Vaux-sur-Seine</td><td>4809</td></tr>
+<tr><td>91</td><td>Athis-Mons</td><td>31841</td></tr>
+<tr><td>95</td><td>Montigny-lès-Cormeilles</td><td>21374</td></tr>
+<tr><td>78</td><td>Maurecourt</td><td>4460</td></tr>
+<tr><td>77</td><td>Gironville</td><td>164</td></tr>
+<tr><td>91</td><td>Mérobert</td><td>595</td></tr>
+<tr><td>78</td><td>Maulette</td><td>878</td></tr>
+<tr><td>91</td><td>Étampes</td><td>24940</td></tr>
+<tr><td>77</td><td>Villenauxe-la-Petite</td><td>490</td></tr>
+<tr><td>77</td><td>Montigny-Lencoup</td><td>1343</td></tr>
+<tr><td>77</td><td>Bouleurs</td><td>1502</td></tr>
+<tr><td>95</td><td>Méry-sur-Oise</td><td>9374</td></tr>
+<tr><td>91</td><td>Saintry-sur-Seine</td><td>5556</td></tr>
+<tr><td>91</td><td>Lisses</td><td>7770</td></tr>
+<tr><td>95</td><td>Béthemont-la-Forêt</td><td>442</td></tr>
+<tr><td>91</td><td>Mespuits</td><td>208</td></tr>
+<tr><td>92</td><td>Suresnes</td><td>49041</td></tr>
+<tr><td>93</td><td>L' Île-Saint-Denis</td><td>7328</td></tr>
+<tr><td>95</td><td>Butry-sur-Oise</td><td>2283</td></tr>
+<tr><td>95</td><td>Moussy</td><td>138</td></tr>
+<tr><td>94</td><td>Fontenay-sous-Bois</td><td>53923</td></tr>
+<tr><td>78</td><td>Arnouville-lès-Mantes</td><td>921</td></tr>
+<tr><td>77</td><td>Rozay-en-Brie</td><td>2901</td></tr>
+<tr><td>95</td><td>Louvres</td><td>10219</td></tr>
+<tr><td>78</td><td>Auteuil</td><td>924</td></tr>
+<tr><td>91</td><td>Richarville</td><td>408</td></tr>
+<tr><td>77</td><td>Montévrain</td><td>9856</td></tr>
+<tr><td>91</td><td>Le Plessis-Pâté</td><td>4021</td></tr>
+<tr><td>95</td><td>Viarmes</td><td>5323</td></tr>
+<tr><td>92</td><td>Ville-d'Avray</td><td>11676</td></tr>
+<tr><td>77</td><td>Voinsles</td><td>625</td></tr>
+<tr><td>95</td><td>Pontoise</td><td>30960</td></tr>
+<tr><td>91</td><td>Paray-Vieille-Poste</td><td>7427</td></tr>
+<tr><td>95</td><td>Mareil-en-France</td><td>698</td></tr>
+<tr><td>93</td><td>Coubron</td><td>4790</td></tr>
+<tr><td>77</td><td>Saint-Siméon</td><td>915</td></tr>
+<tr><td>77</td><td>Fontenailles</td><td>1089</td></tr>
+<tr><td>77</td><td>Darvault</td><td>864</td></tr>
+<tr><td>95</td><td>Grisy-les-Plâtres</td><td>646</td></tr>
+<tr><td>91</td><td>Vert-le-Grand</td><td>2489</td></tr>
+<tr><td>77</td><td>Ozoir-la-Ferrière</td><td>20472</td></tr>
+<tr><td>77</td><td>Courpalay</td><td>1464</td></tr>
+<tr><td>93</td><td>Saint-Ouen</td><td>47779</td></tr>
+<tr><td>77</td><td>Nandy</td><td>5921</td></tr>
+<tr><td>77</td><td>Mousseaux-lès-Bray</td><td>762</td></tr>
+<tr><td>92</td><td>Bourg-la-Reine</td><td>20245</td></tr>
+<tr><td>78</td><td>Magnanville</td><td>6107</td></tr>
+<tr><td>92</td><td>Courbevoie</td><td>85322</td></tr>
+<tr><td>77</td><td>Voulx</td><td>1844</td></tr>
+<tr><td>77</td><td>Germigny-l'Évêque</td><td>1351</td></tr>
+<tr><td>77</td><td>Réau</td><td>1785</td></tr>
+<tr><td>77</td><td>Saint-Pierre-lès-Nemours</td><td>5682</td></tr>
+<tr><td>77</td><td>Jablines</td><td>688</td></tr>
+<tr><td>78</td><td>Mantes-la-Jolie</td><td>45346</td></tr>
+<tr><td>78</td><td>Fontenay-le-Fleury</td><td>13378</td></tr>
+<tr><td>95</td><td>Hodent</td><td>232</td></tr>
+<tr><td>77</td><td>Blandy</td><td>709</td></tr>
+<tr><td>77</td><td>Chartronges</td><td>305</td></tr>
+<tr><td>77</td><td>Verdelot</td><td>703</td></tr>
+<tr><td>77</td><td>Boisdon</td><td>133</td></tr>
+<tr><td>77</td><td>Fontains</td><td>231</td></tr>
+<tr><td>93</td><td>Pierrefitte-sur-Seine</td><td>29497</td></tr>
+<tr><td>91</td><td>Villejust</td><td>2308</td></tr>
+<tr><td>91</td><td>Saint-Chéron</td><td>5072</td></tr>
+<tr><td>77</td><td>Signy-Signets</td><td>614</td></tr>
+<tr><td>94</td><td>Noiseau</td><td>4722</td></tr>
+<tr><td>77</td><td>Villiers-Saint-Georges</td><td>1233</td></tr>
+<tr><td>77</td><td>Boitron</td><td>388</td></tr>
+<tr><td>78</td><td>La Queue-les-Yvelines</td><td>2229</td></tr>
+<tr><td>93</td><td>Pantin</td><td>55175</td></tr>
+<tr><td>94</td><td>Le Perreux-sur-Marne</td><td>33994</td></tr>
+<tr><td>78</td><td>Le Mesnil-le-Roi</td><td>6484</td></tr>
+<tr><td>91</td><td>Boullay-les-Troux</td><td>647</td></tr>
+<tr><td>77</td><td>Nanteau-sur-Essonne</td><td>455</td></tr>
+<tr><td>78</td><td>Bourdonné</td><td>519</td></tr>
+<tr><td>95</td><td>Soisy-sous-Montmorency</td><td>18307</td></tr>
+<tr><td>94</td><td>Fresnes</td><td>26980</td></tr>
+<tr><td>77</td><td>Mareuil-lès-Meaux</td><td>2908</td></tr>
+<tr><td>78</td><td>Thoiry</td><td>1355</td></tr>
+<tr><td>91</td><td>Boissy-le-Sec</td><td>690</td></tr>
+<tr><td>77</td><td>Magny-le-Hongre</td><td>8377</td></tr>
+<tr><td>77</td><td>Villenoy</td><td>4327</td></tr>
+<tr><td>91</td><td>Saclay</td><td>3924</td></tr>
+<tr><td>78</td><td>Marly-le-Roi</td><td>16861</td></tr>
+<tr><td>77</td><td>Champagne-sur-Seine</td><td>6364</td></tr>
+<tr><td>77</td><td>Marolles-sur-Seine</td><td>1721</td></tr>
+<tr><td>91</td><td>Villemoisson-sur-Orge</td><td>6965</td></tr>
+<tr><td>77</td><td>Lesches</td><td>706</td></tr>
+<tr><td>78</td><td>Saint-Germain-de-la-Grange</td><td>1886</td></tr>
+<tr><td>77</td><td>Gravon</td><td>151</td></tr>
+<tr><td>95</td><td>Gonesse</td><td>26252</td></tr>
+<tr><td>91</td><td>Draveil</td><td>29404</td></tr>
+<tr><td>78</td><td>Boissets</td><td>263</td></tr>
+<tr><td>77</td><td>Avon</td><td>14254</td></tr>
+<tr><td>91</td><td>Boigneville</td><td>412</td></tr>
+<tr><td>77</td><td>Neufmoutiers-en-Brie</td><td>986</td></tr>
+<tr><td>77</td><td>Chanteloup-en-Brie</td><td>3387</td></tr>
+<tr><td>77</td><td>Pécy</td><td>851</td></tr>
+<tr><td>77</td><td>Verneuil-l'Étang</td><td>3246</td></tr>
+<tr><td>77</td><td>Dampmart</td><td>3286</td></tr>
+<tr><td>91</td><td>Tigery</td><td>3432</td></tr>
+<tr><td>78</td><td>Le Pecq</td><td>16753</td></tr>
+<tr><td>77</td><td>Jutigny</td><td>546</td></tr>
+<tr><td>91</td><td>Saint-Germain-lès-Arpajon</td><td>10087</td></tr>
+<tr><td>95</td><td>Valmondois</td><td>1224</td></tr>
+<tr><td>95</td><td>Le Heaulme</td><td>208</td></tr>
+<tr><td>77</td><td>Mary-sur-Marne</td><td>1214</td></tr>
+<tr><td>77</td><td>Courtry</td><td>6729</td></tr>
+<tr><td>95</td><td>Bray-et-Lû</td><td>988</td></tr>
+<tr><td>78</td><td>L' Étang-la-Ville</td><td>4944</td></tr>
+<tr><td>94</td><td>Vincennes</td><td>49600</td></tr>
+<tr><td>77</td><td>Sourdun</td><td>1880</td></tr>
+<tr><td>95</td><td>Buhy</td><td>322</td></tr>
+<tr><td>78</td><td>Herbeville</td><td>263</td></tr>
+<tr><td>95</td><td>Puiseux-en-France</td><td>3389</td></tr>
+<tr><td>77</td><td>Villeneuve-sur-Bellot</td><td>1174</td></tr>
+<tr><td>91</td><td>Breux-Jouy</td><td>1266</td></tr>
+<tr><td>77</td><td>Roissy-en-Brie</td><td>23090</td></tr>
+<tr><td>77</td><td>Saint-Martin-des-Champs</td><td>700</td></tr>
+<tr><td>95</td><td>Champagne-sur-Oise</td><td>4864</td></tr>
+<tr><td>77</td><td>Rouilly</td><td>499</td></tr>
+<tr><td>78</td><td>Villennes-sur-Seine</td><td>5358</td></tr>
+<tr><td>92</td><td>Bagneux</td><td>39087</td></tr>
+<tr><td>77</td><td>Combs-la-Ville</td><td>22307</td></tr>
+<tr><td>77</td><td>Château-Landon</td><td>3191</td></tr>
+<tr><td>77</td><td>Bagneaux-sur-Loing</td><td>1704</td></tr>
+<tr><td>77</td><td>Vincy-Manœuvre</td><td>275</td></tr>
+<tr><td>77</td><td>Sablonnières</td><td>717</td></tr>
+<tr><td>91</td><td>Sainte-Geneviève-des-Bois</td><td>36246</td></tr>
+<tr><td>91</td><td>Puiselet-le-Marais</td><td>293</td></tr>
+<tr><td>77</td><td>Boissy-aux-Cailles</td><td>308</td></tr>
+<tr><td>93</td><td>Villepinte</td><td>36062</td></tr>
+<tr><td>77</td><td>Cucharmoy</td><td>227</td></tr>
+<tr><td>77</td><td>Chevrainvilliers</td><td>227</td></tr>
+<tr><td>95</td><td>Saint-Witz</td><td>2548</td></tr>
+<tr><td>95</td><td>Persan</td><td>12534</td></tr>
+<tr><td>77</td><td>Dhuisy</td><td>301</td></tr>
+<tr><td>77</td><td>Voulangis</td><td>1563</td></tr>
+<tr><td>95</td><td>Argenteuil</td><td>110465</td></tr>
+<tr><td>77</td><td>Chartrettes</td><td>2671</td></tr>
+<tr><td>78</td><td>Villepreux</td><td>10266</td></tr>
+<tr><td>78</td><td>Le Perray-en-Yvelines</td><td>6849</td></tr>
+<tr><td>77</td><td>La Ferté-Gaucher</td><td>4844</td></tr>
+<tr><td>95</td><td>Baillet-en-France</td><td>2044</td></tr>
+<tr><td>95</td><td>Jagny-sous-Bois</td><td>253</td></tr>
+<tr><td>94</td><td>Saint-Maurice</td><td>14978</td></tr>
+<tr><td>77</td><td>Montdauphin</td><td>242</td></tr>
+<tr><td>78</td><td>Les Essarts-le-Roi</td><td>6973</td></tr>
+<tr><td>77</td><td>Aubepierre-Ozouer-le-Repos</td><td>913</td></tr>
+<tr><td>77</td><td>Chamigny</td><td>1462</td></tr>
+<tr><td>77</td><td>Montcourt-Fromonville</td><td>2099</td></tr>
+<tr><td>77</td><td>Saint-Rémy-la-Vanne</td><td>1000</td></tr>
+<tr><td>94</td><td>Villiers-sur-Marne</td><td>28500</td></tr>
+<tr><td>77</td><td>Jaulnes</td><td>384</td></tr>
+<tr><td>95</td><td>Luzarches</td><td>4563</td></tr>
+<tr><td>77</td><td>Blennes</td><td>579</td></tr>
+<tr><td>92</td><td>Levallois-Perret</td><td>65942</td></tr>
+<tr><td>77</td><td>Saint-Mars-Vieux-Maisons</td><td>278</td></tr>
+<tr><td>77</td><td>Villiers-sur-Seine</td><td>314</td></tr>
+<tr><td>77</td><td>Saâcy-sur-Marne</td><td>1837</td></tr>
+<tr><td>78</td><td>Chevreuse</td><td>5847</td></tr>
+<tr><td>95</td><td>Cergy</td><td>63691</td></tr>
+<tr><td>94</td><td>Villejuif</td><td>58169</td></tr>
+<tr><td>95</td><td>Moisselles</td><td>1439</td></tr>
+<tr><td>91</td><td>Champcueil</td><td>2920</td></tr>
+<tr><td>78</td><td>Saint-Rémy-lès-Chevreuse</td><td>7907</td></tr>
+<tr><td>95</td><td>Vétheuil</td><td>873</td></tr>
+<tr><td>91</td><td>Boissy-le-Cutté</td><td>1320</td></tr>
+<tr><td>92</td><td>Garches</td><td>18086</td></tr>
+<tr><td>77</td><td>Augers-en-Brie</td><td>309</td></tr>
+<tr><td>77</td><td>Montereau-sur-le-Jard</td><td>540</td></tr>
+<tr><td>91</td><td>Saint-Vrain</td><td>3109</td></tr>
+<tr><td>78</td><td>Raizeux</td><td>932</td></tr>
+<tr><td>77</td><td>Bréau</td><td>336</td></tr>
+<tr><td>78</td><td>Favrieux</td><td>151</td></tr>
+<tr><td>91</td><td>Saint-Michel-sur-Orge</td><td>20085</td></tr>
+<tr><td>95</td><td>Asnières-sur-Oise</td><td>2656</td></tr>
+<tr><td>78</td><td>Mousseaux-sur-Seine</td><td>690</td></tr>
+<tr><td>78</td><td>Lommoye</td><td>677</td></tr>
+<tr><td>77</td><td>Leudon-en-Brie</td><td>172</td></tr>
+<tr><td>78</td><td>Chavenay</td><td>1908</td></tr>
+<tr><td>78</td><td>Sartrouville</td><td>52264</td></tr>
+<tr><td>91</td><td>Vayres-sur-Essonne</td><td>962</td></tr>
+<tr><td>77</td><td>Héricy</td><td>2655</td></tr>
+<tr><td>95</td><td>Arnouville</td><td>14431</td></tr>
+<tr><td>77</td><td>Vaux-le-Pénil</td><td>11057</td></tr>
+<tr><td>78</td><td>Dammartin-en-Serve</td><td>1136</td></tr>
+<tr><td>78</td><td>Les Alluets-le-Roi</td><td>1273</td></tr>
+<tr><td>77</td><td>Saint-Just-en-Brie</td><td>241</td></tr>
+<tr><td>77</td><td>Chevry-Cossigny</td><td>4042</td></tr>
+<tr><td>78</td><td>Flins-Neuve-Église</td><td>160</td></tr>
+<tr><td>91</td><td>Fontaine-la-Rivière</td><td>247</td></tr>
+<tr><td>95</td><td>Bruyères-sur-Oise</td><td>4214</td></tr>
+<tr><td>92</td><td>Nanterre</td><td>95704</td></tr>
+<tr><td>77</td><td>Vaudoy-en-Brie</td><td>891</td></tr>
+<tr><td>77</td><td>Chevry-en-Sereine</td><td>525</td></tr>
+<tr><td>78</td><td>Le Tremblay-sur-Mauldre</td><td>1021</td></tr>
+<tr><td>95</td><td>Taverny</td><td>26162</td></tr>
+<tr><td>78</td><td>Buchelay</td><td>2953</td></tr>
+<tr><td>92</td><td>Chaville</td><td>19889</td></tr>
+<tr><td>92</td><td>Saint-Cloud</td><td>29967</td></tr>
+<tr><td>77</td><td>Vert-Saint-Denis</td><td>7250</td></tr>
+<tr><td>95</td><td>Saint-Martin-du-Tertre</td><td>2723</td></tr>
+<tr><td>91</td><td>Corbreuse</td><td>1797</td></tr>
+<tr><td>77</td><td>Serris</td><td>8681</td></tr>
+<tr><td>77</td><td>La Tombe</td><td>230</td></tr>
+<tr><td>95</td><td>Écouen</td><td>7378</td></tr>
+<tr><td>77</td><td>Crèvecœur-en-Brie</td><td>395</td></tr>
+<tr><td>95</td><td>L' Isle-Adam</td><td>12018</td></tr>
+<tr><td>77</td><td>Les Ormes-sur-Voulzie</td><td>881</td></tr>
+<tr><td>78</td><td>Civry-la-Forêt</td><td>361</td></tr>
+<tr><td>91</td><td>Bièvres</td><td>4609</td></tr>
+<tr><td>95</td><td>Bernes-sur-Oise</td><td>2681</td></tr>
+<tr><td>77</td><td>Le Plessis-aux-Bois</td><td>276</td></tr>
+<tr><td>95</td><td>Theuville</td><td>24</td></tr>
+<tr><td>78</td><td>Millemont</td><td>255</td></tr>
+<tr><td>91</td><td>Brières-les-Scellés</td><td>1200</td></tr>
+<tr><td>78</td><td>La Falaise</td><td>594</td></tr>
+<tr><td>91</td><td>Brouy</td><td>143</td></tr>
+<tr><td>78</td><td>Montfort-l'Amaury</td><td>3050</td></tr>
+<tr><td>78</td><td>Houilles</td><td>32840</td></tr>
+<tr><td>77</td><td>Nemours</td><td>13299</td></tr>
+<tr><td>77</td><td>Nantouillet</td><td>278</td></tr>
+<tr><td>94</td><td>Limeil-Brévannes</td><td>25145</td></tr>
+<tr><td>78</td><td>Saint-Illiers-la-Ville</td><td>353</td></tr>
+<tr><td>77</td><td>Villemaréchal</td><td>864</td></tr>
+<tr><td>95</td><td>Wy-dit-Joli-Village</td><td>325</td></tr>
+<tr><td>78</td><td>Rosay</td><td>368</td></tr>
+<tr><td>77</td><td>Burcy</td><td>169</td></tr>
+<tr><td>77</td><td>Doue</td><td>1009</td></tr>
+<tr><td>91</td><td>Auvernaux</td><td>355</td></tr>
+<tr><td>91</td><td>Cheptainville</td><td>1941</td></tr>
+<tr><td>91</td><td>Arrancourt</td><td>144</td></tr>
+<tr><td>77</td><td>Chambry</td><td>966</td></tr>
+<tr><td>94</td><td>Arcueil</td><td>21088</td></tr>
+<tr><td>95</td><td>Haravilliers</td><td>558</td></tr>
+<tr><td>91</td><td>Longjumeau</td><td>21989</td></tr>
+<tr><td>77</td><td>Gesvres-le-Chapitre</td><td>159</td></tr>
+<tr><td>91</td><td>Bondoufle</td><td>9263</td></tr>
+<tr><td>91</td><td>Guigneville-sur-Essonne</td><td>981</td></tr>
+<tr><td>77</td><td>Fresnes-sur-Marne</td><td>760</td></tr>
+<tr><td>91</td><td>Massy</td><td>49071</td></tr>
+<tr><td>95</td><td>Nucourt</td><td>741</td></tr>
+<tr><td>78</td><td>Versailles</td><td>87550</td></tr>
+<tr><td>91</td><td>Bois-Herpin</td><td>76</td></tr>
+<tr><td>78</td><td>Drocourt</td><td>556</td></tr>
+<tr><td>78</td><td>Jumeauville</td><td>615</td></tr>
+<tr><td>94</td><td>Ormesson-sur-Marne</td><td>10186</td></tr>
+<tr><td>95</td><td>Chars</td><td>2107</td></tr>
+<tr><td>77</td><td>Boissise-le-Roi</td><td>3848</td></tr>
+<tr><td>78</td><td>Jouy-en-Josas</td><td>8493</td></tr>
+<tr><td>95</td><td>Villiers-Adam</td><td>849</td></tr>
+<tr><td>95</td><td>Vaudherland</td><td>78</td></tr>
+<tr><td>78</td><td>Bennecourt</td><td>1835</td></tr>
+<tr><td>91</td><td>Mauchamps</td><td>276</td></tr>
+<tr><td>77</td><td>Chessy</td><td>4906</td></tr>
+<tr><td>77</td><td>Voulton</td><td>318</td></tr>
+<tr><td>77</td><td>Bourron-Marlotte</td><td>2824</td></tr>
+<tr><td>77</td><td>Gretz-Armainvilliers</td><td>8628</td></tr>
+<tr><td>77</td><td>Égligny</td><td>327</td></tr>
+<tr><td>78</td><td>Morainvilliers</td><td>2819</td></tr>
+<tr><td>77</td><td>Quiers</td><td>676</td></tr>
+<tr><td>95</td><td>Gadancourt</td><td>87</td></tr>
+<tr><td>77</td><td>Thieux</td><td>820</td></tr>
+<tr><td>78</td><td>La Celle-les-Bordes</td><td>876</td></tr>
+<tr><td>77</td><td>Sammeron</td><td>1124</td></tr>
+<tr><td>77</td><td>Poigny</td><td>521</td></tr>
+<tr><td>95</td><td>Parmain</td><td>5700</td></tr>
+<tr><td>78</td><td>Bailly</td><td>4029</td></tr>
+<tr><td>77</td><td>Boissy-le-Châtel</td><td>3170</td></tr>
+<tr><td>77</td><td>Mouroux</td><td>5286</td></tr>
+<tr><td>78</td><td>Les Clayes-sous-Bois</td><td>17959</td></tr>
+<tr><td>77</td><td>Souppes-sur-Loing</td><td>5566</td></tr>
+<tr><td>91</td><td>Leuville-sur-Orge</td><td>4335</td></tr>
+<tr><td>78</td><td>Port-Villez</td><td>248</td></tr>
+<tr><td>77</td><td>Léchelle</td><td>592</td></tr>
+<tr><td>78</td><td>Boissy-sans-Avoir</td><td>618</td></tr>
+<tr><td>77</td><td>La Madeleine-sur-Loing</td><td>354</td></tr>
+<tr><td>78</td><td>Saint-Nom-la-Bretèche</td><td>5193</td></tr>
+<tr><td>91</td><td>Oncy-sur-École</td><td>1026</td></tr>
+<tr><td>78</td><td>Bréval</td><td>1901</td></tr>
+<tr><td>78</td><td>Le Port-Marly</td><td>5516</td></tr>
+<tr><td>77</td><td>Saint-Sauveur-sur-École</td><td>1135</td></tr>
+<tr><td>77</td><td>Hermé</td><td>678</td></tr>
+<tr><td>77</td><td>Jaignes</td><td>267</td></tr>
+<tr><td>91</td><td>Courcouronnes</td><td>13423</td></tr>
+<tr><td>77</td><td>Montceaux-lès-Meaux</td><td>613</td></tr>
+<tr><td>95</td><td>Deuil-la-Barre</td><td>22216</td></tr>
+<tr><td>91</td><td>Grigny</td><td>28487</td></tr>
+<tr><td>78</td><td>Paray-Douaville</td><td>257</td></tr>
+<tr><td>78</td><td>Saint-Hilarion</td><td>904</td></tr>
+<tr><td>91</td><td>Saclas</td><td>1809</td></tr>
+<tr><td>77</td><td>Villeneuve-sous-Dammartin</td><td>677</td></tr>
+<tr><td>78</td><td>Bazainville</td><td>1474</td></tr>
+<tr><td>77</td><td>Sancy-lès-Provins</td><td>339</td></tr>
+<tr><td>77</td><td>Cély</td><td>1181</td></tr>
+<tr><td>77</td><td>Changis-sur-Marne</td><td>1149</td></tr>
+<tr><td>95</td><td>Le Bellay-en-Vexin</td><td>252</td></tr>
+<tr><td>95</td><td>Auvers-sur-Oise</td><td>7090</td></tr>
+<tr><td>77</td><td>Annet-sur-Marne</td><td>3314</td></tr>
+<tr><td>77</td><td>Villevaudé</td><td>2103</td></tr>
+<tr><td>77</td><td>Bannost-Villegagnon</td><td>686</td></tr>
+<tr><td>78</td><td>Goupillières</td><td>521</td></tr>
+<tr><td>77</td><td>Vulaines-lès-Provins</td><td>71</td></tr>
+<tr><td>91</td><td>Orveau</td><td>202</td></tr>
+<tr><td>78</td><td>Rochefort-en-Yvelines</td><td>939</td></tr>
+<tr><td>95</td><td>Belloy-en-France</td><td>2175</td></tr>
+<tr><td>77</td><td>Châteaubleau</td><td>355</td></tr>
+<tr><td>77</td><td>Montmachoux</td><td>233</td></tr>
+<tr><td>77</td><td>Mauperthuis</td><td>502</td></tr>
+<tr><td>91</td><td>Sermaise</td><td>1694</td></tr>
+<tr><td>78</td><td>Montalet-le-Bois</td><td>336</td></tr>
+<tr><td>77</td><td>Beauvoir</td><td>205</td></tr>
+<tr><td>91</td><td>Roinville</td><td>1349</td></tr>
+<tr><td>91</td><td>La Ville-du-Bois</td><td>7367</td></tr>
+<tr><td>95</td><td>Survilliers</td><td>4139</td></tr>
+<tr><td>77</td><td>Champeaux</td><td>833</td></tr>
+<tr><td>77</td><td>Armentières-en-Brie</td><td>1323</td></tr>
+<tr><td>91</td><td>Gironville-sur-Essonne</td><td>801</td></tr>
+<tr><td>78</td><td>Bois-d'Arcy</td><td>14247</td></tr>
+<tr><td>78</td><td>Breuil-Bois-Robert</td><td>733</td></tr>
+<tr><td>93</td><td>Romainville</td><td>25805</td></tr>
+<tr><td>78</td><td>Tilly</td><td>549</td></tr>
+<tr><td>77</td><td>Noyen-sur-Seine</td><td>373</td></tr>
+<tr><td>94</td><td>Maisons-Alfort</td><td>55420</td></tr>
+<tr><td>91</td><td>Montlhéry</td><td>7777</td></tr>
+<tr><td>95</td><td>Omerville</td><td>315</td></tr>
+<tr><td>91</td><td>Villeconin</td><td>746</td></tr>
+<tr><td>77</td><td>Balloy</td><td>332</td></tr>
+<tr><td>78</td><td>Méré</td><td>1803</td></tr>
+<tr><td>77</td><td>Chalmaison</td><td>807</td></tr>
+<tr><td>77</td><td>Conches-sur-Gondoire</td><td>1759</td></tr>
+<tr><td>77</td><td>La Chapelle-Rablais</td><td>996</td></tr>
+<tr><td>95</td><td>Vallangoujard</td><td>648</td></tr>
+<tr><td>78</td><td>Rosny-sur-Seine</td><td>5899</td></tr>
+<tr><td>91</td><td>Guillerval</td><td>821</td></tr>
+<tr><td>95</td><td>Neuville-sur-Oise</td><td>2054</td></tr>
+<tr><td>77</td><td>Mortery</td><td>158</td></tr>
+<tr><td>78</td><td>Châteaufort</td><td>1437</td></tr>
+<tr><td>78</td><td>Viroflay</td><td>15781</td></tr>
+<tr><td>91</td><td>Saint-Pierre-du-Perray</td><td>10276</td></tr>
+<tr><td>78</td><td>Garancières</td><td>2418</td></tr>
+<tr><td>78</td><td>Perdreauville</td><td>636</td></tr>
+<tr><td>95</td><td>Fosses</td><td>9646</td></tr>
+<tr><td>78</td><td>Gambais</td><td>2465</td></tr>
+<tr><td>77</td><td>Arbonne-la-Forêt</td><td>1066</td></tr>
+<tr><td>77</td><td>Pontcarré</td><td>2120</td></tr>
+<tr><td>77</td><td>Faÿ-lès-Nemours</td><td>486</td></tr>
+<tr><td>77</td><td>Jossigny</td><td>663</td></tr>
+<tr><td>77</td><td>Boissettes</td><td>433</td></tr>
+<tr><td>77</td><td>Juilly</td><td>2167</td></tr>
+<tr><td>77</td><td>Beautheil</td><td>753</td></tr>
+<tr><td>77</td><td>Lescherolles</td><td>494</td></tr>
+<tr><td>78</td><td>Gargenville</td><td>7044</td></tr>
+<tr><td>91</td><td>Authon-la-Plaine</td><td>375</td></tr>
+<tr><td>77</td><td>La Houssaye-en-Brie</td><td>1659</td></tr>
+<tr><td>95</td><td>Châtenay-en-France</td><td>74</td></tr>
+<tr><td>77</td><td>Chelles</td><td>54202</td></tr>
+<tr><td>78</td><td>Gazeran</td><td>1300</td></tr>
+<tr><td>91</td><td>Abbéville-la-Rivière</td><td>304</td></tr>
+<tr><td>78</td><td>Vélizy-Villacoublay</td><td>20904</td></tr>
+<tr><td>77</td><td>Grisy-sur-Seine</td><td>113</td></tr>
+<tr><td>77</td><td>Férolles-Attilly</td><td>1178</td></tr>
+<tr><td>77</td><td>Achères-la-Forêt</td><td>1197</td></tr>
+<tr><td>95</td><td>Gouzangrez</td><td>174</td></tr>
+<tr><td>91</td><td>Villebon-sur-Yvette</td><td>10585</td></tr>
+<tr><td>78</td><td>Davron</td><td>331</td></tr>
+<tr><td>77</td><td>Rupéreux</td><td>102</td></tr>
+<tr><td>77</td><td>Torcy</td><td>23791</td></tr>
+<tr><td>95</td><td>Mériel</td><td>5007</td></tr>
+<tr><td>78</td><td>Moisson</td><td>951</td></tr>
+<tr><td>95</td><td>Bouqueval</td><td>321</td></tr>
+<tr><td>95</td><td>Saint-Gratien</td><td>21225</td></tr>
+<tr><td>78</td><td>Cravent</td><td>447</td></tr>
+<tr><td>78</td><td>Croissy-sur-Seine</td><td>10351</td></tr>
+<tr><td>77</td><td>Noisy-sur-École</td><td>1927</td></tr>
+<tr><td>78</td><td>Issou</td><td>4304</td></tr>
+<tr><td>77</td><td>Saint-Ange-le-Viel</td><td>235</td></tr>
+<tr><td>77</td><td>Amponville</td><td>392</td></tr>
+<tr><td>77</td><td>Boulancourt</td><td>377</td></tr>
+<tr><td>95</td><td>Berville</td><td>346</td></tr>
+<tr><td>77</td><td>Sept-Sorts</td><td>461</td></tr>
+<tr><td>77</td><td>Presles-en-Brie</td><td>2265</td></tr>
+<tr><td>78</td><td>Mantes-la-Ville</td><td>20045</td></tr>
+<tr><td>77</td><td>Charny</td><td>1266</td></tr>
+<tr><td>95</td><td>Saint-Clair-sur-Epte</td><td>992</td></tr>
+<tr><td>78</td><td>Les Mesnuls</td><td>908</td></tr>
+<tr><td>77</td><td>Mortcerf</td><td>1468</td></tr>
+<tr><td>77</td><td>Vignely</td><td>285</td></tr>
+<tr><td>94</td><td>Thiais</td><td>29138</td></tr>
+<tr><td>78</td><td>Chambourcy</td><td>5941</td></tr>
+<tr><td>91</td><td>Corbeil-Essonnes</td><td>50041</td></tr>
+<tr><td>78</td><td>Milon-la-Chapelle</td><td>268</td></tr>
+<tr><td>77</td><td>Rebais</td><td>2249</td></tr>
+<tr><td>77</td><td>Saint-Thibault-des-Vignes</td><td>6441</td></tr>
+<tr><td>91</td><td>Bouville</td><td>662</td></tr>
+<tr><td>77</td><td>La Genevraye</td><td>726</td></tr>
+<tr><td>94</td><td>Charenton-le-Pont</td><td>31112</td></tr>
+<tr><td>91</td><td>Forges-les-Bains</td><td>3846</td></tr>
+<tr><td>77</td><td>Hautefeuille</td><td>304</td></tr>
+<tr><td>77</td><td>Ocquerre</td><td>455</td></tr>
+<tr><td>78</td><td>Vernouillet</td><td>10099</td></tr>
+<tr><td>93</td><td>Bobigny</td><td>50806</td></tr>
+<tr><td>78</td><td>Jouy-Mauvoisin</td><td>566</td></tr>
+<tr><td>95</td><td>Avernes</td><td>814</td></tr>
+<tr><td>77</td><td>Cessoy-en-Montois</td><td>212</td></tr>
+<tr><td>95</td><td>Ableiges</td><td>1079</td></tr>
+<tr><td>92</td><td>Rueil-Malmaison</td><td>80831</td></tr>
+<tr><td>95</td><td>Maffliers</td><td>1735</td></tr>
+<tr><td>77</td><td>Meaux</td><td>55465</td></tr>
+<tr><td>78</td><td>Fontenay-Mauvoisin</td><td>408</td></tr>
+<tr><td>77</td><td>Paley</td><td>443</td></tr>
+<tr><td>94</td><td>Sucy-en-Brie</td><td>26226</td></tr>
+<tr><td>77</td><td>Villecerf</td><td>725</td></tr>
+<tr><td>91</td><td>Ollainville</td><td>4811</td></tr>
+<tr><td>94</td><td>Le Kremlin-Bicêtre</td><td>25871</td></tr>
+<tr><td>77</td><td>Dammartin-sur-Tigeaux</td><td>1009</td></tr>
+<tr><td>77</td><td>Châtenay-sur-Seine</td><td>1014</td></tr>
+<tr><td>91</td><td>Angerville</td><td>4260</td></tr>
+<tr><td>77</td><td>Maisoncelles-en-Gâtinais</td><td>125</td></tr>
+<tr><td>91</td><td>Saint-Maurice-Montcouronne</td><td>1615</td></tr>
+<tr><td>95</td><td>Le Perchay</td><td>571</td></tr>
+<tr><td>77</td><td>Le Pin</td><td>1433</td></tr>
+<tr><td>95</td><td>Arronville</td><td>668</td></tr>
+<tr><td>77</td><td>Trocy-en-Multien</td><td>255</td></tr>
+<tr><td>77</td><td>Noisy-Rudignon</td><td>625</td></tr>
+<tr><td>95</td><td>Condécourt</td><td>591</td></tr>
+<tr><td>78</td><td>Septeuil</td><td>2361</td></tr>
+<tr><td>91</td><td>Vert-le-Petit</td><td>2820</td></tr>
+<tr><td>77</td><td>Veneux-les-Sablons</td><td>4930</td></tr>
+<tr><td>92</td><td>Gennevilliers</td><td>43693</td></tr>
+<tr><td>77</td><td>Fontenay-Trésigny</td><td>5418</td></tr>
+<tr><td>77</td><td>Le Châtelet-en-Brie</td><td>4529</td></tr>
+<tr><td>77</td><td>Thorigny-sur-Marne</td><td>9406</td></tr>
+<tr><td>91</td><td>Gometz-la-Ville</td><td>1467</td></tr>
+<tr><td>78</td><td>Dannemarie</td><td>222</td></tr>
+<tr><td>77</td><td>Saint-Hilliers</td><td>481</td></tr>
+<tr><td>77</td><td>Soisy-Bouy</td><td>833</td></tr>
+<tr><td>91</td><td>Chamarande</td><td>1165</td></tr>
+<tr><td>77</td><td>Grisy-Suisnes</td><td>2459</td></tr>
+<tr><td>95</td><td>Hédouville</td><td>272</td></tr>
+<tr><td>91</td><td>Saint-Sulpice-de-Favières</td><td>337</td></tr>
+<tr><td>78</td><td>Oinville-sur-Montcient</td><td>1119</td></tr>
+<tr><td>77</td><td>La Haute-Maison</td><td>331</td></tr>
+<tr><td>78</td><td>Saint-Arnoult-en-Yvelines</td><td>6215</td></tr>
+<tr><td>91</td><td>Ris-Orangis</td><td>27576</td></tr>
+<tr><td>77</td><td>Frétoy</td><td>171</td></tr>
+<tr><td>77</td><td>Chevru</td><td>1118</td></tr>
+<tr><td>77</td><td>Villiers-en-Bière</td><td>224</td></tr>
+<tr><td>95</td><td>Le Thillay</td><td>4196</td></tr>
+<tr><td>77</td><td>Gouvernes</td><td>1159</td></tr>
+<tr><td>77</td><td>Bassevelle</td><td>345</td></tr>
+<tr><td>77</td><td>Treuzy-Levelay</td><td>464</td></tr>
+<tr><td>77</td><td>Marcilly</td><td>472</td></tr>
+<tr><td>77</td><td>Coulombs-en-Valois</td><td>626</td></tr>
+<tr><td>77</td><td>Moissy-Cramayel</td><td>17730</td></tr>
+<tr><td>78</td><td>Clairefontaine-en-Yvelines</td><td>909</td></tr>
+<tr><td>91</td><td>Saint-Hilaire</td><td>405</td></tr>
+<tr><td>77</td><td>Compans</td><td>804</td></tr>
+<tr><td>77</td><td>Lizines</td><td>192</td></tr>
+<tr><td>91</td><td>Quincy-sous-Sénart</td><td>8643</td></tr>
+<tr><td>78</td><td>Boinville-le-Gaillard</td><td>627</td></tr>
+<tr><td>77</td><td>Moret Loing et Orvanne</td><td>7782</td></tr>
+<tr><td>77</td><td>Larchant</td><td>794</td></tr>
+<tr><td>78</td><td>Richebourg</td><td>1574</td></tr>
+<tr><td>77</td><td>Saint-Fiacre</td><td>417</td></tr>
+<tr><td>77</td><td>Touquin</td><td>1227</td></tr>
+<tr><td>78</td><td>Feucherolles</td><td>2947</td></tr>
+<tr><td>77</td><td>Ville-Saint-Jacques</td><td>766</td></tr>
+<tr><td>78</td><td>Orcemont</td><td>927</td></tr>
+<tr><td>78</td><td>La Boissière-École</td><td>856</td></tr>
+<tr><td>78</td><td>Gambaiseuil</td><td>66</td></tr>
+<tr><td>95</td><td>Fontenay-en-Parisis</td><td>1952</td></tr>
+<tr><td>92</td><td>Puteaux</td><td>44792</td></tr>
+<tr><td>95</td><td>Montmorency</td><td>21167</td></tr>
+<tr><td>93</td><td>Aubervilliers</td><td>80834</td></tr>
+<tr><td>78</td><td>Buc</td><td>5818</td></tr>
+<tr><td>78</td><td>Montainville</td><td>544</td></tr>
+<tr><td>77</td><td>Boissise-la-Bertrand</td><td>1193</td></tr>
+<tr><td>94</td><td>Gentilly</td><td>16478</td></tr>
+<tr><td>77</td><td>Les Marêts</td><td>155</td></tr>
+<tr><td>91</td><td>Igny</td><td>10464</td></tr>
+<tr><td>77</td><td>Nanteuil-sur-Marne</td><td>467</td></tr>
+<tr><td>91</td><td>Janville-sur-Juine</td><td>2010</td></tr>
+<tr><td>91</td><td>Janvry</td><td>647</td></tr>
+<tr><td>95</td><td>Bellefontaine</td><td>474</td></tr>
+<tr><td>77</td><td>Lagny-sur-Marne</td><td>21630</td></tr>
+<tr><td>91</td><td>La Ferté-Alais</td><td>3998</td></tr>
+<tr><td>77</td><td>Saint-Martin-du-Boschet</td><td>300</td></tr>
+<tr><td>77</td><td>Courchamp</td><td>162</td></tr>
+<tr><td>95</td><td>Enghien-les-Bains</td><td>11330</td></tr>
+<tr><td>91</td><td>Marcoussis</td><td>8305</td></tr>
+<tr><td>77</td><td>Douy-la-Ramée</td><td>323</td></tr>
+<tr><td>95</td><td>Montlignon</td><td>2837</td></tr>
+<tr><td>78</td><td>Bonnières-sur-Seine</td><td>4619</td></tr>
+<tr><td>77</td><td>Oissery</td><td>2172</td></tr>
+<tr><td>77</td><td>Croissy-Beaubourg</td><td>2032</td></tr>
+<tr><td>95</td><td>Neuilly-en-Vexin</td><td>193</td></tr>
+<tr><td>77</td><td>Brie-Comte-Robert</td><td>16943</td></tr>
+<tr><td>77</td><td>Montolivet</td><td>255</td></tr>
+<tr><td>77</td><td>Fublaines</td><td>1156</td></tr>
+<tr><td>77</td><td>Lissy</td><td>204</td></tr>
+<tr><td>78</td><td>Flexanville</td><td>602</td></tr>
+<tr><td>78</td><td>Orgeval</td><td>6149</td></tr>
+<tr><td>93</td><td>Les Pavillons-sous-Bois</td><td>23302</td></tr>
+<tr><td>95</td><td>Le Plessis-Luzarches</td><td>145</td></tr>
+<tr><td>77</td><td>Le Mée-sur-Seine</td><td>20969</td></tr>
+<tr><td>77</td><td>Chaumes-en-Brie</td><td>3021</td></tr>
+<tr><td>78</td><td>Saint-Martin-la-Garenne</td><td>1001</td></tr>
+<tr><td>91</td><td>Morangis</td><td>12692</td></tr>
+<tr><td>93</td><td>Montreuil</td><td>105608</td></tr>
+<tr><td>95</td><td>Villaines-sous-Bois</td><td>727</td></tr>
+<tr><td>77</td><td>Pézarches</td><td>421</td></tr>
+<tr><td>91</td><td>Guibeville</td><td>734</td></tr>
+<tr><td>95</td><td>Sarcelles</td><td>57455</td></tr>
+<tr><td>77</td><td>Fontainebleau</td><td>15196</td></tr>
+<tr><td>77</td><td>Saint-Fargeau-Ponthierry</td><td>14122</td></tr>
+<tr><td>95</td><td>Épiais-lès-Louvres</td><td>116</td></tr>
+<tr><td>94</td><td>Champigny-sur-Marne</td><td>77009</td></tr>
+<tr><td>77</td><td>Villuis</td><td>274</td></tr>
+<tr><td>77</td><td>Mauregard</td><td>340</td></tr>
+<tr><td>91</td><td>Roinvilliers</td><td>91</td></tr>
+<tr><td>78</td><td>Soindres</td><td>679</td></tr>
+<tr><td>77</td><td>Savins</td><td>616</td></tr>
+<tr><td>77</td><td>Chalautre-la-Grande</td><td>741</td></tr>
+<tr><td>95</td><td>Livilliers</td><td>401</td></tr>
+<tr><td>91</td><td>Les Molières</td><td>2097</td></tr>
+<tr><td>91</td><td>Baulne</td><td>1319</td></tr>
+<tr><td>93</td><td>Le Bourget</td><td>16105</td></tr>
+<tr><td>95</td><td>Beaumont-sur-Oise</td><td>9794</td></tr>
+<tr><td>77</td><td>Champs-sur-Marne</td><td>25322</td></tr>
+<tr><td>77</td><td>Couilly-Pont-aux-Dames</td><td>2215</td></tr>
+<tr><td>78</td><td>Le Vésinet</td><td>16475</td></tr>
+<tr><td>77</td><td>Mons-en-Montois</td><td>489</td></tr>
+<tr><td>77</td><td>Cuisy</td><td>432</td></tr>
+<tr><td>77</td><td>Sigy</td><td>54</td></tr>
+<tr><td>77</td><td>Dagny</td><td>343</td></tr>
+<tr><td>77</td><td>Quincy-Voisins</td><td>5212</td></tr>
+<tr><td>95</td><td>Saint-Prix</td><td>7311</td></tr>
+<tr><td>95</td><td>Menouville</td><td>78</td></tr>
+<tr><td>94</td><td>Ivry-sur-Seine</td><td>60180</td></tr>
+<tr><td>77</td><td>Montigny-sur-Loing</td><td>2800</td></tr>
+<tr><td>91</td><td>Villiers-le-Bâcle</td><td>1257</td></tr>
+<tr><td>77</td><td>Beton-Bazoches</td><td>894</td></tr>
+<tr><td>77</td><td>Remauville</td><td>479</td></tr>
+<tr><td>77</td><td>Argentières</td><td>396</td></tr>
+<tr><td>78</td><td>Médan</td><td>1444</td></tr>
+<tr><td>77</td><td>Meigneux</td><td>255</td></tr>
+<tr><td>78</td><td>Guernes</td><td>1099</td></tr>
+<tr><td>77</td><td>Saint-Denis-lès-Rebais</td><td>957</td></tr>
+<tr><td>78</td><td>Meulan-en-Yvelines</td><td>9377</td></tr>
+<tr><td>91</td><td>Saint-Aubin</td><td>716</td></tr>
+<tr><td>77</td><td>Fromont</td><td>220</td></tr>
+<tr><td>91</td><td>Le Coudray-Montceaux</td><td>4848</td></tr>
+<tr><td>77</td><td>Crégy-lès-Meaux</td><td>4786</td></tr>
+<tr><td>94</td><td>Saint-Maur-des-Fossés</td><td>76181</td></tr>
+<tr><td>77</td><td>Châtillon-la-Borde</td><td>227</td></tr>
+<tr><td>77</td><td>Forfry</td><td>238</td></tr>
+<tr><td>78</td><td>Jambville</td><td>860</td></tr>
+<tr><td>94</td><td>Orly</td><td>22857</td></tr>
+<tr><td>78</td><td>Auffargis</td><td>2015</td></tr>
+<tr><td>77</td><td>Champcenest</td><td>199</td></tr>
+<tr><td>77</td><td>Moussy-le-Neuf</td><td>3009</td></tr>
+<tr><td>77</td><td>Aulnoy</td><td>383</td></tr>
+<tr><td>95</td><td>Frémécourt</td><td>564</td></tr>
+<tr><td>91</td><td>Ballainvilliers</td><td>4218</td></tr>
+<tr><td>77</td><td>Luzancy</td><td>1142</td></tr>
+<tr><td>91</td><td>Courances</td><td>354</td></tr>
+<tr><td>91</td><td>Montgeron</td><td>23839</td></tr>
+<tr><td>77</td><td>Le Vaudoué</td><td>783</td></tr>
+<tr><td>95</td><td>Magny-en-Vexin</td><td>5654</td></tr>
+<tr><td>94</td><td>Boissy-Saint-Léger</td><td>16275</td></tr>
+<tr><td>95</td><td>Chauvry</td><td>315</td></tr>
+<tr><td>77</td><td>Villeneuve-Saint-Denis</td><td>876</td></tr>
+<tr><td>77</td><td>Salins</td><td>1067</td></tr>
+<tr><td>77</td><td>Recloses</td><td>734</td></tr>
+<tr><td>91</td><td>Angervilliers</td><td>1656</td></tr>
+<tr><td>91</td><td>Nozay</td><td>4877</td></tr>
+<tr><td>95</td><td>Montgeroult</td><td>418</td></tr>
+<tr><td>78</td><td>Évecquemont</td><td>805</td></tr>
+<tr><td>77</td><td>Vieux-Champagne</td><td>189</td></tr>
+<tr><td>95</td><td>Villiers-le-Sec</td><td>179</td></tr>
+<tr><td>77</td><td>Courcelles-en-Bassée</td><td>251</td></tr>
+<tr><td>77</td><td>Bazoches-lès-Bray</td><td>864</td></tr>
+<tr><td>95</td><td>Le Plessis-Gassot</td><td>70</td></tr>
+<tr><td>77</td><td>Messy</td><td>1126</td></tr>
+<tr><td>77</td><td>Mondreville</td><td>366</td></tr>
+<tr><td>77</td><td>Longperrier</td><td>2492</td></tr>
+<tr><td>77</td><td>Penchard</td><td>1100</td></tr>
+<tr><td>77</td><td>Passy-sur-Seine</td><td>54</td></tr>
+<tr><td>78</td><td>Cernay-la-Ville</td><td>1655</td></tr>
+<tr><td>77</td><td>Émerainville</td><td>7597</td></tr>
+<tr><td>77</td><td>Brou-sur-Chantereine</td><td>4508</td></tr>
+<tr><td>78</td><td>Andrésy</td><td>12286</td></tr>
+<tr><td>77</td><td>Fouju</td><td>588</td></tr>
+<tr><td>77</td><td>Luisetaines</td><td>245</td></tr>
+<tr><td>78</td><td>Orvilliers</td><td>762</td></tr>
+<tr><td>95</td><td>Us</td><td>1328</td></tr>
+<tr><td>95</td><td>Villers-en-Arthies</td><td>513</td></tr>
+<tr><td>77</td><td>Valence-en-Brie</td><td>921</td></tr>
+<tr><td>77</td><td>Sancy</td><td>382</td></tr>
+<tr><td>91</td><td>Saulx-les-Chartreux</td><td>5229</td></tr>
+<tr><td>91</td><td>La Forêt-Sainte-Croix</td><td>164</td></tr>
+<tr><td>77</td><td>Villeneuve-le-Comte</td><td>1867</td></tr>
+<tr><td>77</td><td>Chalifert</td><td>1294</td></tr>
+<tr><td>91</td><td>Verrières-le-Buisson</td><td>16127</td></tr>
+<tr><td>78</td><td>Chanteloup-les-Vignes</td><td>10327</td></tr>
+<tr><td>95</td><td>Sannois</td><td>27394</td></tr>
+<tr><td>94</td><td>Nogent-sur-Marne</td><td>31590</td></tr>
+<tr><td>78</td><td>Les Mureaux</td><td>31858</td></tr>
+<tr><td>95</td><td>Nerville-la-Forêt</td><td>699</td></tr>
+<tr><td>92</td><td>Asnières-sur-Seine</td><td>87624</td></tr>
+<tr><td>91</td><td>Fontenay-lès-Briis</td><td>1994</td></tr>
+<tr><td>95</td><td>Ronquerolles</td><td>870</td></tr>
+<tr><td>78</td><td>Galluis</td><td>1156</td></tr>
+<tr><td>95</td><td>Génicourt</td><td>520</td></tr>
+<tr><td>91</td><td>Estouches</td><td>246</td></tr>
+<tr><td>93</td><td>Stains</td><td>38228</td></tr>
+<tr><td>91</td><td>Bouray-sur-Juine</td><td>2231</td></tr>
+<tr><td>91</td><td>Breuillet</td><td>8574</td></tr>
+<tr><td>93</td><td>Bondy</td><td>53381</td></tr>
+<tr><td>78</td><td>La Hauteville</td><td>187</td></tr>
+<tr><td>78</td><td>Auffreville-Brasseuil</td><td>658</td></tr>
+<tr><td>93</td><td>Villetaneuse</td><td>12551</td></tr>
+<tr><td>77</td><td>Thoury-Férottes</td><td>695</td></tr>
+<tr><td>95</td><td>Vauréal</td><td>16099</td></tr>
+<tr><td>91</td><td>Gometz-le-Châtel</td><td>2618</td></tr>
+<tr><td>77</td><td>Précy-sur-Marne</td><td>809</td></tr>
+<tr><td>77</td><td>Mormant</td><td>4667</td></tr>
+<tr><td>95</td><td>Arthies</td><td>287</td></tr>
+<tr><td>78</td><td>Autouillet</td><td>483</td></tr>
+<tr><td>95</td><td>Roissy-en-France</td><td>2881</td></tr>
+<tr><td>93</td><td>Épinay-sur-Seine</td><td>55349</td></tr>
+<tr><td>78</td><td>La Villeneuve-en-Chevrie</td><td>609</td></tr>
+<tr><td>91</td><td>Linas</td><td>6840</td></tr>
+<tr><td>77</td><td>Dammartin-en-Goële</td><td>8998</td></tr>
+<tr><td>95</td><td>Mours</td><td>1457</td></tr>
+<tr><td>77</td><td>Champdeuil</td><td>733</td></tr>
+<tr><td>91</td><td>Étiolles</td><td>3442</td></tr>
+<tr><td>91</td><td>Longpont-sur-Orge</td><td>6570</td></tr>
+<tr><td>93</td><td>Sevran</td><td>50374</td></tr>
+<tr><td>77</td><td>Saint-Sauveur-lès-Bray</td><td>355</td></tr>
+<tr><td>91</td><td>Ballancourt-sur-Essonne</td><td>7583</td></tr>
+<tr><td>95</td><td>Jouy-le-Moutier</td><td>16256</td></tr>
+<tr><td>77</td><td>Meilleray</td><td>521</td></tr>
+<tr><td>77</td><td>Nanteau-sur-Lunain</td><td>722</td></tr>
+<tr><td>77</td><td>Chauffry</td><td>1038</td></tr>
+<tr><td>78</td><td>Porcheville</td><td>3054</td></tr>
+<tr><td>77</td><td>Savigny-le-Temple</td><td>30444</td></tr>
+<tr><td>78</td><td>Mézières-sur-Seine</td><td>3691</td></tr>
+<tr><td>95</td><td>Bonneuil-en-France</td><td>935</td></tr>
+<tr><td>91</td><td>Moigny-sur-École</td><td>1292</td></tr>
+<tr><td>77</td><td>Le Mesnil-Amelot</td><td>903</td></tr>
+<tr><td>77</td><td>La Brosse-Montceaux</td><td>799</td></tr>
+<tr><td>78</td><td>Brueil-en-Vexin</td><td>720</td></tr>
+<tr><td>77</td><td>Noisiel</td><td>15652</td></tr>
+<tr><td>93</td><td>Montfermeil</td><td>25920</td></tr>
+<tr><td>78</td><td>Louveciennes</td><td>7274</td></tr>
+<tr><td>78</td><td>Saint-Rémy-l'Honoré</td><td>1457</td></tr>
+<tr><td>78</td><td>Carrières-sous-Poissy</td><td>15546</td></tr>
+<tr><td>77</td><td>Crouy-sur-Ourcq</td><td>1920</td></tr>
+<tr><td>77</td><td>Saint-Martin-en-Bière</td><td>795</td></tr>
+<tr><td>77</td><td>Cocherel</td><td>649</td></tr>
+<tr><td>95</td><td>Eaubonne</td><td>24740</td></tr>
+<tr><td>95</td><td>Ermont</td><td>29253</td></tr>
+<tr><td>77</td><td>Lizy-sur-Ourcq</td><td>3762</td></tr>
+<tr><td>77</td><td>Lumigny-Nesles-Ormeaux</td><td>1555</td></tr>
+<tr><td>77</td><td>La Croix-en-Brie</td><td>686</td></tr>
+<tr><td>94</td><td>Le Plessis-Trévise</td><td>19854</td></tr>
+<tr><td>77</td><td>Longueville</td><td>1854</td></tr>
+<tr><td>78</td><td>Achères</td><td>21111</td></tr>
+<tr><td>77</td><td>Thomery</td><td>3598</td></tr>
+<tr><td>91</td><td>Saint-Cyr-la-Rivière</td><td>513</td></tr>
+<tr><td>77</td><td>La Chapelle-Gauthier</td><td>1482</td></tr>
+<tr><td>77</td><td>Gurcy-le-Châtel</td><td>581</td></tr>
+<tr><td>91</td><td>Épinay-sur-Orge</td><td>10886</td></tr>
+<tr><td>93</td><td>Clichy-sous-Bois</td><td>30101</td></tr>
+<tr><td>77</td><td>Coubert</td><td>2099</td></tr>
+<tr><td>95</td><td>Frouville</td><td>379</td></tr>
+<tr><td>93</td><td>Gournay-sur-Marne</td><td>6878</td></tr>
+<tr><td>77</td><td>Saint-Ouen-en-Brie</td><td>865</td></tr>
+<tr><td>95</td><td>Épiais-Rhus</td><td>652</td></tr>
+<tr><td>77</td><td>Gastins</td><td>722</td></tr>
+<tr><td>77</td><td>Vendrest</td><td>758</td></tr>
+<tr><td>78</td><td>Tessancourt-sur-Aubette</td><td>989</td></tr>
+<tr><td>95</td><td>Saint-Brice-sous-Forêt</td><td>15017</td></tr>
+<tr><td>78</td><td>Senlisse</td><td>525</td></tr>
+<tr><td>77</td><td>Solers</td><td>1293</td></tr>
+<tr><td>91</td><td>Crosne</td><td>9111</td></tr>
+<tr><td>91</td><td>Le Val-Saint-Germain</td><td>1450</td></tr>
+<tr><td>78</td><td>Neauphlette</td><td>873</td></tr>
+<tr><td>77</td><td>Citry</td><td>846</td></tr>
+<tr><td>91</td><td>Saint-Escobille</td><td>514</td></tr>
+<tr><td>91</td><td>Gif-sur-Yvette</td><td>21842</td></tr>
+<tr><td>78</td><td>Goussonville</td><td>629</td></tr>
+<tr><td>95</td><td>Beauchamp</td><td>8836</td></tr>
+<tr><td>78</td><td>Épône</td><td>6558</td></tr>
+<tr><td>94</td><td>Vitry-sur-Seine</td><td>91870</td></tr>
+<tr><td>77</td><td>Varennes-sur-Seine</td><td>3490</td></tr>
+<tr><td>78</td><td>Orgerus</td><td>2350</td></tr>
+<tr><td>78</td><td>Prunay-le-Temple</td><td>447</td></tr>
+<tr><td>77</td><td>Obsonville</td><td>99</td></tr>
+<tr><td>78</td><td>Nézel</td><td>1135</td></tr>
+<tr><td>77</td><td>Maincy</td><td>1763</td></tr>
+<tr><td>77</td><td>Saint-Germain-Laxis</td><td>713</td></tr>
+<tr><td>93</td><td>La Courneuve</td><td>41115</td></tr>
+<tr><td>77</td><td>Dammarie-les-Lys</td><td>21800</td></tr>
+<tr><td>77</td><td>Vinantes</td><td>372</td></tr>
+<tr><td>92</td><td>Vanves</td><td>28112</td></tr>
+<tr><td>77</td><td>Guignes</td><td>3487</td></tr>
+<tr><td>91</td><td>Villeneuve-sur-Auvers</td><td>627</td></tr>
+<tr><td>77</td><td>Barcy</td><td>289</td></tr>
+<tr><td>95</td><td>Saint-Ouen-l'Aumône</td><td>24666</td></tr>
+<tr><td>77</td><td>Nonville</td><td>609</td></tr>
+<tr><td>77</td><td>Carnetin</td><td>455</td></tr>
+<tr><td>95</td><td>Le Mesnil-Aubry</td><td>932</td></tr>
+<tr><td>78</td><td>Maule</td><td>5920</td></tr>
+<tr><td>77</td><td>Samois-sur-Seine</td><td>2174</td></tr>
+<tr><td>78</td><td>Rambouillet</td><td>26396</td></tr>
+<tr><td>77</td><td>La Chapelle-Iger</td><td>158</td></tr>
+<tr><td>77</td><td>Les Chapelles-Bourbon</td><td>408</td></tr>
+<tr><td>77</td><td>May-en-Multien</td><td>909</td></tr>
+<tr><td>91</td><td>Morsang-sur-Orge</td><td>21621</td></tr>
+<tr><td>78</td><td>Tacoignières</td><td>1058</td></tr>
+<tr><td>77</td><td>Saint-Brice</td><td>725</td></tr>
+<tr><td>78</td><td>Saint-Germain-en-Laye</td><td>41258</td></tr>
+<tr><td>77</td><td>Saint-Pathus</td><td>6032</td></tr>
+<tr><td>91</td><td>Les Ulis</td><td>24711</td></tr>
+<tr><td>91</td><td>Vigneux-sur-Seine</td><td>31284</td></tr>
+<tr><td>78</td><td>Magny-les-Hameaux</td><td>9305</td></tr>
+<tr><td>91</td><td>Courson-Monteloup</td><td>619</td></tr>
+<tr><td>95</td><td>Margency</td><td>2969</td></tr>
+<tr><td>78</td><td>Toussus-le-Noble</td><td>1200</td></tr>
+<tr><td>94</td><td>Créteil</td><td>91780</td></tr>
+<tr><td>95</td><td>Bréançon</td><td>380</td></tr>
+<tr><td>94</td><td>Périgny</td><td>2567</td></tr>
+<tr><td>78</td><td>Montesson</td><td>15394</td></tr>
+<tr><td>78</td><td>Coignières</td><td>4359</td></tr>
+<tr><td>78</td><td>Orsonville</td><td>345</td></tr>
+<tr><td>91</td><td>Fleury-Mérogis</td><td>9321</td></tr>
+<tr><td>94</td><td>La Queue-en-Brie</td><td>12048</td></tr>
+<tr><td>91</td><td>Wissous</td><td>7803</td></tr>
+<tr><td>78</td><td>Crespières</td><td>1633</td></tr>
+<tr><td>95</td><td>Franconville</td><td>34261</td></tr>
+<tr><td>77</td><td>Ichy</td><td>194</td></tr>
+<tr><td>95</td><td>Bezons</td><td>28678</td></tr>
+<tr><td>95</td><td>Pierrelaye</td><td>8335</td></tr>
+<tr><td>78</td><td>Bouafle</td><td>2128</td></tr>
+<tr><td>91</td><td>Maisse</td><td>2765</td></tr>
+<tr><td>77</td><td>Beaumont-du-Gâtinais</td><td>1182</td></tr>
+<tr><td>77</td><td>Boutigny</td><td>895</td></tr>
+<tr><td>91</td><td>Valpuiseaux</td><td>625</td></tr>
+<tr><td>94</td><td>Rungis</td><td>5716</td></tr>
+<tr><td>91</td><td>Arpajon</td><td>10710</td></tr>
+<tr><td>91</td><td>Villabé</td><td>5458</td></tr>
+<tr><td>93</td><td>Drancy</td><td>69600</td></tr>
+<tr><td>94</td><td>Marolles-en-Brie</td><td>4913</td></tr>
+<tr><td>78</td><td>Chaufour-lès-Bonnières</td><td>452</td></tr>
+<tr><td>77</td><td>Châtenoy</td><td>174</td></tr>
+<tr><td>77</td><td>Monthyon</td><td>1705</td></tr>
+<tr><td>78</td><td>Bazoches-sur-Guyonne</td><td>594</td></tr>
+<tr><td>77</td><td>Bernay-Vilbert</td><td>848</td></tr>
+<tr><td>78</td><td>Choisel</td><td>555</td></tr>
+<tr><td>95</td><td>Santeuil</td><td>655</td></tr>
+<tr><td>77</td><td>Saint-Soupplets</td><td>3288</td></tr>
+<tr><td>77</td><td>Bougligny</td><td>741</td></tr>
+<tr><td>95</td><td>Maudétour-en-Vexin</td><td>200</td></tr>
+<tr><td>92</td><td>Meudon</td><td>46184</td></tr>
+<tr><td>77</td><td>Bransles</td><td>552</td></tr>
+<tr><td>78</td><td>Saint-Léger-en-Yvelines</td><td>1454</td></tr>
+<tr><td>77</td><td>Vaucourtois</td><td>228</td></tr>
+<tr><td>77</td><td>Coutevroult</td><td>1081</td></tr>
+<tr><td>91</td><td>Boutervilliers</td><td>441</td></tr>
+<tr><td>95</td><td>Sagy</td><td>1165</td></tr>
+<tr><td>78</td><td>Limetz-Villez</td><td>1957</td></tr>
+<tr><td>77</td><td>Montereau-Fault-Yonne</td><td>18592</td></tr>
+<tr><td>77</td><td>Ferrières-en-Brie</td><td>2827</td></tr>
+<tr><td>77</td><td>Nangis</td><td>8660</td></tr>
+<tr><td>77</td><td>Lorrez-le-Bocage-Préaux</td><td>1306</td></tr>
+<tr><td>78</td><td>Rocquencourt</td><td>3273</td></tr>
+<tr><td>94</td><td>Saint-Mandé</td><td>22549</td></tr>
+<tr><td>92</td><td>Châtenay-Malabry</td><td>33518</td></tr>
+<tr><td>78</td><td>Courgent</td><td>403</td></tr>
+<tr><td>78</td><td>Follainville-Dennemont</td><td>1899</td></tr>
+<tr><td>78</td><td>Guitrancourt</td><td>627</td></tr>
+<tr><td>77</td><td>Saint-Ouen-sur-Morin</td><td>555</td></tr>
+<tr><td>77</td><td>Sainte-Aulde</td><td>710</td></tr>
+<tr><td>77</td><td>La Grande-Paroisse</td><td>2785</td></tr>
+<tr><td>91</td><td>Buno-Bonnevaux</td><td>479</td></tr>
+<tr><td>78</td><td>Gressey</td><td>566</td></tr>
+<tr><td>94</td><td>Villeneuve-Saint-Georges</td><td>33176</td></tr>
+<tr><td>91</td><td>Yerres</td><td>29292</td></tr>
+<tr><td>77</td><td>Villeroy</td><td>723</td></tr>
+<tr><td>95</td><td>La Chapelle-en-Vexin</td><td>332</td></tr>
+<tr><td>77</td><td>Échouboulains</td><td>565</td></tr>
+<tr><td>77</td><td>Aufferville</td><td>540</td></tr>
+<tr><td>78</td><td>Mittainville</td><td>620</td></tr>
+<tr><td>77</td><td>Montry</td><td>3559</td></tr>
+<tr><td>77</td><td>Vernou-la-Celle-sur-Seine</td><td>2741</td></tr>
+<tr><td>95</td><td>Osny</td><td>17408</td></tr>
+<tr><td>78</td><td>La Verrière</td><td>6097</td></tr>
+<tr><td>77</td><td>Grandpuits-Bailly-Carrois</td><td>1023</td></tr>
+<tr><td>91</td><td>Lardy</td><td>5597</td></tr>
+<tr><td>77</td><td>Tournan-en-Brie</td><td>8766</td></tr>
+<tr><td>91</td><td>Souzy-la-Briche</td><td>403</td></tr>
+<tr><td>91</td><td>Viry-Châtillon</td><td>31743</td></tr>
+<tr><td>91</td><td>Limours</td><td>6833</td></tr>
+<tr><td>77</td><td>Ormesson</td><td>287</td></tr>
+<tr><td>91</td><td>Chilly-Mazarin</td><td>20200</td></tr>
+<tr><td>95</td><td>Longuesse</td><td>547</td></tr>
+<tr><td>78</td><td>Conflans-Sainte-Honorine</td><td>35531</td></tr>
+<tr><td>78</td><td>Dampierre-en-Yvelines</td><td>1061</td></tr>
+<tr><td>77</td><td>Jouy-le-Châtel</td><td>1587</td></tr>
+<tr><td>77</td><td>La Chapelle-Moutils</td><td>436</td></tr>
+<tr><td>91</td><td>Videlles</td><td>632</td></tr>
+<tr><td>78</td><td>Vert</td><td>837</td></tr>
+<tr><td>93</td><td>Vaujours</td><td>7034</td></tr>
+<tr><td>78</td><td>Gaillon-sur-Montcient</td><td>693</td></tr>
+<tr><td>95</td><td>Aincourt</td><td>934</td></tr>
+<tr><td>95</td><td>Andilly</td><td>2604</td></tr>
+<tr><td>78</td><td>Mondreville</td><td>408</td></tr>
+<tr><td>77</td><td>Fontaine-Fourches</td><td>625</td></tr>
+<tr><td>77</td><td>Ury</td><td>857</td></tr>
+<tr><td>77</td><td>Dormelles</td><td>834</td></tr>
+<tr><td>78</td><td>Adainville</td><td>775</td></tr>
+<tr><td>78</td><td>Le Mesnil-Saint-Denis</td><td>6806</td></tr>
+<tr><td>91</td><td>Vaugrigneuse</td><td>1299</td></tr>
+<tr><td>77</td><td>Pierre-Levée</td><td>501</td></tr>
+<tr><td>78</td><td>Marcq</td><td>754</td></tr>
+<tr><td>91</td><td>La Norville</td><td>4157</td></tr>
+<tr><td>77</td><td>Sivry-Courtry</td><td>1232</td></tr>
+<tr><td>77</td><td>Guercheville</td><td>284</td></tr>
+<tr><td>78</td><td>Vicq</td><td>361</td></tr>
+<tr><td>77</td><td>Fontaine-le-Port</td><td>983</td></tr>
+<tr><td>92</td><td>Antony</td><td>62415</td></tr>
+<tr><td>78</td><td>Ménerville</td><td>217</td></tr>
+<tr><td>77</td><td>Germigny-sous-Coulombs</td><td>207</td></tr>
+<tr><td>92</td><td>Neuilly-sur-Seine</td><td>63092</td></tr>
+<tr><td>95</td><td>Saint-Cyr-en-Arthies</td><td>245</td></tr>
+<tr><td>78</td><td>Condé-sur-Vesgre</td><td>1188</td></tr>
+<tr><td>77</td><td>Servon</td><td>3214</td></tr>
+<tr><td>78</td><td>Sainte-Mesme</td><td>935</td></tr>
+<tr><td>78</td><td>Plaisir</td><td>32244</td></tr>
+<tr><td>95</td><td>Garges-lès-Gonesse</td><td>42262</td></tr>
+<tr><td>78</td><td>Ponthévrard</td><td>629</td></tr>
+<tr><td>77</td><td>Everly</td><td>617</td></tr>
+<tr><td>78</td><td>Lévis-Saint-Nom</td><td>1703</td></tr>
+<tr><td>77</td><td>Beauchery-Saint-Martin</td><td>425</td></tr>
+<tr><td>94</td><td>Joinville-le-Pont</td><td>18577</td></tr>
+<tr><td>78</td><td>Osmoy</td><td>364</td></tr>
+<tr><td>77</td><td>Jouy-sur-Morin</td><td>2166</td></tr>
+<tr><td>78</td><td>Aulnay-sur-Mauldre</td><td>1172</td></tr>
+<tr><td>93</td><td>Les Lilas</td><td>22928</td></tr>
+<tr><td>78</td><td>Longvilliers</td><td>505</td></tr>
+<tr><td>91</td><td>Bures-sur-Yvette</td><td>9905</td></tr>
+<tr><td>77</td><td>Melz-sur-Seine</td><td>374</td></tr>
+<tr><td>95</td><td>Bessancourt</td><td>6676</td></tr>
+<tr><td>92</td><td>Sèvres</td><td>23572</td></tr>
+<tr><td>91</td><td>Marolles-en-Hurepoix</td><td>5208</td></tr>
+<tr><td>77</td><td>Louan-Villegruis-Fontaine</td><td>513</td></tr>
+<tr><td>78</td><td>Hargeville</td><td>443</td></tr>
+<tr><td>77</td><td>Pommeuse</td><td>2912</td></tr>
+<tr><td>77</td><td>Tigeaux</td><td>381</td></tr>
+<tr><td>94</td><td>Valenton</td><td>13511</td></tr>
+<tr><td>95</td><td>Ennery</td><td>2421</td></tr>
+<tr><td>95</td><td>Vienne-en-Arthies</td><td>450</td></tr>
+<tr><td>91</td><td>Soisy-sur-Seine</td><td>7109</td></tr>
+<tr><td>77</td><td>Marchémoret</td><td>561</td></tr>
+<tr><td>95</td><td>Presles</td><td>3781</td></tr>
+<tr><td>77</td><td>Chenoise</td><td>1360</td></tr>
+<tr><td>78</td><td>Verneuil-sur-Seine</td><td>15455</td></tr>
+<tr><td>77</td><td>Villemareuil</td><td>409</td></tr>
+<tr><td>91</td><td>Dourdan</td><td>10671</td></tr>
+<tr><td>94</td><td>Santeny</td><td>3718</td></tr>
+<tr><td>78</td><td>Limay</td><td>16281</td></tr>
+<tr><td>77</td><td>Saint-Loup-de-Naud</td><td>908</td></tr>
+<tr><td>77</td><td>Rampillon</td><td>818</td></tr>
+<tr><td>95</td><td>Seugy</td><td>1023</td></tr>
+<tr><td>78</td><td>Béhoust</td><td>478</td></tr>
+<tr><td>78</td><td>Gommecourt</td><td>685</td></tr>
+<tr><td>77</td><td>Guérard</td><td>2336</td></tr>
+<tr><td>77</td><td>Chaintreaux</td><td>929</td></tr>
+<tr><td>78</td><td>Beynes</td><td>7681</td></tr>
+<tr><td>77</td><td>Moisenay</td><td>1348</td></tr>
+<tr><td>78</td><td>Bazemont</td><td>1573</td></tr>
+<tr><td>91</td><td>Méréville</td><td>3209</td></tr>
+<tr><td>95</td><td>Amenucourt</td><td>215</td></tr>
+<tr><td>78</td><td>Chapet</td><td>1274</td></tr>
+<tr><td>95</td><td>Herblay</td><td>28274</td></tr>
+<tr><td>78</td><td>Bullion</td><td>2001</td></tr>
+<tr><td>78</td><td>Andelu</td><td>478</td></tr>
+<tr><td>77</td><td>Fleury-en-Bière</td><td>672</td></tr>
+<tr><td>78</td><td>Guyancourt</td><td>27808</td></tr>
+<tr><td>91</td><td>Chatignonville</td><td>58</td></tr>
+<tr><td>92</td><td>Colombes</td><td>85150</td></tr>
+<tr><td>78</td><td>Le Tertre-Saint-Denis</td><td>122</td></tr>
+<tr><td>77</td><td>Les Écrennes</td><td>604</td></tr>
+<tr><td>77</td><td>La Trétoire</td><td>475</td></tr>
+<tr><td>93</td><td>Noisy-le-Grand</td><td>65140</td></tr>
+<tr><td>77</td><td>Barbey</td><td>157</td></tr>
+<tr><td>77</td><td>Livry-sur-Seine</td><td>1994</td></tr>
+<tr><td>77</td><td>Vaires-sur-Marne</td><td>13552</td></tr>
+<tr><td>77</td><td>Ozouer-le-Voulgis</td><td>1875</td></tr>
+<tr><td>77</td><td>Clos-Fontaine</td><td>277</td></tr>
+<tr><td>77</td><td>Chalautre-la-Petite</td><td>623</td></tr>
+<tr><td>77</td><td>Cannes-Écluse</td><td>2585</td></tr>
+<tr><td>95</td><td>Théméricourt</td><td>284</td></tr>
+<tr><td>78</td><td>Ecquevilly</td><td>4126</td></tr>
+<tr><td>95</td><td>Guiry-en-Vexin</td><td>179</td></tr>
+<tr><td>77</td><td>Flagy</td><td>661</td></tr>
+<tr><td>91</td><td>Bruyères-le-Châtel</td><td>3415</td></tr>
+<tr><td>78</td><td>Orphin</td><td>926</td></tr>
+<tr><td>77</td><td>Chailly-en-Brie</td><td>1546</td></tr>
+<tr><td>78</td><td>Maurepas</td><td>19018</td></tr>
+<tr><td>78</td><td>Prunay-en-Yvelines</td><td>836</td></tr>
+<tr><td>77</td><td>Sainte-Colombe</td><td>1849</td></tr>
+<tr><td>77</td><td>La Celle-sur-Morin</td><td>1322</td></tr>
+<tr><td>91</td><td>Cerny</td><td>3505</td></tr>
+<tr><td>77</td><td>Liverdy-en-Brie</td><td>1327</td></tr>
+<tr><td>78</td><td>Chatou</td><td>31432</td></tr>
+<tr><td>91</td><td>Itteville</td><td>6754</td></tr>
+<tr><td>77</td><td>Perthes</td><td>2124</td></tr>
+<tr><td>77</td><td>Ussy-sur-Marne</td><td>1039</td></tr>
+<tr><td>78</td><td>Saint-Illiers-le-Bois</td><td>449</td></tr>
+<tr><td>95</td><td>Banthelu</td><td>150</td></tr>
+<tr><td>77</td><td>Lognes</td><td>13963</td></tr>
+<tr><td>91</td><td>Pussay</td><td>2091</td></tr>
+<tr><td>78</td><td>Boinvilliers</td><td>284</td></tr>
+<tr><td>95</td><td>Menucourt</td><td>5479</td></tr>
+<tr><td>91</td><td>Égly</td><td>5640</td></tr>
+<tr><td>95</td><td>Courdimanche</td><td>6764</td></tr>
+<tr><td>95</td><td>La Roche-Guyon</td><td>503</td></tr>
+<tr><td>77</td><td>Bussières</td><td>524</td></tr>
+<tr><td>77</td><td>Montigny-le-Guesdier</td><td>309</td></tr>
+<tr><td>77</td><td>Saint-Méry</td><td>378</td></tr>
+<tr><td>78</td><td>Rennemoulin</td><td>112</td></tr>
+<tr><td>78</td><td>Saint-Lambert</td><td>496</td></tr>
+<tr><td>91</td><td>Boissy-sous-Saint-Yon</td><td>3800</td></tr>
+<tr><td>94</td><td>Cachan</td><td>30258</td></tr>
+<tr><td>77</td><td>Esbly</td><td>6284</td></tr>
+<tr><td>77</td><td>Arville</td><td>122</td></tr>
+<tr><td>77</td><td>Bailly-Romainvilliers</td><td>7498</td></tr>
+<tr><td>92</td><td>Clamart</td><td>53007</td></tr>
+<tr><td>77</td><td>Bussy-Saint-Martin</td><td>723</td></tr>
+<tr><td>77</td><td>Charmentray</td><td>260</td></tr>
+<tr><td>94</td><td>L' Haÿ-les-Roses</td><td>31029</td></tr>
+<tr><td>77</td><td>Saint-Mammès</td><td>3381</td></tr>
+<tr><td>77</td><td>Trilbardou</td><td>697</td></tr>
+<tr><td>77</td><td>Courtacon</td><td>254</td></tr>
+
+
+      </tbody>
+</table>
+    <p>Source : Insee, Recensement de la population 2014</a></p>
+    
+    
+    
+</body></html>

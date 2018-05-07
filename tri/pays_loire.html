@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>PIX - trier un tableau</title>
+
+<style>
+body{font-family: Arial;text-align:center;}
+/* les flèches */
+.flecheDesc {
+  width: 0; 
+  height: 0; 
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+.flecheAsc {
+  width: 0; 
+  height: 0;
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+/* le tableau */
+table {table-layout: fixed;border-collapse: collapse;text-align:left;margin-left:auto;margin-right:auto;}
+td {padding:.5rem}
+tr {background-color: #F1EDEB;border-bottom:1px solid #ccc;color:#444;}
+//tr: nth-child(even)  tr: nth-child(odd)
+.bande tbody tr:hover:nth-child(odd) {background-color: #7F8A8C;color:#ffffff;}
+.bande tbody tr:hover:nth-child(even) {background-color: #7F8A8C;color:#ffffff;}
+th {text-align:center;padding:5px 0 0 5px;vertical-align: middle;background-color:#4B5259;color:#F1EDEB;cursor:pointer;
+}
+th.choisi {background-color:#5d625c;color:#fff;}
+th.choisi .flecheDesc {border-bottom-color: white;}
+th.choisi .flecheAsc {border-top-color: white;}
+caption{text-align:center; font-size: 1.5em;padding:1em}
+</style>
+
+<script>
+  // Tri dynamique 
+  function initialiseTab() {
+    // Initialise le tableau, la première fois, les fleche sont toutes vers le bas
+       [].forEach.call(document.getElementsByTagName("table"), function(monTab) {
+           var sonEntete = monTab.getElementsByTagName("tr")[0];
+           var ncol = 1;
+          // maj attribut de chaque colonne selon la capture du clic
+          // soit : affichage du picto flèche, attribut sens du tri (0 Asc - 1 Desc), et num colonne
+          
+          [].forEach.call(sonEntete.querySelectorAll("th"), function(sonTH) {
+            // déclenche la fonction trier au clic sur l'en tête de la colonne 
+            sonTH.addEventListener("click", trier, false);
+            sonTH.setAttribute("data-pos", ncol);
+            if(sonTH.getAttribute("data-tri")=="1") {
+             sonTH.innerHTML += "<span class=\"flecheDesc\"></span>";
+            } else {
+              sonTH.setAttribute("data-tri", "0");
+              sonTH.innerHTML += "<span class=\"flecheAsc\"></span>";
+            }
+            // Tri par défaut
+            if (sonTH.className=="choisi") {
+              sonTH.click();
+            }
+            ncol++;
+          });
+        });
+      }
+
+  function trier() {
+    // afficher le tableau dans le tri choisi mémorisé dans data-tri
+    var sensTri = this.getAttribute("data-tri");
+    this.setAttribute("data-tri", (sensTri=="0") ? "1" : "0");
+    // Supprime la classe « choisi » de chaque colonne.
+    [].forEach.call( this.parentNode.querySelectorAll("th"), function(sonTH) {sonTH.classList.remove("choisi");});
+    // Ajoute la classe « choisi » à la colonne cliquée (this).
+    this.className = "choisi";
+    // Ajuste la flèche
+    this.querySelector("span").className = (sensTri=="0") ? "flecheAsc" : "flecheDesc";
+
+    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets 
+    // NE PAS MODIFIER STRUCTURE DU TABLEAU
+    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0]; 
+    var sesLignes = sonTBody.rows;
+    var nNbrLigne = sesLignes.length;
+    var laCol = new Array(), i, j, laCel;
+    for(i = 0; i < nNbrLigne; i++) {
+      laCel = sesLignes[i].cells;
+      laCol[i] = new Array();
+      for(j = 0; j < laCel.length; j++){
+        laCol[i][j] = laCel[j].innerHTML;
+      }
+    }
+
+    // Trier la matrice (array)
+    var nCol = this.getAttribute("data-pos");
+    // Récupère le type de tri (numérique ou par défaut « local »)
+    var sFonctionTri = (this.getAttribute("data-type")=="num") ? "compareNombres" : "compareLocale";
+    // Tri
+    laCol.sort(eval(sFonctionTri));
+    // Tri numérique
+    function compareNombres(a, b) {return a[nCol-1] - b[nCol-1];}
+    // Tri local (pour support utf-8)
+    function compareLocale(a, b) {return a[nCol-1].localeCompare(b[nCol-1]);}
+    // Renverse la matrice dans le cas d’un tri descendant
+    if (sensTri==0) laCol.reverse();
+    
+    // Construit les colonne du nouveau tableau
+    for(i = 0; i < nNbrLigne; i++){
+      laCol[i] = "<td>"+laCol[i].join("</td><td>")+"</td>";
+    }
+
+    // assigne les lignes au tableau
+    sonTBody.innerHTML = "<tr>"+laCol.join("</tr><tr>")+"</tr>";
+  }
+</script>
+</head>
+
+<body onload="initialiseTab()">
+<h1>PIX - trier un tableau</h1>
+
+<table>
+    <caption>Les communes du Pays de Loire</caption>
+  <thead>
+    <tr>
+        <th data-pos="1" data-tri="0">Département <span class="flecheAsc"></span></th>
+        <th data-pos="2" data-tri="0">Communes<span class="flecheAsc"></span></th>
+        <th data-type="num" data-pos="3" data-tri="0">Population<span class="flecheAsc"></span></th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr><td>49</td><td>La Romagne</td><td>1908</td></tr>
+<tr><td>72</td><td>Ruaudin</td><td>3473</td></tr>
+<tr><td>85</td><td>Bourneau</td><td>758</td></tr>
+<tr><td>53</td><td>Parigné-sur-Braye</td><td>837</td></tr>
+<tr><td>53</td><td>Azé</td><td>3539</td></tr>
+<tr><td>53</td><td>Denazé</td><td>153</td></tr>
+<tr><td>72</td><td>Blèves</td><td>99</td></tr>
+<tr><td>49</td><td>Denée</td><td>1423</td></tr>
+<tr><td>72</td><td>Chenay</td><td>224</td></tr>
+<tr><td>72</td><td>Saint-Pierre-du-Lorouër</td><td>383</td></tr>
+<tr><td>72</td><td>Saint-Christophe-du-Jambet</td><td>224</td></tr>
+<tr><td>44</td><td>Pont-Saint-Martin</td><td>5781</td></tr>
+<tr><td>72</td><td>Saint-Pierre-des-Ormes</td><td>235</td></tr>
+<tr><td>53</td><td>Sainte-Gemmes-le-Robert</td><td>884</td></tr>
+<tr><td>44</td><td>Trignac</td><td>7868</td></tr>
+<tr><td>85</td><td>La Merlatière</td><td>1017</td></tr>
+<tr><td>53</td><td>Gorron</td><td>2738</td></tr>
+<tr><td>85</td><td>Thiré</td><td>581</td></tr>
+<tr><td>49</td><td>Loire-Authion</td><td>16157</td></tr>
+<tr><td>72</td><td>Montreuil-le-Henri</td><td>307</td></tr>
+<tr><td>72</td><td>Juillé</td><td>487</td></tr>
+<tr><td>72</td><td>Mulsanne</td><td>5018</td></tr>
+<tr><td>72</td><td>Ruillé-sur-Loir</td><td>1340</td></tr>
+<tr><td>49</td><td>Étriché</td><td>1542</td></tr>
+<tr><td>85</td><td>Saint-Vincent-Sterlanges</td><td>788</td></tr>
+<tr><td>85</td><td>Saint-Fulgent</td><td>3903</td></tr>
+<tr><td>72</td><td>Yvré-l'Évêque</td><td>4397</td></tr>
+<tr><td>49</td><td>Rochefort-sur-Loire</td><td>2359</td></tr>
+<tr><td>85</td><td>Sainte-Hermine</td><td>2912</td></tr>
+<tr><td>53</td><td>Soulgé-sur-Ouette</td><td>1122</td></tr>
+<tr><td>72</td><td>Saint-Jean-de-la-Motte</td><td>928</td></tr>
+<tr><td>44</td><td>Bonnœuvre</td><td>582</td></tr>
+<tr><td>53</td><td>Saint-Pierre-sur-Orthe</td><td>473</td></tr>
+<tr><td>72</td><td>Thoiré-sur-Dinan</td><td>472</td></tr>
+<tr><td>44</td><td>Couffé</td><td>2504</td></tr>
+<tr><td>72</td><td>Nuillé-le-Jalais</td><td>525</td></tr>
+<tr><td>53</td><td>La Chapelle-Rainsouin</td><td>423</td></tr>
+<tr><td>49</td><td>Le Louroux-Béconnais</td><td>3115</td></tr>
+<tr><td>53</td><td>Saint-Aubin-Fosse-Louvain</td><td>232</td></tr>
+<tr><td>85</td><td>Saint-Cyr-en-Talmondais</td><td>369</td></tr>
+<tr><td>49</td><td>Angrie</td><td>969</td></tr>
+<tr><td>53</td><td>Saint-Michel-de-la-Roë</td><td>262</td></tr>
+<tr><td>85</td><td>Beaulieu-sous-la-Roche</td><td>2185</td></tr>
+<tr><td>72</td><td>Peray</td><td>67</td></tr>
+<tr><td>49</td><td>Genneteil</td><td>339</td></tr>
+<tr><td>49</td><td>Saint-Philbert-du-Peuple</td><td>1330</td></tr>
+<tr><td>72</td><td>Dissé-sous-Ballon</td><td>140</td></tr>
+<tr><td>72</td><td>Parennes</td><td>533</td></tr>
+<tr><td>44</td><td>Sainte-Reine-de-Bretagne</td><td>2321</td></tr>
+<tr><td>44</td><td>Villepot</td><td>688</td></tr>
+<tr><td>44</td><td>Saint-Aubin-des-Châteaux</td><td>1766</td></tr>
+<tr><td>49</td><td>Brissarthe</td><td>636</td></tr>
+<tr><td>85</td><td>Sainte-Radégonde-des-Noyers</td><td>899</td></tr>
+<tr><td>53</td><td>Montaudin</td><td>912</td></tr>
+<tr><td>85</td><td>Saint-Sulpice-en-Pareds</td><td>423</td></tr>
+<tr><td>44</td><td>Assérac</td><td>1830</td></tr>
+<tr><td>49</td><td>Saint-Rémy-la-Varenne</td><td>992</td></tr>
+<tr><td>72</td><td>Mézières-sous-Lavardin</td><td>722</td></tr>
+<tr><td>72</td><td>Grandchamp</td><td>167</td></tr>
+<tr><td>53</td><td>Saint-Léger</td><td>312</td></tr>
+<tr><td>53</td><td>Marigné-Peuton</td><td>558</td></tr>
+<tr><td>49</td><td>Vernantes</td><td>2003</td></tr>
+<tr><td>85</td><td>Froidfond</td><td>1759</td></tr>
+<tr><td>85</td><td>Cugand</td><td>3481</td></tr>
+<tr><td>53</td><td>Athée</td><td>525</td></tr>
+<tr><td>85</td><td>La Génétouze</td><td>1910</td></tr>
+<tr><td>49</td><td>Marigné</td><td>720</td></tr>
+<tr><td>72</td><td>Le Tronchet</td><td>149</td></tr>
+<tr><td>72</td><td>Auvers-sous-Montfaucon</td><td>248</td></tr>
+<tr><td>49</td><td>Chambellay</td><td>379</td></tr>
+<tr><td>85</td><td>Luçon</td><td>9770</td></tr>
+<tr><td>72</td><td>Villaines-sous-Lucé</td><td>705</td></tr>
+<tr><td>72</td><td>Chahaignes</td><td>739</td></tr>
+<tr><td>72</td><td>Semur-en-Vallon</td><td>449</td></tr>
+<tr><td>85</td><td>Les Pineaux</td><td>625</td></tr>
+<tr><td>49</td><td>Turquant</td><td>601</td></tr>
+<tr><td>85</td><td>Givrand</td><td>2102</td></tr>
+<tr><td>49</td><td>Montreuil-Bellay</td><td>4247</td></tr>
+<tr><td>85</td><td>Saint-Paul-Mont-Penit</td><td>806</td></tr>
+<tr><td>44</td><td>Saint-Sulpice-des-Landes</td><td>710</td></tr>
+<tr><td>72</td><td>Saosnes</td><td>225</td></tr>
+<tr><td>72</td><td>Lavaré</td><td>858</td></tr>
+<tr><td>49</td><td>Marans</td><td>580</td></tr>
+<tr><td>72</td><td>Beillé</td><td>544</td></tr>
+<tr><td>72</td><td>Cures</td><td>526</td></tr>
+<tr><td>53</td><td>Le Pas</td><td>548</td></tr>
+<tr><td>72</td><td>Saint-Paterne</td><td>1742</td></tr>
+<tr><td>72</td><td>Saint-Rémy-de-Sillé</td><td>870</td></tr>
+<tr><td>85</td><td>Champagné-les-Marais</td><td>1775</td></tr>
+<tr><td>53</td><td>Le Bourgneuf-la-Forêt</td><td>1815</td></tr>
+<tr><td>53</td><td>Saint-Sulpice</td><td>255</td></tr>
+<tr><td>49</td><td>Bégrolles-en-Mauges</td><td>2025</td></tr>
+<tr><td>44</td><td>Fégréac</td><td>2445</td></tr>
+<tr><td>85</td><td>Pouillé</td><td>651</td></tr>
+<tr><td>44</td><td>Saint-Nazaire</td><td>71920</td></tr>
+<tr><td>85</td><td>La Jonchère</td><td>426</td></tr>
+<tr><td>72</td><td>Yvré-le-Pôlin</td><td>1794</td></tr>
+<tr><td>72</td><td>Sargé-lès-le-Mans</td><td>3758</td></tr>
+<tr><td>44</td><td>Loireauxence</td><td>7594</td></tr>
+<tr><td>72</td><td>Courcebœufs</td><td>641</td></tr>
+<tr><td>72</td><td>Saint-Corneille</td><td>1363</td></tr>
+<tr><td>85</td><td>Saint-Juire-Champgillon</td><td>422</td></tr>
+<tr><td>44</td><td>Bouaye</td><td>7069</td></tr>
+<tr><td>49</td><td>Vernoil-le-Fourrier</td><td>1285</td></tr>
+<tr><td>49</td><td>Écuillé</td><td>622</td></tr>
+<tr><td>72</td><td>Guécélard</td><td>2987</td></tr>
+<tr><td>49</td><td>Feneu</td><td>2267</td></tr>
+<tr><td>53</td><td>Charchigné</td><td>526</td></tr>
+<tr><td>49</td><td>Mazé-Milon</td><td>5777</td></tr>
+<tr><td>49</td><td>Vivy</td><td>2639</td></tr>
+<tr><td>85</td><td>La Faute-sur-Mer</td><td>694</td></tr>
+<tr><td>49</td><td>Chavaignes</td><td>100</td></tr>
+<tr><td>72</td><td>La Chapelle-Huon</td><td>562</td></tr>
+<tr><td>85</td><td>Montreuil</td><td>817</td></tr>
+<tr><td>72</td><td>Monhoudou</td><td>234</td></tr>
+<tr><td>53</td><td>Saint-Ellier-du-Maine</td><td>544</td></tr>
+<tr><td>49</td><td>Courchamps</td><td>495</td></tr>
+<tr><td>53</td><td>Craon</td><td>4690</td></tr>
+<tr><td>85</td><td>Longèves</td><td>1369</td></tr>
+<tr><td>53</td><td>Ménil</td><td>1020</td></tr>
+<tr><td>53</td><td>Loupfougères</td><td>403</td></tr>
+<tr><td>53</td><td>Pré-en-Pail-Saint-Samson</td><td>2421</td></tr>
+<tr><td>53</td><td>La Chapelle-au-Riboul</td><td>517</td></tr>
+<tr><td>72</td><td>Rouez</td><td>787</td></tr>
+<tr><td>85</td><td>La Boissière-des-Landes</td><td>1364</td></tr>
+<tr><td>85</td><td>Sainte-Foy</td><td>1966</td></tr>
+<tr><td>72</td><td>Saint-Mars-la-Brière</td><td>2662</td></tr>
+<tr><td>49</td><td>Saint-Cyr-en-Bourg</td><td>936</td></tr>
+<tr><td>72</td><td>Fyé</td><td>1069</td></tr>
+<tr><td>85</td><td>Maillé</td><td>784</td></tr>
+<tr><td>85</td><td>Thorigny</td><td>1235</td></tr>
+<tr><td>85</td><td>Saint-Maixent-sur-Vie</td><td>1034</td></tr>
+<tr><td>72</td><td>Vouvray-sur-Loir</td><td>801</td></tr>
+<tr><td>44</td><td>Saint-Étienne-de-Montluc</td><td>6946</td></tr>
+<tr><td>49</td><td>Distré</td><td>1726</td></tr>
+<tr><td>44</td><td>Vue</td><td>1612</td></tr>
+<tr><td>85</td><td>L' Orbrie</td><td>842</td></tr>
+<tr><td>49</td><td>Martigné-Briand</td><td>1948</td></tr>
+<tr><td>72</td><td>Avezé</td><td>778</td></tr>
+<tr><td>72</td><td>Duneau</td><td>1080</td></tr>
+<tr><td>72</td><td>Connerré</td><td>2958</td></tr>
+<tr><td>53</td><td>Lassay-les-Châteaux</td><td>2446</td></tr>
+<tr><td>85</td><td>Mesnard-la-Barotière</td><td>1386</td></tr>
+<tr><td>85</td><td>Saint-Martin-des-Fontaines</td><td>166</td></tr>
+<tr><td>53</td><td>Brains-sur-les-Marches</td><td>267</td></tr>
+<tr><td>53</td><td>Port-Brillet</td><td>1878</td></tr>
+<tr><td>72</td><td>La Chapelle-Saint-Aubin</td><td>2450</td></tr>
+<tr><td>85</td><td>Brem-sur-Mer</td><td>2650</td></tr>
+<tr><td>72</td><td>Ballon-Saint Mars</td><td>2228</td></tr>
+<tr><td>72</td><td>Vernie</td><td>358</td></tr>
+<tr><td>53</td><td>Loigné-sur-Mayenne</td><td>931</td></tr>
+<tr><td>53</td><td>Montreuil-Poulay</td><td>406</td></tr>
+<tr><td>85</td><td>Curzon</td><td>491</td></tr>
+<tr><td>44</td><td>Donges</td><td>7757</td></tr>
+<tr><td>44</td><td>La Chapelle-Launay</td><td>2934</td></tr>
+<tr><td>85</td><td>Saint-Aubin-des-Ormeaux</td><td>1367</td></tr>
+<tr><td>53</td><td>La Bazoge-Montpinçon</td><td>1018</td></tr>
+<tr><td>72</td><td>Bonnétable</td><td>3948</td></tr>
+<tr><td>85</td><td>Velluire</td><td>659</td></tr>
+<tr><td>44</td><td>Vritz</td><td>807</td></tr>
+<tr><td>53</td><td>Moulay</td><td>986</td></tr>
+<tr><td>72</td><td>Poncé-sur-le-Loir</td><td>366</td></tr>
+<tr><td>44</td><td>Saint-Mars-la-Jaille</td><td>2461</td></tr>
+<tr><td>44</td><td>Mouzeil</td><td>1924</td></tr>
+<tr><td>49</td><td>Saint-Georges-sur-Layon</td><td>798</td></tr>
+<tr><td>53</td><td>La Cropte</td><td>233</td></tr>
+<tr><td>85</td><td>Noirmoutier-en-l'Île</td><td>4717</td></tr>
+<tr><td>72</td><td>Joué-en-Charnie</td><td>646</td></tr>
+<tr><td>85</td><td>Mouzeuil-Saint-Martin</td><td>1269</td></tr>
+<tr><td>49</td><td>Montsoreau</td><td>455</td></tr>
+<tr><td>72</td><td>Arnage</td><td>5401</td></tr>
+<tr><td>72</td><td>Saint-Vincent-des-Prés</td><td>523</td></tr>
+<tr><td>72</td><td>Bouër</td><td>328</td></tr>
+<tr><td>53</td><td>Hercé</td><td>331</td></tr>
+<tr><td>44</td><td>Drefféac</td><td>2158</td></tr>
+<tr><td>53</td><td>Pontmain</td><td>913</td></tr>
+<tr><td>53</td><td>Laval</td><td>52935</td></tr>
+<tr><td>44</td><td>Saint-Jean-de-Boiseau</td><td>5587</td></tr>
+<tr><td>44</td><td>Jans</td><td>1324</td></tr>
+<tr><td>49</td><td>Épieds</td><td>748</td></tr>
+<tr><td>72</td><td>Rahay</td><td>210</td></tr>
+<tr><td>72</td><td>Beaumont-sur-Sarthe</td><td>1977</td></tr>
+<tr><td>44</td><td>La Marne</td><td>1423</td></tr>
+<tr><td>72</td><td>Montaillé</td><td>576</td></tr>
+<tr><td>72</td><td>Sceaux-sur-Huisne</td><td>581</td></tr>
+<tr><td>44</td><td>Remouillé</td><td>1859</td></tr>
+<tr><td>53</td><td>La Baconnière</td><td>1874</td></tr>
+<tr><td>49</td><td>La Cornuaille</td><td>1043</td></tr>
+<tr><td>72</td><td>Doucelles</td><td>260</td></tr>
+<tr><td>44</td><td>Vallet</td><td>9016</td></tr>
+<tr><td>49</td><td>Saint-Augustin-des-Bois</td><td>1235</td></tr>
+<tr><td>85</td><td>Palluau</td><td>1093</td></tr>
+<tr><td>85</td><td>Réaumur</td><td>831</td></tr>
+<tr><td>49</td><td>Saint-Georges-sur-Loire</td><td>3566</td></tr>
+<tr><td>72</td><td>Courdemanche</td><td>640</td></tr>
+<tr><td>72</td><td>Évaillé</td><td>357</td></tr>
+<tr><td>49</td><td>Challain-la-Potherie</td><td>847</td></tr>
+<tr><td>53</td><td>Coudray</td><td>914</td></tr>
+<tr><td>44</td><td>Port-Saint-Père</td><td>2919</td></tr>
+<tr><td>49</td><td>Saint-Léger-sous-Cholet</td><td>2744</td></tr>
+<tr><td>49</td><td>Grugé-l'Hôpital</td><td>289</td></tr>
+<tr><td>85</td><td>Oulmes</td><td>839</td></tr>
+<tr><td>85</td><td>Moutiers-sur-le-Lay</td><td>743</td></tr>
+<tr><td>53</td><td>Mée</td><td>212</td></tr>
+<tr><td>72</td><td>La Guierche</td><td>1091</td></tr>
+<tr><td>53</td><td>Saint-Germain-le-Guillaume</td><td>490</td></tr>
+<tr><td>72</td><td>Assé-le-Riboul</td><td>526</td></tr>
+<tr><td>85</td><td>Chavagnes-les-Redoux</td><td>828</td></tr>
+<tr><td>49</td><td>Noyant</td><td>1927</td></tr>
+<tr><td>49</td><td>Trémentines</td><td>2918</td></tr>
+<tr><td>72</td><td>Roézé-sur-Sarthe</td><td>2691</td></tr>
+<tr><td>49</td><td>Avrillé</td><td>13639</td></tr>
+<tr><td>72</td><td>Saint-Aignan</td><td>276</td></tr>
+<tr><td>53</td><td>Beaumont-Pied-de-Bœuf</td><td>196</td></tr>
+<tr><td>49</td><td>Sermaise</td><td>301</td></tr>
+<tr><td>85</td><td>Le Champ-Saint-Père</td><td>1866</td></tr>
+<tr><td>53</td><td>Andouillé</td><td>2312</td></tr>
+<tr><td>49</td><td>Toutlemonde</td><td>1281</td></tr>
+<tr><td>49</td><td>Rou-Marson</td><td>685</td></tr>
+<tr><td>53</td><td>Parné-sur-Roc</td><td>1342</td></tr>
+<tr><td>49</td><td>Yzernay</td><td>1881</td></tr>
+<tr><td>49</td><td>Beaupréau-en-Mauges</td><td>23393</td></tr>
+<tr><td>72</td><td>Volnay</td><td>903</td></tr>
+<tr><td>44</td><td>Saint-Hilaire-de-Chaléons</td><td>2227</td></tr>
+<tr><td>44</td><td>Saint-Julien-de-Concelles</td><td>6941</td></tr>
+<tr><td>44</td><td>La Bernerie-en-Retz</td><td>2769</td></tr>
+<tr><td>85</td><td>Le Fenouiller</td><td>4580</td></tr>
+<tr><td>49</td><td>Freigné</td><td>1162</td></tr>
+<tr><td>44</td><td>Cheix-en-Retz</td><td>1023</td></tr>
+<tr><td>49</td><td>Mazières-en-Mauges</td><td>1100</td></tr>
+<tr><td>44</td><td>Rougé</td><td>2301</td></tr>
+<tr><td>72</td><td>Dollon</td><td>1532</td></tr>
+<tr><td>49</td><td>La Pellerine</td><td>163</td></tr>
+<tr><td>85</td><td>Le Langon</td><td>1145</td></tr>
+<tr><td>49</td><td>Mozé-sur-Louet</td><td>2074</td></tr>
+<tr><td>49</td><td>Morannes-sur-Sarthe</td><td>2107</td></tr>
+<tr><td>53</td><td>Bonchamp-lès-Laval</td><td>6047</td></tr>
+<tr><td>49</td><td>Montreuil-sur-Loir</td><td>533</td></tr>
+<tr><td>49</td><td>Parnay</td><td>483</td></tr>
+<tr><td>49</td><td>Varrains</td><td>1290</td></tr>
+<tr><td>44</td><td>Lavau-sur-Loire</td><td>778</td></tr>
+<tr><td>72</td><td>Amné</td><td>548</td></tr>
+<tr><td>49</td><td>L' Hôtellerie-de-Flée</td><td>521</td></tr>
+<tr><td>53</td><td>Montsûrs</td><td>2068</td></tr>
+<tr><td>85</td><td>Saint-Cyr-des-Gâts</td><td>542</td></tr>
+<tr><td>49</td><td>Bellevigne-en-Layon</td><td>5967</td></tr>
+<tr><td>44</td><td>La Chevrolière</td><td>5417</td></tr>
+<tr><td>49</td><td>Saumur</td><td>28410</td></tr>
+<tr><td>44</td><td>Conquereuil</td><td>1100</td></tr>
+<tr><td>53</td><td>Saulges</td><td>311</td></tr>
+<tr><td>44</td><td>La Limouzinière</td><td>2411</td></tr>
+<tr><td>44</td><td>Sévérac</td><td>1657</td></tr>
+<tr><td>49</td><td>Marcé</td><td>864</td></tr>
+<tr><td>72</td><td>Le Mans</td><td>147768</td></tr>
+<tr><td>44</td><td>Couëron</td><td>20517</td></tr>
+<tr><td>72</td><td>La Suze-sur-Sarthe</td><td>4543</td></tr>
+<tr><td>49</td><td>Louvaines</td><td>519</td></tr>
+<tr><td>49</td><td>Broc</td><td>314</td></tr>
+<tr><td>49</td><td>Beaufort-en-Anjou</td><td>7235</td></tr>
+<tr><td>49</td><td>Bourg-l'Évêque</td><td>245</td></tr>
+<tr><td>53</td><td>Madré</td><td>355</td></tr>
+<tr><td>85</td><td>Chambretaud</td><td>1584</td></tr>
+<tr><td>72</td><td>Louplande</td><td>1489</td></tr>
+<tr><td>44</td><td>Pontchâteau</td><td>10689</td></tr>
+<tr><td>53</td><td>Le Housseau-Brétignolles</td><td>270</td></tr>
+<tr><td>72</td><td>Beaumont-Pied-de-Bœuf</td><td>499</td></tr>
+<tr><td>85</td><td>Liez</td><td>281</td></tr>
+<tr><td>49</td><td>Meigné-le-Vicomte</td><td>321</td></tr>
+<tr><td>72</td><td>Montreuil-le-Chétif</td><td>309</td></tr>
+<tr><td>53</td><td>Peuton</td><td>235</td></tr>
+<tr><td>44</td><td>Les Moutiers-en-Retz</td><td>1605</td></tr>
+<tr><td>53</td><td>Boulay-les-Ifs</td><td>175</td></tr>
+<tr><td>49</td><td>Concourson-sur-Layon</td><td>575</td></tr>
+<tr><td>53</td><td>Juvigné</td><td>1490</td></tr>
+<tr><td>44</td><td>Machecoul-Saint-Même</td><td>7649</td></tr>
+<tr><td>72</td><td>Bérus</td><td>468</td></tr>
+<tr><td>85</td><td>Challans</td><td>20371</td></tr>
+<tr><td>44</td><td>Paulx</td><td>1991</td></tr>
+<tr><td>44</td><td>Petit-Auverné</td><td>431</td></tr>
+<tr><td>44</td><td>Sainte-Pazanne</td><td>6489</td></tr>
+<tr><td>44</td><td>Maumusson</td><td>1056</td></tr>
+<tr><td>53</td><td>Le Ham</td><td>421</td></tr>
+<tr><td>53</td><td>Bouère</td><td>1093</td></tr>
+<tr><td>49</td><td>Chazé-sur-Argos</td><td>1075</td></tr>
+<tr><td>53</td><td>Saint-Christophe-du-Luat</td><td>803</td></tr>
+<tr><td>53</td><td>Alexain</td><td>617</td></tr>
+<tr><td>44</td><td>Maisdon-sur-Sèvre</td><td>2909</td></tr>
+<tr><td>49</td><td>Somloire</td><td>932</td></tr>
+<tr><td>44</td><td>La Planche</td><td>2584</td></tr>
+<tr><td>85</td><td>Vouvant</td><td>915</td></tr>
+<tr><td>44</td><td>Moisdon-la-Rivière</td><td>1999</td></tr>
+<tr><td>72</td><td>Commerveil</td><td>129</td></tr>
+<tr><td>85</td><td>Vairé</td><td>1633</td></tr>
+<tr><td>53</td><td>Chémeré-le-Roi</td><td>432</td></tr>
+<tr><td>53</td><td>Saint-Georges-sur-Erve</td><td>392</td></tr>
+<tr><td>49</td><td>La Prévière</td><td>253</td></tr>
+<tr><td>53</td><td>Saint-Poix</td><td>415</td></tr>
+<tr><td>44</td><td>La Chapelle-Glain</td><td>831</td></tr>
+<tr><td>49</td><td>Cheffes</td><td>986</td></tr>
+<tr><td>49</td><td>Les Bois d'Anjou</td><td>2648</td></tr>
+<tr><td>72</td><td>Sablé-sur-Sarthe</td><td>13058</td></tr>
+<tr><td>44</td><td>Frossay</td><td>3217</td></tr>
+<tr><td>85</td><td>La Taillée</td><td>571</td></tr>
+<tr><td>85</td><td>Saint-Martin-Lars-en-Sainte-Hermine</td><td>420</td></tr>
+<tr><td>53</td><td>Placé</td><td>346</td></tr>
+<tr><td>44</td><td>Le Gâvre</td><td>1776</td></tr>
+<tr><td>53</td><td>Le Buret</td><td>313</td></tr>
+<tr><td>85</td><td>Bessay</td><td>445</td></tr>
+<tr><td>49</td><td>Carbay</td><td>253</td></tr>
+<tr><td>72</td><td>Saint-Marceau</td><td>537</td></tr>
+<tr><td>72</td><td>Saint-Biez-en-Belin</td><td>727</td></tr>
+<tr><td>85</td><td>Pouzauges</td><td>5702</td></tr>
+<tr><td>72</td><td>Thorée-les-Pins</td><td>745</td></tr>
+<tr><td>72</td><td>Béthon</td><td>339</td></tr>
+<tr><td>44</td><td>Saint-Molf</td><td>2556</td></tr>
+<tr><td>85</td><td>Saint-Mesmin</td><td>1771</td></tr>
+<tr><td>53</td><td>Villaines-la-Juhel</td><td>2985</td></tr>
+<tr><td>72</td><td>Vivoin</td><td>957</td></tr>
+<tr><td>53</td><td>La Pallu</td><td>204</td></tr>
+<tr><td>53</td><td>Lignières-Orgères</td><td>797</td></tr>
+<tr><td>85</td><td>Chaix</td><td>466</td></tr>
+<tr><td>53</td><td>Saint-Charles-la-Forêt</td><td>229</td></tr>
+<tr><td>72</td><td>Bessé-sur-Braye</td><td>2293</td></tr>
+<tr><td>44</td><td>Saint-Mars-de-Coutais</td><td>2658</td></tr>
+<tr><td>53</td><td>Neau</td><td>751</td></tr>
+<tr><td>72</td><td>Chassillé</td><td>259</td></tr>
+<tr><td>53</td><td>Laubrières</td><td>340</td></tr>
+<tr><td>72</td><td>Précigné</td><td>3085</td></tr>
+<tr><td>72</td><td>Champrond</td><td>72</td></tr>
+<tr><td>85</td><td>Auzay</td><td>669</td></tr>
+<tr><td>72</td><td>Saint-Rémy-du-Val</td><td>561</td></tr>
+<tr><td>49</td><td>Cernusson</td><td>358</td></tr>
+<tr><td>72</td><td>Chantenay-Villedieu</td><td>885</td></tr>
+<tr><td>72</td><td>Soulitré</td><td>658</td></tr>
+<tr><td>53</td><td>Saint-Quentin-les-Anges</td><td>426</td></tr>
+<tr><td>85</td><td>La Rabatelière</td><td>953</td></tr>
+<tr><td>53</td><td>Ahuillé</td><td>1863</td></tr>
+<tr><td>72</td><td>La Bosse</td><td>128</td></tr>
+<tr><td>85</td><td>Falleron</td><td>1560</td></tr>
+<tr><td>85</td><td>Les Lucs-sur-Boulogne</td><td>3438</td></tr>
+<tr><td>44</td><td>Saint-Lyphard</td><td>4651</td></tr>
+<tr><td>85</td><td>Saint-Paul-en-Pareds</td><td>1323</td></tr>
+<tr><td>72</td><td>Rouillon</td><td>2613</td></tr>
+<tr><td>85</td><td>Essarts en Bocage</td><td>8747</td></tr>
+<tr><td>53</td><td>Gastines</td><td>162</td></tr>
+<tr><td>49</td><td>Doué-la-Fontaine</td><td>7891</td></tr>
+<tr><td>72</td><td>Courgenard</td><td>492</td></tr>
+<tr><td>44</td><td>Paimbœuf</td><td>3358</td></tr>
+<tr><td>44</td><td>Sainte-Luce-sur-Loire</td><td>15000</td></tr>
+<tr><td>85</td><td>Saint-Valérien</td><td>540</td></tr>
+<tr><td>72</td><td>Vancé</td><td>337</td></tr>
+<tr><td>85</td><td>Vendrennes</td><td>1652</td></tr>
+<tr><td>49</td><td>Nyoiseau</td><td>1477</td></tr>
+<tr><td>85</td><td>Saint-Pierre-du-Chemin</td><td>1373</td></tr>
+<tr><td>53</td><td>La Croixille</td><td>706</td></tr>
+<tr><td>49</td><td>Brossay</td><td>375</td></tr>
+<tr><td>72</td><td>Oizé</td><td>1345</td></tr>
+<tr><td>53</td><td>Blandouet</td><td>192</td></tr>
+<tr><td>49</td><td>La Possonnière</td><td>2491</td></tr>
+<tr><td>85</td><td>Tallud-Sainte-Gemme</td><td>481</td></tr>
+<tr><td>85</td><td>Talmont-Saint-Hilaire</td><td>7474</td></tr>
+<tr><td>49</td><td>Montilliers</td><td>1270</td></tr>
+<tr><td>85</td><td>La Chaize-le-Vicomte</td><td>3706</td></tr>
+<tr><td>44</td><td>Le Bignon</td><td>3695</td></tr>
+<tr><td>53</td><td>Beaulieu-sur-Oudon</td><td>493</td></tr>
+<tr><td>44</td><td>Montoir-de-Bretagne</td><td>7247</td></tr>
+<tr><td>85</td><td>Coëx</td><td>3180</td></tr>
+<tr><td>53</td><td>Deux-Évailles</td><td>208</td></tr>
+<tr><td>53</td><td>Montflours</td><td>254</td></tr>
+<tr><td>85</td><td>Saint-Jean-de-Beugné</td><td>605</td></tr>
+<tr><td>53</td><td>Livré-la-Touche</td><td>776</td></tr>
+<tr><td>85</td><td>Le Givre</td><td>490</td></tr>
+<tr><td>44</td><td>Saint-Gildas-des-Bois</td><td>3794</td></tr>
+<tr><td>85</td><td>Rocheservière</td><td>3189</td></tr>
+<tr><td>49</td><td>Soucelles</td><td>2597</td></tr>
+<tr><td>85</td><td>Poiroux</td><td>1043</td></tr>
+<tr><td>49</td><td>Erdre-en-Anjou</td><td>5783</td></tr>
+<tr><td>85</td><td>Le Bernard</td><td>1236</td></tr>
+<tr><td>49</td><td>Nuaillé</td><td>1563</td></tr>
+<tr><td>53</td><td>Chailland</td><td>1294</td></tr>
+<tr><td>44</td><td>Carquefou</td><td>19359</td></tr>
+<tr><td>44</td><td>Les Touches</td><td>2469</td></tr>
+<tr><td>72</td><td>Courcelles-la-Forêt</td><td>425</td></tr>
+<tr><td>72</td><td>Rouessé-Fontaine</td><td>283</td></tr>
+<tr><td>53</td><td>Origné</td><td>430</td></tr>
+<tr><td>49</td><td>Neuillé</td><td>1006</td></tr>
+<tr><td>85</td><td>Fontenay-le-Comte</td><td>14278</td></tr>
+<tr><td>85</td><td>La Bernardière</td><td>1800</td></tr>
+<tr><td>85</td><td>Le Poiré-sur-Vie</td><td>8536</td></tr>
+<tr><td>72</td><td>Saint-Calais</td><td>3514</td></tr>
+<tr><td>49</td><td>Souzay-Champigny</td><td>813</td></tr>
+<tr><td>44</td><td>Les Sorinières</td><td>8034</td></tr>
+<tr><td>72</td><td>Neuvy-en-Champagne</td><td>385</td></tr>
+<tr><td>44</td><td>La Boissière-du-Doré</td><td>1054</td></tr>
+<tr><td>85</td><td>La Copechagnière</td><td>975</td></tr>
+<tr><td>72</td><td>Saint-Georges-le-Gaultier</td><td>527</td></tr>
+<tr><td>53</td><td>L' Huisserie</td><td>4335</td></tr>
+<tr><td>49</td><td>Les Ulmes</td><td>600</td></tr>
+<tr><td>72</td><td>Jupilles</td><td>581</td></tr>
+<tr><td>49</td><td>Baracé</td><td>564</td></tr>
+<tr><td>72</td><td>Loué</td><td>2258</td></tr>
+<tr><td>49</td><td>Saint-Sigismond</td><td>379</td></tr>
+<tr><td>72</td><td>Noyen-sur-Sarthe</td><td>2713</td></tr>
+<tr><td>85</td><td>Rosnay</td><td>610</td></tr>
+<tr><td>49</td><td>Gennes-Val de Loire</td><td>5197</td></tr>
+<tr><td>49</td><td>Saint-Jean-des-Mauvrets</td><td>1831</td></tr>
+<tr><td>49</td><td>Chemillé-en-Anjou</td><td>21986</td></tr>
+<tr><td>72</td><td>Spay</td><td>2968</td></tr>
+<tr><td>72</td><td>Montabon</td><td>824</td></tr>
+<tr><td>85</td><td>Saint-Étienne-de-Brillouet</td><td>582</td></tr>
+<tr><td>72</td><td>Thoiré-sous-Contensor</td><td>88</td></tr>
+<tr><td>53</td><td>Meslay-du-Maine</td><td>2881</td></tr>
+<tr><td>49</td><td>Allonnes</td><td>3123</td></tr>
+<tr><td>85</td><td>Saint-Avaugourd-des-Landes</td><td>1044</td></tr>
+<tr><td>49</td><td>Passavant-sur-Layon</td><td>131</td></tr>
+<tr><td>53</td><td>Saint-Aignan-sur-Roë</td><td>909</td></tr>
+<tr><td>44</td><td>Besné</td><td>2927</td></tr>
+<tr><td>85</td><td>Notre-Dame-de-Riez</td><td>2042</td></tr>
+<tr><td>85</td><td>Saint-Étienne-du-Bois</td><td>2138</td></tr>
+<tr><td>72</td><td>Dureil</td><td>68</td></tr>
+<tr><td>44</td><td>Pouillé-les-Côteaux</td><td>994</td></tr>
+<tr><td>44</td><td>Guémené-Penfao</td><td>5387</td></tr>
+<tr><td>85</td><td>Landevieille</td><td>1367</td></tr>
+<tr><td>85</td><td>Bois-de-Céné</td><td>1965</td></tr>
+<tr><td>85</td><td>Aubigny-Les Clouzeaux</td><td>6330</td></tr>
+<tr><td>72</td><td>Saint-Léonard-des-Bois</td><td>500</td></tr>
+<tr><td>85</td><td>Château-d'Olonne</td><td>14285</td></tr>
+<tr><td>72</td><td>Neuvillette-en-Charnie</td><td>314</td></tr>
+<tr><td>72</td><td>Souligné-Flacé</td><td>702</td></tr>
+<tr><td>44</td><td>Sion-les-Mines</td><td>1688</td></tr>
+<tr><td>72</td><td>Clermont-Créans</td><td>1288</td></tr>
+<tr><td>72</td><td>Montfort-le-Gesnois</td><td>3075</td></tr>
+<tr><td>44</td><td>Le Loroux-Bottereau</td><td>8183</td></tr>
+<tr><td>72</td><td>Les Mées</td><td>106</td></tr>
+<tr><td>72</td><td>La Fontaine-Saint-Martin</td><td>626</td></tr>
+<tr><td>53</td><td>Saint-Michel-de-Feins</td><td>189</td></tr>
+<tr><td>85</td><td>Rives de l'Yon</td><td>4262</td></tr>
+<tr><td>44</td><td>Boussay</td><td>2697</td></tr>
+<tr><td>53</td><td>Cuillé</td><td>929</td></tr>
+<tr><td>49</td><td>Montreuil-sur-Maine</td><td>732</td></tr>
+<tr><td>53</td><td>Landivy</td><td>1175</td></tr>
+<tr><td>49</td><td>Angers</td><td>155734</td></tr>
+<tr><td>85</td><td>Boufféré</td><td>3255</td></tr>
+<tr><td>53</td><td>Renazé</td><td>2611</td></tr>
+<tr><td>72</td><td>Brains-sur-Gée</td><td>801</td></tr>
+<tr><td>72</td><td>Cormes</td><td>915</td></tr>
+<tr><td>72</td><td>Lamnay</td><td>976</td></tr>
+<tr><td>49</td><td>Chavagnes</td><td>1288</td></tr>
+<tr><td>53</td><td>La Roë</td><td>251</td></tr>
+<tr><td>44</td><td>Clisson</td><td>7056</td></tr>
+<tr><td>85</td><td>Longeville-sur-Mer</td><td>2503</td></tr>
+<tr><td>85</td><td>Notre-Dame-de-Monts</td><td>2051</td></tr>
+<tr><td>44</td><td>Villeneuve-en-Retz</td><td>4932</td></tr>
+<tr><td>49</td><td>Louresse-Rochemenier</td><td>820</td></tr>
+<tr><td>85</td><td>Saint-Georges-de-Pointindoux</td><td>1645</td></tr>
+<tr><td>44</td><td>Bouée</td><td>932</td></tr>
+<tr><td>72</td><td>La Flèche</td><td>16146</td></tr>
+<tr><td>85</td><td>Le Tablier</td><td>754</td></tr>
+<tr><td>49</td><td>Châtelais</td><td>674</td></tr>
+<tr><td>44</td><td>Le Landreau</td><td>3219</td></tr>
+<tr><td>44</td><td>Cordemais</td><td>3627</td></tr>
+<tr><td>44</td><td>Monnières</td><td>2105</td></tr>
+<tr><td>53</td><td>Saint-Pierre-sur-Erve</td><td>142</td></tr>
+<tr><td>72</td><td>Sainte-Cérotte</td><td>327</td></tr>
+<tr><td>72</td><td>Sainte-Jamme-sur-Sarthe</td><td>2109</td></tr>
+<tr><td>72</td><td>Saint-Pierre-de-Chevillé</td><td>369</td></tr>
+<tr><td>72</td><td>Marolles-lès-Saint-Calais</td><td>282</td></tr>
+<tr><td>72</td><td>Pezé-le-Robert</td><td>377</td></tr>
+<tr><td>72</td><td>La Chapelle-d'Aligné</td><td>1660</td></tr>
+<tr><td>53</td><td>Couesmes-Vaucé</td><td>404</td></tr>
+<tr><td>53</td><td>Saint-Loup-du-Dorat</td><td>382</td></tr>
+<tr><td>49</td><td>Le Puy-Notre-Dame</td><td>1250</td></tr>
+<tr><td>49</td><td>La Chapelle-sur-Oudon</td><td>589</td></tr>
+<tr><td>53</td><td>Saint-Erblon</td><td>178</td></tr>
+<tr><td>44</td><td>Brains</td><td>2755</td></tr>
+<tr><td>53</td><td>Bazougers</td><td>1153</td></tr>
+<tr><td>53</td><td>Carelles</td><td>269</td></tr>
+<tr><td>53</td><td>La Rouaudière</td><td>341</td></tr>
+<tr><td>53</td><td>Martigné-sur-Mayenne</td><td>1794</td></tr>
+<tr><td>85</td><td>La Tardière</td><td>1341</td></tr>
+<tr><td>72</td><td>Beaumont-sur-Dême</td><td>364</td></tr>
+<tr><td>72</td><td>Mézeray</td><td>1910</td></tr>
+<tr><td>85</td><td>L' Île-d'Olonne</td><td>2797</td></tr>
+<tr><td>49</td><td>Chemellier</td><td>823</td></tr>
+<tr><td>49</td><td>La Chapelle-Hullin</td><td>138</td></tr>
+<tr><td>53</td><td>Ruillé-Froid-Fonds</td><td>548</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-de-Voust</td><td>658</td></tr>
+<tr><td>72</td><td>Moncé-en-Belin</td><td>3605</td></tr>
+<tr><td>85</td><td>Saint-Malô-du-Bois</td><td>1612</td></tr>
+<tr><td>85</td><td>Aizenay</td><td>9131</td></tr>
+<tr><td>72</td><td>Nouans</td><td>288</td></tr>
+<tr><td>85</td><td>Bretignolles-sur-Mer</td><td>4510</td></tr>
+<tr><td>53</td><td>Grez-en-Bouère</td><td>1021</td></tr>
+<tr><td>72</td><td>Le Grand-Lucé</td><td>1960</td></tr>
+<tr><td>44</td><td>Treffieux</td><td>856</td></tr>
+<tr><td>44</td><td>Le Temple-de-Bretagne</td><td>1925</td></tr>
+<tr><td>53</td><td>Saint-Julien-du-Terroux</td><td>280</td></tr>
+<tr><td>53</td><td>Villiers-Charlemagne</td><td>1120</td></tr>
+<tr><td>72</td><td>Saint-Paul-le-Gaultier</td><td>305</td></tr>
+<tr><td>49</td><td>Saint-Martin-du-Fouilloux</td><td>1719</td></tr>
+<tr><td>72</td><td>Asnières-sur-Vègre</td><td>407</td></tr>
+<tr><td>85</td><td>Fougeré</td><td>1202</td></tr>
+<tr><td>49</td><td>Chanteloup-les-Bois</td><td>732</td></tr>
+<tr><td>85</td><td>Faymoreau</td><td>224</td></tr>
+<tr><td>72</td><td>Dehault</td><td>282</td></tr>
+<tr><td>53</td><td>Chemazé</td><td>1408</td></tr>
+<tr><td>85</td><td>Rochetrejoux</td><td>923</td></tr>
+<tr><td>85</td><td>La Châtaigneraie</td><td>2603</td></tr>
+<tr><td>44</td><td>Legé</td><td>4606</td></tr>
+<tr><td>85</td><td>Maché</td><td>1426</td></tr>
+<tr><td>53</td><td>Saint-Berthevin-la-Tannière</td><td>354</td></tr>
+<tr><td>49</td><td>Dénezé-sous-Doué</td><td>487</td></tr>
+<tr><td>85</td><td>Corpe</td><td>1059</td></tr>
+<tr><td>85</td><td>Saint-Christophe-du-Ligneron</td><td>2581</td></tr>
+<tr><td>72</td><td>Trangé</td><td>1382</td></tr>
+<tr><td>53</td><td>Saint-Loup-du-Gast</td><td>372</td></tr>
+<tr><td>44</td><td>Le Cellier</td><td>3789</td></tr>
+<tr><td>72</td><td>Saint-Cosme-en-Vairais</td><td>2031</td></tr>
+<tr><td>49</td><td>Brézé</td><td>1317</td></tr>
+<tr><td>85</td><td>Le Gué-de-Velluire</td><td>549</td></tr>
+<tr><td>49</td><td>Blou</td><td>1043</td></tr>
+<tr><td>72</td><td>Nauvay</td><td>14</td></tr>
+<tr><td>53</td><td>Neuilly-le-Vendin</td><td>362</td></tr>
+<tr><td>53</td><td>Longuefuye</td><td>347</td></tr>
+<tr><td>53</td><td>Bannes</td><td>130</td></tr>
+<tr><td>53</td><td>Saint-Brice</td><td>541</td></tr>
+<tr><td>53</td><td>Trans</td><td>230</td></tr>
+<tr><td>53</td><td>Gennes-sur-Glaize</td><td>1012</td></tr>
+<tr><td>72</td><td>Villaines-la-Gonais</td><td>563</td></tr>
+<tr><td>44</td><td>Aigrefeuille-sur-Maine</td><td>3714</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-des-Loges</td><td>2006</td></tr>
+<tr><td>72</td><td>Challes</td><td>1251</td></tr>
+<tr><td>49</td><td>Courléon</td><td>155</td></tr>
+<tr><td>44</td><td>Nantes</td><td>306495</td></tr>
+<tr><td>85</td><td>Saint-Germain-de-Prinçay</td><td>1535</td></tr>
+<tr><td>44</td><td>Riaillé</td><td>2312</td></tr>
+<tr><td>85</td><td>Chasnais</td><td>731</td></tr>
+<tr><td>49</td><td>Saint-Saturnin-sur-Loire</td><td>1430</td></tr>
+<tr><td>49</td><td>Armaillé</td><td>319</td></tr>
+<tr><td>53</td><td>Saint-Pierre-des-Landes</td><td>971</td></tr>
+<tr><td>85</td><td>Grand'Landes</td><td>630</td></tr>
+<tr><td>53</td><td>Bouchamps-lès-Craon</td><td>570</td></tr>
+<tr><td>53</td><td>Saint-Jean-sur-Erve</td><td>455</td></tr>
+<tr><td>85</td><td>Les Epesses</td><td>2831</td></tr>
+<tr><td>72</td><td>Valennes</td><td>321</td></tr>
+<tr><td>53</td><td>Jublains</td><td>734</td></tr>
+<tr><td>53</td><td>Saint-Denis-d'Anjou</td><td>1575</td></tr>
+<tr><td>44</td><td>Juigné-des-Moutiers</td><td>358</td></tr>
+<tr><td>72</td><td>Fillé</td><td>1551</td></tr>
+<tr><td>85</td><td>La Réorthe</td><td>1125</td></tr>
+<tr><td>44</td><td>Oudon</td><td>3772</td></tr>
+<tr><td>72</td><td>Pirmil</td><td>527</td></tr>
+<tr><td>49</td><td>Champigné</td><td>2217</td></tr>
+<tr><td>85</td><td>Sainte-Pexine</td><td>249</td></tr>
+<tr><td>44</td><td>Mauves-sur-Loire</td><td>3212</td></tr>
+<tr><td>85</td><td>La Bruffière</td><td>3947</td></tr>
+<tr><td>72</td><td>Mont-Saint-Jean</td><td>696</td></tr>
+<tr><td>72</td><td>Écorpain</td><td>308</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-la-Forêt</td><td>831</td></tr>
+<tr><td>49</td><td>Ingrandes-Le Fresne sur Loire</td><td>2662</td></tr>
+<tr><td>85</td><td>L' Aiguillon-sur-Mer</td><td>2175</td></tr>
+<tr><td>49</td><td>Juvardeil</td><td>813</td></tr>
+<tr><td>49</td><td>Cantenay-Épinard</td><td>2103</td></tr>
+<tr><td>72</td><td>Thoigné</td><td>167</td></tr>
+<tr><td>53</td><td>Cossé-le-Vivien</td><td>3126</td></tr>
+<tr><td>49</td><td>Le Plessis-Grammoire</td><td>2384</td></tr>
+<tr><td>53</td><td>Fromentières</td><td>863</td></tr>
+<tr><td>72</td><td>Crissé</td><td>608</td></tr>
+<tr><td>49</td><td>Saint-Paul-du-Bois</td><td>620</td></tr>
+<tr><td>85</td><td>Cezais</td><td>309</td></tr>
+<tr><td>49</td><td>Cléré-sur-Layon</td><td>354</td></tr>
+<tr><td>72</td><td>Saint-Gervais-de-Vic</td><td>412</td></tr>
+<tr><td>72</td><td>Pruillé-l'Éguillé</td><td>840</td></tr>
+<tr><td>85</td><td>Beauvoir-sur-Mer</td><td>3995</td></tr>
+<tr><td>72</td><td>Crosmières</td><td>1056</td></tr>
+<tr><td>44</td><td>Grandchamps-des-Fontaines</td><td>5599</td></tr>
+<tr><td>85</td><td>Saint-Michel-en-l'Herm</td><td>2409</td></tr>
+<tr><td>53</td><td>Forcé</td><td>1035</td></tr>
+<tr><td>49</td><td>Breil</td><td>283</td></tr>
+<tr><td>72</td><td>La Bazoge</td><td>3758</td></tr>
+<tr><td>53</td><td>Congrier</td><td>949</td></tr>
+<tr><td>85</td><td>La Bretonnière-la-Claye</td><td>607</td></tr>
+<tr><td>53</td><td>Courbeveille</td><td>649</td></tr>
+<tr><td>49</td><td>Brigné</td><td>452</td></tr>
+<tr><td>72</td><td>Tresson</td><td>459</td></tr>
+<tr><td>85</td><td>Lairoux</td><td>620</td></tr>
+<tr><td>72</td><td>Neufchâtel-en-Saosnois</td><td>1031</td></tr>
+<tr><td>72</td><td>Saint-Mars-de-Locquenay</td><td>560</td></tr>
+<tr><td>49</td><td>Sœurdres</td><td>396</td></tr>
+<tr><td>49</td><td>Cherré</td><td>549</td></tr>
+<tr><td>44</td><td>Soudan</td><td>2049</td></tr>
+<tr><td>49</td><td>Contigné</td><td>784</td></tr>
+<tr><td>49</td><td>Chenillé-Champteussé</td><td>367</td></tr>
+<tr><td>49</td><td>Saint-Sauveur-de-Flée</td><td>334</td></tr>
+<tr><td>44</td><td>Quilly</td><td>1397</td></tr>
+<tr><td>72</td><td>Saint-Aubin-de-Locquenay</td><td>696</td></tr>
+<tr><td>53</td><td>Cosmes</td><td>301</td></tr>
+<tr><td>44</td><td>Corsept</td><td>2760</td></tr>
+<tr><td>53</td><td>Thubœuf</td><td>308</td></tr>
+<tr><td>85</td><td>La Guérinière</td><td>1403</td></tr>
+<tr><td>72</td><td>Les Aulneaux</td><td>119</td></tr>
+<tr><td>44</td><td>Ruffigné</td><td>715</td></tr>
+<tr><td>49</td><td>Champtocé-sur-Loire</td><td>1906</td></tr>
+<tr><td>44</td><td>La Baule-Escoublac</td><td>16242</td></tr>
+<tr><td>72</td><td>Mareil-en-Champagne</td><td>356</td></tr>
+<tr><td>44</td><td>Saint-Viaud</td><td>2396</td></tr>
+<tr><td>85</td><td>Martinet</td><td>1070</td></tr>
+<tr><td>72</td><td>Saint-Ulphace</td><td>240</td></tr>
+<tr><td>72</td><td>Dissé-sous-le-Lude</td><td>571</td></tr>
+<tr><td>72</td><td>Cherreau</td><td>951</td></tr>
+<tr><td>53</td><td>Gesnes</td><td>235</td></tr>
+<tr><td>49</td><td>Beaucouzé</td><td>5092</td></tr>
+<tr><td>53</td><td>Saint-Ouën-des-Toits</td><td>1732</td></tr>
+<tr><td>72</td><td>Brette-les-Pins</td><td>2260</td></tr>
+<tr><td>44</td><td>Montbert</td><td>3117</td></tr>
+<tr><td>72</td><td>Saint-Saturnin</td><td>2552</td></tr>
+<tr><td>53</td><td>Simplé</td><td>425</td></tr>
+<tr><td>85</td><td>La Roche-sur-Yon</td><td>56617</td></tr>
+<tr><td>85</td><td>Moutiers-les-Mauxfaits</td><td>2097</td></tr>
+<tr><td>72</td><td>Notre-Dame-du-Pé</td><td>650</td></tr>
+<tr><td>53</td><td>Astillé</td><td>861</td></tr>
+<tr><td>85</td><td>Saint-Mathurin</td><td>2216</td></tr>
+<tr><td>53</td><td>Niafles</td><td>339</td></tr>
+<tr><td>72</td><td>Saint-Rémy-des-Monts</td><td>701</td></tr>
+<tr><td>53</td><td>Ambrières-les-Vallées</td><td>2848</td></tr>
+<tr><td>72</td><td>Lucé-sous-Ballon</td><td>116</td></tr>
+<tr><td>72</td><td>Briosne-lès-Sables</td><td>563</td></tr>
+<tr><td>49</td><td>Le Tremblay</td><td>364</td></tr>
+<tr><td>49</td><td>Sainte-Gemmes-sur-Loire</td><td>3776</td></tr>
+<tr><td>85</td><td>La Chapelle-Achard</td><td>1971</td></tr>
+<tr><td>85</td><td>Sainte-Flaive-des-Loups</td><td>2367</td></tr>
+<tr><td>44</td><td>Pannecé</td><td>1366</td></tr>
+<tr><td>44</td><td>Saint-Léger-les-Vignes</td><td>1677</td></tr>
+<tr><td>49</td><td>Soulaines-sur-Aubance</td><td>1324</td></tr>
+<tr><td>85</td><td>Bazoges-en-Paillers</td><td>1335</td></tr>
+<tr><td>49</td><td>Thorigné-d'Anjou</td><td>1224</td></tr>
+<tr><td>44</td><td>La Chapelle-des-Marais</td><td>4096</td></tr>
+<tr><td>49</td><td>Le May-sur-Èvre</td><td>3973</td></tr>
+<tr><td>72</td><td>Douillet</td><td>343</td></tr>
+<tr><td>72</td><td>Ségrie</td><td>625</td></tr>
+<tr><td>44</td><td>La Turballe</td><td>4590</td></tr>
+<tr><td>44</td><td>Nozay</td><td>4080</td></tr>
+<tr><td>53</td><td>Saint-Fraimbault-de-Prières</td><td>1029</td></tr>
+<tr><td>85</td><td>Saint-Gilles-Croix-de-Vie</td><td>7746</td></tr>
+<tr><td>72</td><td>Saint-Michel-de-Chavaignes</td><td>771</td></tr>
+<tr><td>53</td><td>Cossé-en-Champagne</td><td>340</td></tr>
+<tr><td>72</td><td>Courtillers</td><td>987</td></tr>
+<tr><td>72</td><td>Parcé-sur-Sarthe</td><td>2197</td></tr>
+<tr><td>53</td><td>Livet</td><td>149</td></tr>
+<tr><td>72</td><td>Neuvillalais</td><td>597</td></tr>
+<tr><td>72</td><td>Saint-Maixent</td><td>748</td></tr>
+<tr><td>72</td><td>Saint-Ouen-en-Champagne</td><td>222</td></tr>
+<tr><td>85</td><td>Les Herbiers</td><td>16575</td></tr>
+<tr><td>53</td><td>Saint-Mars-sur-la-Futaie</td><td>586</td></tr>
+<tr><td>49</td><td>Longuenée-en-Anjou</td><td>6451</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-le-Vouhis</td><td>1043</td></tr>
+<tr><td>72</td><td>Nogent-le-Bernard</td><td>1017</td></tr>
+<tr><td>44</td><td>Mouais</td><td>389</td></tr>
+<tr><td>72</td><td>Neuville-sur-Sarthe</td><td>2418</td></tr>
+<tr><td>72</td><td>Livet-en-Saosnois</td><td>71</td></tr>
+<tr><td>85</td><td>Foussais-Payré</td><td>1158</td></tr>
+<tr><td>85</td><td>Les Magnils-Reigniers</td><td>1638</td></tr>
+<tr><td>72</td><td>Mareil-sur-Loir</td><td>660</td></tr>
+<tr><td>85</td><td>Menomblet</td><td>646</td></tr>
+<tr><td>49</td><td>Sainte-Gemmes-d'Andigné</td><td>1514</td></tr>
+<tr><td>49</td><td>Aubigné-sur-Layon</td><td>381</td></tr>
+<tr><td>44</td><td>Le Pellerin</td><td>5000</td></tr>
+<tr><td>44</td><td>Massérac</td><td>707</td></tr>
+<tr><td>72</td><td>Luché-Pringé</td><td>1615</td></tr>
+<tr><td>72</td><td>Saint-Denis-d'Orques</td><td>840</td></tr>
+<tr><td>53</td><td>Saint-Cyr-le-Gravelais</td><td>539</td></tr>
+<tr><td>85</td><td>Montréverd</td><td>3558</td></tr>
+<tr><td>72</td><td>Sainte-Osmane</td><td>187</td></tr>
+<tr><td>85</td><td>Sigournais</td><td>879</td></tr>
+<tr><td>72</td><td>Bazouges-sur-le-Loir</td><td>1320</td></tr>
+<tr><td>49</td><td>Forges</td><td>307</td></tr>
+<tr><td>72</td><td>La Chapelle-Saint-Fray</td><td>476</td></tr>
+<tr><td>85</td><td>Loge-Fougereuse</td><td>381</td></tr>
+<tr><td>53</td><td>Couptrain</td><td>123</td></tr>
+<tr><td>72</td><td>Arthezé</td><td>413</td></tr>
+<tr><td>85</td><td>Mouchamps</td><td>2899</td></tr>
+<tr><td>49</td><td>Villemoisan</td><td>658</td></tr>
+<tr><td>44</td><td>Bouvron</td><td>3114</td></tr>
+<tr><td>53</td><td>Louvigné</td><td>1129</td></tr>
+<tr><td>53</td><td>Averton</td><td>613</td></tr>
+<tr><td>44</td><td>Saint-Brevin-les-Pins</td><td>13520</td></tr>
+<tr><td>44</td><td>Le Croisic</td><td>4106</td></tr>
+<tr><td>53</td><td>Évron</td><td>7320</td></tr>
+<tr><td>85</td><td>Saint-Urbain</td><td>1796</td></tr>
+<tr><td>49</td><td>Mûrs-Erigné</td><td>5489</td></tr>
+<tr><td>44</td><td>Herbignac</td><td>6567</td></tr>
+<tr><td>85</td><td>Benet</td><td>4092</td></tr>
+<tr><td>53</td><td>Launay-Villiers</td><td>399</td></tr>
+<tr><td>85</td><td>La Chaize-Giraud</td><td>1058</td></tr>
+<tr><td>49</td><td>Cholet</td><td>55935</td></tr>
+<tr><td>85</td><td>Vix</td><td>1821</td></tr>
+<tr><td>85</td><td>Chantonnay</td><td>8696</td></tr>
+<tr><td>72</td><td>Panon</td><td>43</td></tr>
+<tr><td>72</td><td>Saint-Pavace</td><td>2004</td></tr>
+<tr><td>72</td><td>Bousse</td><td>438</td></tr>
+<tr><td>85</td><td>La Chapelle-Hermier</td><td>939</td></tr>
+<tr><td>72</td><td>Sarcé</td><td>299</td></tr>
+<tr><td>49</td><td>Saint-Christophe-du-Bois</td><td>2680</td></tr>
+<tr><td>53</td><td>Vautorte</td><td>595</td></tr>
+<tr><td>72</td><td>Savigné-l'Évêque</td><td>4137</td></tr>
+<tr><td>72</td><td>Courcival</td><td>91</td></tr>
+<tr><td>72</td><td>Tassillé</td><td>148</td></tr>
+<tr><td>53</td><td>Hambers</td><td>641</td></tr>
+<tr><td>53</td><td>Mayenne</td><td>14172</td></tr>
+<tr><td>44</td><td>La Chevallerais</td><td>1558</td></tr>
+<tr><td>53</td><td>Saint-Cyr-en-Pail</td><td>496</td></tr>
+<tr><td>44</td><td>Haute-Goulaine</td><td>5719</td></tr>
+<tr><td>44</td><td>Saint-Julien-de-Vouvantes</td><td>966</td></tr>
+<tr><td>85</td><td>Châteauneuf</td><td>1007</td></tr>
+<tr><td>72</td><td>Requeil</td><td>1240</td></tr>
+<tr><td>49</td><td>Lys-Haut-Layon</td><td>8042</td></tr>
+<tr><td>53</td><td>Champgenéteux</td><td>548</td></tr>
+<tr><td>49</td><td>Saint-Jean-de-la-Croix</td><td>239</td></tr>
+<tr><td>72</td><td>Maresché</td><td>925</td></tr>
+<tr><td>72</td><td>Saint-Ouen-en-Belin</td><td>1325</td></tr>
+<tr><td>85</td><td>Saint-Mars-la-Réorthe</td><td>959</td></tr>
+<tr><td>72</td><td>Saint-Ouen-de-Mimbré</td><td>1007</td></tr>
+<tr><td>72</td><td>Congé-sur-Orne</td><td>350</td></tr>
+<tr><td>53</td><td>Argentré</td><td>2829</td></tr>
+<tr><td>44</td><td>La Chapelle-Heulin</td><td>3279</td></tr>
+<tr><td>72</td><td>Vezot</td><td>71</td></tr>
+<tr><td>72</td><td>Sillé-le-Guillaume</td><td>2425</td></tr>
+<tr><td>72</td><td>Saint-Jean-des-Échelles</td><td>265</td></tr>
+<tr><td>49</td><td>Brain-sur-Allonnes</td><td>2011</td></tr>
+<tr><td>49</td><td>Saint-Lambert-la-Potherie</td><td>2597</td></tr>
+<tr><td>72</td><td>Terrehault</td><td>133</td></tr>
+<tr><td>44</td><td>La Haie-Fouassière</td><td>4587</td></tr>
+<tr><td>72</td><td>Aigné</td><td>1658</td></tr>
+<tr><td>72</td><td>Parigné-l'Évêque</td><td>4971</td></tr>
+<tr><td>72</td><td>Solesmes</td><td>1303</td></tr>
+<tr><td>72</td><td>Saint-Symphorien</td><td>594</td></tr>
+<tr><td>53</td><td>Le Ribay</td><td>469</td></tr>
+<tr><td>53</td><td>Désertines</td><td>532</td></tr>
+<tr><td>49</td><td>Mauges-sur-Loire</td><td>18738</td></tr>
+<tr><td>85</td><td>L' Herbergement</td><td>3150</td></tr>
+<tr><td>53</td><td>Saint-Germain-d'Anxure</td><td>384</td></tr>
+<tr><td>72</td><td>Saint-Georges-de-la-Couée</td><td>160</td></tr>
+<tr><td>85</td><td>Marsais-Sainte-Radégonde</td><td>561</td></tr>
+<tr><td>72</td><td>Luceau</td><td>1285</td></tr>
+<tr><td>85</td><td>Moreilles</td><td>377</td></tr>
+<tr><td>49</td><td>Loiré</td><td>909</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-de-Riez</td><td>11631</td></tr>
+<tr><td>85</td><td>Saint-Benoist-sur-Mer</td><td>449</td></tr>
+<tr><td>85</td><td>Treize-Septiers</td><td>3156</td></tr>
+<tr><td>72</td><td>Gesnes-le-Gandelin</td><td>992</td></tr>
+<tr><td>72</td><td>Saint-Mars-d'Outillé</td><td>2399</td></tr>
+<tr><td>53</td><td>Saint-Jean-sur-Mayenne</td><td>1695</td></tr>
+<tr><td>72</td><td>Pontvallain</td><td>1787</td></tr>
+<tr><td>44</td><td>Saint-Philbert-de-Grand-Lieu</td><td>8958</td></tr>
+<tr><td>53</td><td>Saint-Germain-le-Fouilloux</td><td>1140</td></tr>
+<tr><td>49</td><td>Écouflant</td><td>3909</td></tr>
+<tr><td>49</td><td>Pouancé</td><td>3246</td></tr>
+<tr><td>44</td><td>Saint-Géréon</td><td>2922</td></tr>
+<tr><td>72</td><td>Degré</td><td>811</td></tr>
+<tr><td>72</td><td>Parigné-le-Pôlin</td><td>1201</td></tr>
+<tr><td>44</td><td>Le Pin</td><td>820</td></tr>
+<tr><td>44</td><td>Saint-Sébastien-sur-Loire</td><td>26679</td></tr>
+<tr><td>49</td><td>Montfort</td><td>110</td></tr>
+<tr><td>44</td><td>Joué-sur-Erdre</td><td>2402</td></tr>
+<tr><td>72</td><td>Gréez-sur-Roc</td><td>356</td></tr>
+<tr><td>44</td><td>Fay-de-Bretagne</td><td>3559</td></tr>
+<tr><td>72</td><td>Bouloire</td><td>2120</td></tr>
+<tr><td>85</td><td>Triaize</td><td>1075</td></tr>
+<tr><td>53</td><td>La Boissière</td><td>129</td></tr>
+<tr><td>72</td><td>Saint-Vincent-du-Lorouër</td><td>896</td></tr>
+<tr><td>44</td><td>Saint-Colomban</td><td>3310</td></tr>
+<tr><td>49</td><td>La Chapelle-Saint-Laud</td><td>737</td></tr>
+<tr><td>72</td><td>Le Chevain</td><td>604</td></tr>
+<tr><td>49</td><td>Saint-Michel-et-Chanveaux</td><td>412</td></tr>
+<tr><td>49</td><td>Les Verchers-sur-Layon</td><td>914</td></tr>
+<tr><td>53</td><td>Lesbois</td><td>197</td></tr>
+<tr><td>53</td><td>Grazay</td><td>650</td></tr>
+<tr><td>44</td><td>Derval</td><td>3911</td></tr>
+<tr><td>44</td><td>Châteaubriant</td><td>12484</td></tr>
+<tr><td>44</td><td>Divatte-sur-Loire</td><td>6757</td></tr>
+<tr><td>72</td><td>Fercé-sur-Sarthe</td><td>595</td></tr>
+<tr><td>72</td><td>Chaufour-Notre-Dame</td><td>1087</td></tr>
+<tr><td>49</td><td>Coron</td><td>1615</td></tr>
+<tr><td>85</td><td>Commequiers</td><td>3367</td></tr>
+<tr><td>72</td><td>Saint-Aubin-des-Coudrais</td><td>945</td></tr>
+<tr><td>72</td><td>Vion</td><td>1485</td></tr>
+<tr><td>72</td><td>Lavenay</td><td>355</td></tr>
+<tr><td>72</td><td>Le Bailleul</td><td>1255</td></tr>
+<tr><td>53</td><td>Loiron-Ruillé</td><td>2582</td></tr>
+<tr><td>72</td><td>Ligron</td><td>511</td></tr>
+<tr><td>85</td><td>Saint-Jean-de-Monts</td><td>8676</td></tr>
+<tr><td>49</td><td>La Breille-les-Pins</td><td>609</td></tr>
+<tr><td>85</td><td>Nalliers</td><td>2363</td></tr>
+<tr><td>85</td><td>Saint-Georges-de-Montaigu</td><td>4298</td></tr>
+<tr><td>85</td><td>La Barre-de-Monts</td><td>2226</td></tr>
+<tr><td>72</td><td>Coudrecieux</td><td>651</td></tr>
+<tr><td>72</td><td>Moitron-sur-Sarthe</td><td>251</td></tr>
+<tr><td>44</td><td>Ligné</td><td>5037</td></tr>
+<tr><td>85</td><td>Saint-Maurice-le-Girard</td><td>612</td></tr>
+<tr><td>44</td><td>Savenay</td><td>8618</td></tr>
+<tr><td>53</td><td>Saint-Thomas-de-Courceriers</td><td>203</td></tr>
+<tr><td>72</td><td>Changé</td><td>6638</td></tr>
+<tr><td>85</td><td>Château-Guibert</td><td>1569</td></tr>
+<tr><td>53</td><td>Saint-Germain-de-Coulamer</td><td>399</td></tr>
+<tr><td>72</td><td>Sillé-le-Philippe</td><td>1111</td></tr>
+<tr><td>49</td><td>Le Lion-d'Angers</td><td>4761</td></tr>
+<tr><td>53</td><td>Izé</td><td>483</td></tr>
+<tr><td>85</td><td>Doix lès Fontaines</td><td>1751</td></tr>
+<tr><td>85</td><td>Dompierre-sur-Yon</td><td>4273</td></tr>
+<tr><td>44</td><td>Vigneux-de-Bretagne</td><td>5845</td></tr>
+<tr><td>53</td><td>Le Genest-Saint-Isle</td><td>2175</td></tr>
+<tr><td>49</td><td>Chaudefonds-sur-Layon</td><td>987</td></tr>
+<tr><td>72</td><td>Épineu-le-Chevreuil</td><td>306</td></tr>
+<tr><td>72</td><td>Saint-Georges-du-Bois</td><td>2065</td></tr>
+<tr><td>44</td><td>Rouans</td><td>2845</td></tr>
+<tr><td>53</td><td>Saint-Aubin-du-Désert</td><td>258</td></tr>
+<tr><td>49</td><td>Saint-Melaine-sur-Aubance</td><td>2084</td></tr>
+<tr><td>85</td><td>Barbâtre</td><td>1843</td></tr>
+<tr><td>53</td><td>Marcillé-la-Ville</td><td>841</td></tr>
+<tr><td>72</td><td>Tassé</td><td>325</td></tr>
+<tr><td>85</td><td>Saint-Hilaire-de-Loulay</td><td>4571</td></tr>
+<tr><td>44</td><td>Héric</td><td>5847</td></tr>
+<tr><td>72</td><td>Moncé-en-Saosnois</td><td>261</td></tr>
+<tr><td>53</td><td>Saint-Georges-le-Fléchard</td><td>421</td></tr>
+<tr><td>53</td><td>Montigné-le-Brillant</td><td>1300</td></tr>
+<tr><td>72</td><td>Joué-l'Abbé</td><td>1329</td></tr>
+<tr><td>44</td><td>Mouzillon</td><td>2766</td></tr>
+<tr><td>49</td><td>Jarzé Villages</td><td>2804</td></tr>
+<tr><td>53</td><td>Oisseau</td><td>1208</td></tr>
+<tr><td>85</td><td>Nieul-le-Dolent</td><td>2469</td></tr>
+<tr><td>85</td><td>La Chapelle-Palluau</td><td>952</td></tr>
+<tr><td>72</td><td>Meurcé</td><td>266</td></tr>
+<tr><td>53</td><td>La Chapelle-Anthenaise</td><td>970</td></tr>
+<tr><td>53</td><td>Bais</td><td>1280</td></tr>
+<tr><td>72</td><td>Chérancé</td><td>392</td></tr>
+<tr><td>72</td><td>Souvigné-sur-Sarthe</td><td>634</td></tr>
+<tr><td>49</td><td>Saint-Martin-de-la-Place</td><td>1182</td></tr>
+<tr><td>49</td><td>Chalonnes-sur-Loire</td><td>6686</td></tr>
+<tr><td>72</td><td>Saint-Georges-du-Rosay</td><td>438</td></tr>
+<tr><td>49</td><td>Vezins</td><td>1716</td></tr>
+<tr><td>49</td><td>Querré</td><td>342</td></tr>
+<tr><td>53</td><td>Ernée</td><td>5901</td></tr>
+<tr><td>72</td><td>Pincé</td><td>199</td></tr>
+<tr><td>85</td><td>Puyravault</td><td>698</td></tr>
+<tr><td>85</td><td>Saint-André-Goule-d'Oie</td><td>1804</td></tr>
+<tr><td>53</td><td>Montenay</td><td>1386</td></tr>
+<tr><td>49</td><td>Sceaux-d'Anjou</td><td>1165</td></tr>
+<tr><td>85</td><td>Xanton-Chassenon</td><td>741</td></tr>
+<tr><td>53</td><td>Chantrigné</td><td>626</td></tr>
+<tr><td>53</td><td>Saint-Georges-Buttavent</td><td>1442</td></tr>
+<tr><td>53</td><td>Torcé-Viviers-en-Charnie</td><td>782</td></tr>
+<tr><td>85</td><td>Damvix</td><td>773</td></tr>
+<tr><td>53</td><td>Mézangers</td><td>721</td></tr>
+<tr><td>44</td><td>La Roche-Blanche</td><td>1181</td></tr>
+<tr><td>72</td><td>Villeneuve-en-Perseigne</td><td>2315</td></tr>
+<tr><td>85</td><td>La Ferrière</td><td>5256</td></tr>
+<tr><td>85</td><td>Le Boupère</td><td>3130</td></tr>
+<tr><td>53</td><td>Levaré</td><td>338</td></tr>
+<tr><td>53</td><td>Changé</td><td>5749</td></tr>
+<tr><td>72</td><td>Saint-Jean-d'Assé</td><td>1702</td></tr>
+<tr><td>53</td><td>La Brûlatte</td><td>712</td></tr>
+<tr><td>49</td><td>Briollay</td><td>2868</td></tr>
+<tr><td>85</td><td>Mouilleron-le-Captif</td><td>4952</td></tr>
+<tr><td>85</td><td>Sainte-Gemme-la-Plaine</td><td>2263</td></tr>
+<tr><td>44</td><td>Touvois</td><td>1769</td></tr>
+<tr><td>72</td><td>Cherré</td><td>1783</td></tr>
+<tr><td>44</td><td>Noyal-sur-Brutz</td><td>602</td></tr>
+<tr><td>49</td><td>Candé</td><td>2960</td></tr>
+<tr><td>72</td><td>Longnes</td><td>351</td></tr>
+<tr><td>49</td><td>Corzé</td><td>1771</td></tr>
+<tr><td>49</td><td>Miré</td><td>1044</td></tr>
+<tr><td>85</td><td>Saint-Denis-la-Chevasse</td><td>2294</td></tr>
+<tr><td>85</td><td>Mallièvre</td><td>266</td></tr>
+<tr><td>44</td><td>Nort-sur-Erdre</td><td>8648</td></tr>
+<tr><td>72</td><td>La Ferté-Bernard</td><td>9269</td></tr>
+<tr><td>49</td><td>Montreuil-Juigné</td><td>7569</td></tr>
+<tr><td>49</td><td>Sarrigné</td><td>831</td></tr>
+<tr><td>72</td><td>Dissay-sous-Courcillon</td><td>972</td></tr>
+<tr><td>72</td><td>Cogners</td><td>207</td></tr>
+<tr><td>44</td><td>Chaumes-en-Retz</td><td>6680</td></tr>
+<tr><td>44</td><td>Saint-Lumine-de-Coutais</td><td>2094</td></tr>
+<tr><td>49</td><td>Bouillé-Ménard</td><td>758</td></tr>
+<tr><td>85</td><td>Les Sables-d'Olonne</td><td>14667</td></tr>
+<tr><td>53</td><td>Rennes-en-Grenouilles</td><td>116</td></tr>
+<tr><td>49</td><td>Artannes-sur-Thouet</td><td>434</td></tr>
+<tr><td>49</td><td>Villebernier</td><td>1543</td></tr>
+<tr><td>53</td><td>Entrammes</td><td>2285</td></tr>
+<tr><td>49</td><td>Saint-Clément-des-Levées</td><td>1175</td></tr>
+<tr><td>72</td><td>Teloché</td><td>3100</td></tr>
+<tr><td>85</td><td>Nieul-sur-l'Autise</td><td>1320</td></tr>
+<tr><td>72</td><td>Chemiré-en-Charnie</td><td>224</td></tr>
+<tr><td>53</td><td>Contest</td><td>915</td></tr>
+<tr><td>44</td><td>Saint-Nicolas-de-Redon</td><td>3219</td></tr>
+<tr><td>53</td><td>Vimarcé</td><td>247</td></tr>
+<tr><td>44</td><td>Saint-Mars-du-Désert</td><td>4647</td></tr>
+<tr><td>53</td><td>Ravigny</td><td>235</td></tr>
+<tr><td>72</td><td>Melleray</td><td>465</td></tr>
+<tr><td>44</td><td>Trans-sur-Erdre</td><td>1038</td></tr>
+<tr><td>85</td><td>Les Landes-Genusson</td><td>2307</td></tr>
+<tr><td>53</td><td>Sainte-Marie-du-Bois</td><td>225</td></tr>
+<tr><td>72</td><td>Juigné-sur-Sarthe</td><td>1195</td></tr>
+<tr><td>85</td><td>Mervent</td><td>1085</td></tr>
+<tr><td>72</td><td>Mayet</td><td>3226</td></tr>
+<tr><td>72</td><td>Vouvray-sur-Huisne</td><td>127</td></tr>
+<tr><td>72</td><td>La Chapelle-aux-Choux</td><td>271</td></tr>
+<tr><td>53</td><td>Fontaine-Couverte</td><td>432</td></tr>
+<tr><td>44</td><td>Abbaretz</td><td>2042</td></tr>
+<tr><td>53</td><td>Daon</td><td>474</td></tr>
+<tr><td>53</td><td>Saint-Denis-de-Gastines</td><td>1629</td></tr>
+<tr><td>85</td><td>Le Girouard</td><td>1011</td></tr>
+<tr><td>44</td><td>Louisfert</td><td>1008</td></tr>
+<tr><td>85</td><td>Landeronde</td><td>2325</td></tr>
+<tr><td>49</td><td>Le Coudray-Macouard</td><td>930</td></tr>
+<tr><td>53</td><td>Épineux-le-Seguin</td><td>245</td></tr>
+<tr><td>85</td><td>Bouillé-Courdault</td><td>556</td></tr>
+<tr><td>49</td><td>Lézigné</td><td>790</td></tr>
+<tr><td>53</td><td>Hardanges</td><td>200</td></tr>
+<tr><td>53</td><td>La Selle-Craonnaise</td><td>956</td></tr>
+<tr><td>53</td><td>Courcité</td><td>920</td></tr>
+<tr><td>72</td><td>Écommoy</td><td>4722</td></tr>
+<tr><td>72</td><td>Louvigny</td><td>199</td></tr>
+<tr><td>53</td><td>Le Bignon-du-Maine</td><td>347</td></tr>
+<tr><td>85</td><td>Saint-Maurice-des-Noues</td><td>683</td></tr>
+<tr><td>85</td><td>Bellevigny</td><td>5928</td></tr>
+<tr><td>72</td><td>Jauzé</td><td>89</td></tr>
+<tr><td>53</td><td>Senonnes</td><td>353</td></tr>
+<tr><td>72</td><td>Lavernat</td><td>632</td></tr>
+<tr><td>49</td><td>Saint-Léger-des-Bois</td><td>1703</td></tr>
+<tr><td>85</td><td>Breuil-Barret</td><td>671</td></tr>
+<tr><td>44</td><td>Mésanger</td><td>4721</td></tr>
+<tr><td>53</td><td>Sainte-Suzanne-et-Chammes</td><td>1364</td></tr>
+<tr><td>49</td><td>Charcé-Saint-Ellier-sur-Aubance</td><td>793</td></tr>
+<tr><td>72</td><td>La Chapelle-Gaugain</td><td>297</td></tr>
+<tr><td>49</td><td>Les Cerqueux</td><td>907</td></tr>
+<tr><td>49</td><td>Saint-Just-sur-Dive</td><td>397</td></tr>
+<tr><td>72</td><td>Crannes-en-Champagne</td><td>359</td></tr>
+<tr><td>85</td><td>Mortagne-sur-Sèvre</td><td>6123</td></tr>
+<tr><td>85</td><td>L' Île-d'Yeu</td><td>4802</td></tr>
+<tr><td>49</td><td>Longué-Jumelles</td><td>7014</td></tr>
+<tr><td>85</td><td>Sèvremont</td><td>6689</td></tr>
+<tr><td>44</td><td>La Regrippière</td><td>1556</td></tr>
+<tr><td>85</td><td>La Jaudonnière</td><td>634</td></tr>
+<tr><td>53</td><td>La Pellerine</td><td>349</td></tr>
+<tr><td>85</td><td>Antigny</td><td>1082</td></tr>
+<tr><td>53</td><td>Champéon</td><td>586</td></tr>
+<tr><td>72</td><td>Mamers</td><td>5496</td></tr>
+<tr><td>85</td><td>La Mothe-Achard</td><td>2977</td></tr>
+<tr><td>72</td><td>Fay</td><td>627</td></tr>
+<tr><td>72</td><td>Le Grez</td><td>401</td></tr>
+<tr><td>49</td><td>Vergonnes</td><td>325</td></tr>
+<tr><td>53</td><td>Ampoigné</td><td>575</td></tr>
+<tr><td>53</td><td>Belgeard</td><td>601</td></tr>
+<tr><td>72</td><td>Louailles</td><td>756</td></tr>
+<tr><td>44</td><td>Casson</td><td>2175</td></tr>
+<tr><td>85</td><td>Saint-Gervais</td><td>2552</td></tr>
+<tr><td>49</td><td>Saulgé-l'Hôpital</td><td>612</td></tr>
+<tr><td>44</td><td>Ancenis</td><td>7861</td></tr>
+<tr><td>49</td><td>Saint-Macaire-du-Bois</td><td>461</td></tr>
+<tr><td>85</td><td>Thouarsais-Bouildroux</td><td>766</td></tr>
+<tr><td>44</td><td>Vertou</td><td>23781</td></tr>
+<tr><td>72</td><td>Saint-Germain-sur-Sarthe</td><td>582</td></tr>
+<tr><td>49</td><td>Montrevault-sur-Èvre</td><td>16346</td></tr>
+<tr><td>53</td><td>Javron-les-Chapelles</td><td>1439</td></tr>
+<tr><td>72</td><td>Coulaines</td><td>7651</td></tr>
+<tr><td>44</td><td>Saint-Lumine-de-Clisson</td><td>2137</td></tr>
+<tr><td>49</td><td>Antoigné</td><td>476</td></tr>
+<tr><td>72</td><td>Marigné-Laillé</td><td>1691</td></tr>
+<tr><td>44</td><td>Batz-sur-Mer</td><td>3086</td></tr>
+<tr><td>53</td><td>Vaiges</td><td>1167</td></tr>
+<tr><td>49</td><td>Chacé</td><td>1410</td></tr>
+<tr><td>49</td><td>La Tessoualle</td><td>3173</td></tr>
+<tr><td>53</td><td>Voutré</td><td>925</td></tr>
+<tr><td>85</td><td>Chavagnes-en-Paillers</td><td>3628</td></tr>
+<tr><td>53</td><td>Saint-Aignan-de-Couptrain</td><td>389</td></tr>
+<tr><td>72</td><td>Maisoncelles</td><td>189</td></tr>
+<tr><td>44</td><td>Saint-Étienne-de-Mer-Morte</td><td>1668</td></tr>
+<tr><td>72</td><td>Villaines-la-Carelle</td><td>165</td></tr>
+<tr><td>53</td><td>Châlons-du-Maine</td><td>722</td></tr>
+<tr><td>85</td><td>Saint-Martin-des-Noyers</td><td>2308</td></tr>
+<tr><td>53</td><td>Bourgon</td><td>660</td></tr>
+<tr><td>44</td><td>Geneston</td><td>3686</td></tr>
+<tr><td>49</td><td>Daumeray</td><td>1570</td></tr>
+<tr><td>72</td><td>Saint-Pierre-des-Bois</td><td>239</td></tr>
+<tr><td>85</td><td>Venansault</td><td>4785</td></tr>
+<tr><td>44</td><td>Montrelais</td><td>872</td></tr>
+<tr><td>85</td><td>Cheffois</td><td>1003</td></tr>
+<tr><td>85</td><td>La Chapelle-Thémer</td><td>384</td></tr>
+<tr><td>85</td><td>L' Hermenault</td><td>886</td></tr>
+<tr><td>85</td><td>Bouin</td><td>2197</td></tr>
+<tr><td>44</td><td>La Montagne</td><td>6141</td></tr>
+<tr><td>72</td><td>Moulins-le-Carbonnel</td><td>728</td></tr>
+<tr><td>49</td><td>Baugé-en-Anjou</td><td>12129</td></tr>
+<tr><td>44</td><td>Missillac</td><td>5214</td></tr>
+<tr><td>85</td><td>Montournais</td><td>1746</td></tr>
+<tr><td>49</td><td>Verrières-en-Anjou</td><td>7294</td></tr>
+<tr><td>49</td><td>La Ferrière-de-Flée</td><td>366</td></tr>
+<tr><td>53</td><td>La Gravelle</td><td>526</td></tr>
+<tr><td>44</td><td>Saint-André-des-Eaux</td><td>6224</td></tr>
+<tr><td>49</td><td>Orée d'Anjou</td><td>16389</td></tr>
+<tr><td>72</td><td>Aubigné-Racan</td><td>2192</td></tr>
+<tr><td>49</td><td>Sèvremoine</td><td>25879</td></tr>
+<tr><td>85</td><td>Olonne-sur-Mer</td><td>15663</td></tr>
+<tr><td>85</td><td>Saint-Martin-de-Fraigneau</td><td>879</td></tr>
+<tr><td>53</td><td>Nuillé-sur-Vicoin</td><td>1271</td></tr>
+<tr><td>49</td><td>Savennières</td><td>1378</td></tr>
+<tr><td>72</td><td>Prévelles</td><td>227</td></tr>
+<tr><td>72</td><td>Pizieux</td><td>82</td></tr>
+<tr><td>72</td><td>Teillé</td><td>517</td></tr>
+<tr><td>72</td><td>Brûlon</td><td>1636</td></tr>
+<tr><td>53</td><td>Bierné</td><td>691</td></tr>
+<tr><td>72</td><td>Marçon</td><td>1045</td></tr>
+<tr><td>85</td><td>Petosse</td><td>701</td></tr>
+<tr><td>49</td><td>Trélazé</td><td>13841</td></tr>
+<tr><td>49</td><td>Huillé</td><td>552</td></tr>
+<tr><td>53</td><td>Méral</td><td>1099</td></tr>
+<tr><td>72</td><td>Courgains</td><td>606</td></tr>
+<tr><td>44</td><td>Indre</td><td>4003</td></tr>
+<tr><td>72</td><td>Coulans-sur-Gée</td><td>1757</td></tr>
+<tr><td>72</td><td>La Quinte</td><td>814</td></tr>
+<tr><td>44</td><td>Sainte-Anne-sur-Brivet</td><td>2899</td></tr>
+<tr><td>72</td><td>Chemiré-le-Gaudin</td><td>970</td></tr>
+<tr><td>53</td><td>Saint-Baudelle</td><td>1204</td></tr>
+<tr><td>49</td><td>Verrie</td><td>471</td></tr>
+<tr><td>85</td><td>Sallertaine</td><td>2988</td></tr>
+<tr><td>72</td><td>Ancinnes</td><td>994</td></tr>
+<tr><td>72</td><td>Théligny</td><td>227</td></tr>
+<tr><td>49</td><td>Saint-Clément-de-la-Place</td><td>2199</td></tr>
+<tr><td>49</td><td>Châteauneuf-sur-Sarthe</td><td>3196</td></tr>
+<tr><td>85</td><td>Treize-Vents</td><td>1281</td></tr>
+<tr><td>85</td><td>La Caillère-Saint-Hilaire</td><td>1134</td></tr>
+<tr><td>44</td><td>Rezé</td><td>40903</td></tr>
+<tr><td>72</td><td>Saint-Gervais-en-Belin</td><td>2179</td></tr>
+<tr><td>53</td><td>Châtres-la-Forêt</td><td>812</td></tr>
+<tr><td>85</td><td>Soullans</td><td>4326</td></tr>
+<tr><td>72</td><td>Verneil-le-Chétif</td><td>726</td></tr>
+<tr><td>72</td><td>Poillé-sur-Vègre</td><td>638</td></tr>
+<tr><td>49</td><td>Chigné</td><td>315</td></tr>
+<tr><td>72</td><td>Boëssé-le-Sec</td><td>636</td></tr>
+<tr><td>44</td><td>Saint-Père-en-Retz</td><td>4504</td></tr>
+<tr><td>44</td><td>Gorges</td><td>4743</td></tr>
+<tr><td>49</td><td>Bouchemaine</td><td>6803</td></tr>
+<tr><td>49</td><td>Juigné-sur-Loire</td><td>2715</td></tr>
+<tr><td>85</td><td>Sérigné</td><td>1027</td></tr>
+<tr><td>44</td><td>Lusanger</td><td>1051</td></tr>
+<tr><td>49</td><td>Méon</td><td>275</td></tr>
+<tr><td>72</td><td>Saint-Germain-d'Arcé</td><td>352</td></tr>
+<tr><td>49</td><td>La Lande-Chasles</td><td>116</td></tr>
+<tr><td>53</td><td>Houssay</td><td>481</td></tr>
+<tr><td>53</td><td>Saint-Martin-du-Limet</td><td>471</td></tr>
+<tr><td>85</td><td>Saint-Michel-le-Cloucq</td><td>1345</td></tr>
+<tr><td>53</td><td>Laigné</td><td>877</td></tr>
+<tr><td>72</td><td>Domfront-en-Champagne</td><td>1041</td></tr>
+<tr><td>44</td><td>Teillé</td><td>1829</td></tr>
+<tr><td>49</td><td>Combrée</td><td>2916</td></tr>
+<tr><td>72</td><td>Cérans-Foulletourte</td><td>3400</td></tr>
+<tr><td>85</td><td>Bazoges-en-Pareds</td><td>1202</td></tr>
+<tr><td>44</td><td>Préfailles</td><td>1241</td></tr>
+<tr><td>44</td><td>La Remaudière</td><td>1275</td></tr>
+<tr><td>72</td><td>Sainte-Sabine-sur-Longève</td><td>758</td></tr>
+<tr><td>85</td><td>La Meilleraie-Tillay</td><td>1609</td></tr>
+<tr><td>85</td><td>Péault</td><td>587</td></tr>
+<tr><td>44</td><td>Gétigné</td><td>3635</td></tr>
+<tr><td>72</td><td>Souvigné-sur-Même</td><td>189</td></tr>
+<tr><td>44</td><td>Mesquer</td><td>1919</td></tr>
+<tr><td>53</td><td>Saint-Berthevin</td><td>7634</td></tr>
+<tr><td>72</td><td>Marollette</td><td>147</td></tr>
+<tr><td>85</td><td>Le Perrier</td><td>1964</td></tr>
+<tr><td>72</td><td>Saint-Christophe-en-Champagne</td><td>199</td></tr>
+<tr><td>53</td><td>Brée</td><td>546</td></tr>
+<tr><td>72</td><td>Viré-en-Champagne</td><td>226</td></tr>
+<tr><td>44</td><td>Guérande</td><td>16730</td></tr>
+<tr><td>85</td><td>Sainte-Cécile</td><td>1682</td></tr>
+<tr><td>44</td><td>Malville</td><td>3453</td></tr>
+<tr><td>49</td><td>Dénezé-sous-le-Lude</td><td>312</td></tr>
+<tr><td>53</td><td>Chevaigné-du-Maine</td><td>189</td></tr>
+<tr><td>53</td><td>Assé-le-Bérenger</td><td>437</td></tr>
+<tr><td>49</td><td>Luigné</td><td>268</td></tr>
+<tr><td>85</td><td>Saint-Pierre-le-Vieux</td><td>991</td></tr>
+<tr><td>85</td><td>Saint-Aubin-la-Plaine</td><td>531</td></tr>
+<tr><td>44</td><td>Blain</td><td>9787</td></tr>
+<tr><td>85</td><td>Chaillé-les-Marais</td><td>1947</td></tr>
+<tr><td>72</td><td>Saint-Denis-des-Coudrais</td><td>128</td></tr>
+<tr><td>85</td><td>Vouillé-les-Marais</td><td>778</td></tr>
+<tr><td>85</td><td>Le Poiré-sur-Velluire</td><td>667</td></tr>
+<tr><td>49</td><td>Parçay-les-Pins</td><td>907</td></tr>
+<tr><td>49</td><td>Noyant-la-Gravoyère</td><td>1926</td></tr>
+<tr><td>72</td><td>Vibraye</td><td>2642</td></tr>
+<tr><td>44</td><td>Treillières</td><td>8657</td></tr>
+<tr><td>85</td><td>La Garnache</td><td>4846</td></tr>
+<tr><td>85</td><td>Angles</td><td>2760</td></tr>
+<tr><td>85</td><td>La Gaubretière</td><td>3114</td></tr>
+<tr><td>44</td><td>Pierric</td><td>996</td></tr>
+<tr><td>53</td><td>Chérancé</td><td>164</td></tr>
+<tr><td>44</td><td>Saint-Vincent-des-Landes</td><td>1543</td></tr>
+<tr><td>49</td><td>Noëllet</td><td>436</td></tr>
+<tr><td>49</td><td>Les Ponts-de-Cé</td><td>12987</td></tr>
+<tr><td>72</td><td>Sougé-le-Ganelon</td><td>917</td></tr>
+<tr><td>49</td><td>Seiches-sur-le-Loir</td><td>3027</td></tr>
+<tr><td>53</td><td>Commer</td><td>1252</td></tr>
+<tr><td>85</td><td>Monsireigne</td><td>986</td></tr>
+<tr><td>49</td><td>Grez-Neuville</td><td>1504</td></tr>
+<tr><td>49</td><td>Meigné</td><td>382</td></tr>
+<tr><td>72</td><td>Oisseau-le-Petit</td><td>693</td></tr>
+<tr><td>53</td><td>Châtillon-sur-Colmont</td><td>1063</td></tr>
+<tr><td>72</td><td>Torcé-en-Vallée</td><td>1383</td></tr>
+<tr><td>85</td><td>Beaufou</td><td>1456</td></tr>
+<tr><td>85</td><td>Puy-de-Serre</td><td>335</td></tr>
+<tr><td>72</td><td>Auvers-le-Hamon</td><td>1566</td></tr>
+<tr><td>53</td><td>Brecé</td><td>850</td></tr>
+<tr><td>72</td><td>Fatines</td><td>851</td></tr>
+<tr><td>49</td><td>Les Rairies</td><td>1003</td></tr>
+<tr><td>72</td><td>Avoise</td><td>614</td></tr>
+<tr><td>49</td><td>Linières-Bouton</td><td>86</td></tr>
+<tr><td>44</td><td>Issé</td><td>1901</td></tr>
+<tr><td>44</td><td>Soulvache</td><td>369</td></tr>
+<tr><td>44</td><td>Sucé-sur-Erdre</td><td>6929</td></tr>
+<tr><td>44</td><td>Erbray</td><td>3033</td></tr>
+<tr><td>53</td><td>Château-Gontier</td><td>12068</td></tr>
+<tr><td>85</td><td>Saint-Révérend</td><td>1430</td></tr>
+<tr><td>53</td><td>Saint-Pierre-la-Cour</td><td>2159</td></tr>
+<tr><td>72</td><td>Vallon-sur-Gée</td><td>803</td></tr>
+<tr><td>44</td><td>La Meilleraye-de-Bretagne</td><td>1507</td></tr>
+<tr><td>85</td><td>La Tranche-sur-Mer</td><td>2878</td></tr>
+<tr><td>72</td><td>Le Breil-sur-Mérize</td><td>1544</td></tr>
+<tr><td>72</td><td>Assé-le-Boisne</td><td>937</td></tr>
+<tr><td>53</td><td>La Haie-Traversaine</td><td>505</td></tr>
+<tr><td>53</td><td>Quelaines-Saint-Gault</td><td>2167</td></tr>
+<tr><td>85</td><td>L' Épine</td><td>1687</td></tr>
+<tr><td>85</td><td>Marillet</td><td>113</td></tr>
+<tr><td>72</td><td>Avesnes-en-Saosnois</td><td>93</td></tr>
+<tr><td>44</td><td>La Chapelle-sur-Erdre</td><td>19704</td></tr>
+<tr><td>49</td><td>Saint-Germain-des-Prés</td><td>1434</td></tr>
+<tr><td>44</td><td>Château-Thébaud</td><td>3059</td></tr>
+<tr><td>44</td><td>Crossac</td><td>3016</td></tr>
+<tr><td>72</td><td>Chérisay</td><td>320</td></tr>
+<tr><td>72</td><td>René</td><td>372</td></tr>
+<tr><td>72</td><td>Souligné-sous-Ballon</td><td>1182</td></tr>
+<tr><td>53</td><td>Champfrémont</td><td>339</td></tr>
+<tr><td>72</td><td>Lombron</td><td>1965</td></tr>
+<tr><td>85</td><td>Jard-sur-Mer</td><td>2674</td></tr>
+<tr><td>44</td><td>Saint-Aignan-Grandlieu</td><td>3933</td></tr>
+<tr><td>85</td><td>Beaurepaire</td><td>2350</td></tr>
+<tr><td>53</td><td>Saint-Martin-de-Connée</td><td>421</td></tr>
+<tr><td>44</td><td>Saint-Hilaire-de-Clisson</td><td>2215</td></tr>
+<tr><td>72</td><td>Surfonds</td><td>353</td></tr>
+<tr><td>72</td><td>Rouperroux-le-Coquet</td><td>309</td></tr>
+<tr><td>72</td><td>Rouessé-Vassé</td><td>835</td></tr>
+<tr><td>49</td><td>Brissac-Quincé</td><td>3223</td></tr>
+<tr><td>72</td><td>Tuffé Val de la Chéronne</td><td>1750</td></tr>
+<tr><td>53</td><td>La Bazouge-des-Alleux</td><td>532</td></tr>
+<tr><td>85</td><td>La Verrie</td><td>4001</td></tr>
+<tr><td>72</td><td>Maigné</td><td>351</td></tr>
+<tr><td>72</td><td>Chenu</td><td>450</td></tr>
+<tr><td>53</td><td>Maisoncelles-du-Maine</td><td>543</td></tr>
+<tr><td>53</td><td>Vieuvy</td><td>136</td></tr>
+<tr><td>72</td><td>Château-l'Hermitage</td><td>283</td></tr>
+<tr><td>44</td><td>Pornichet</td><td>11092</td></tr>
+<tr><td>49</td><td>La Plaine</td><td>1057</td></tr>
+<tr><td>49</td><td>Beaulieu-sur-Layon</td><td>1455</td></tr>
+<tr><td>53</td><td>Saint-Calais-du-Désert</td><td>391</td></tr>
+<tr><td>53</td><td>Arquenay</td><td>658</td></tr>
+<tr><td>72</td><td>Saint-Célerin</td><td>870</td></tr>
+<tr><td>72</td><td>Ruillé-en-Champagne</td><td>356</td></tr>
+<tr><td>44</td><td>Prinquiau</td><td>3501</td></tr>
+<tr><td>53</td><td>La Bigottière</td><td>504</td></tr>
+<tr><td>44</td><td>Guenrouet</td><td>3364</td></tr>
+<tr><td>85</td><td>Saint-Denis-du-Payré</td><td>391</td></tr>
+<tr><td>49</td><td>Tiercé</td><td>4381</td></tr>
+<tr><td>44</td><td>Sautron</td><td>7551</td></tr>
+<tr><td>49</td><td>Varennes-sur-Loire</td><td>1934</td></tr>
+<tr><td>85</td><td>La Chapelle-aux-Lys</td><td>257</td></tr>
+<tr><td>72</td><td>Saint-Victeur</td><td>470</td></tr>
+<tr><td>53</td><td>Soucé</td><td>172</td></tr>
+<tr><td>53</td><td>Thorigné-en-Charnie</td><td>198</td></tr>
+<tr><td>72</td><td>Savigné-sous-le-Lude</td><td>444</td></tr>
+<tr><td>44</td><td>La Grigonnais</td><td>1655</td></tr>
+<tr><td>49</td><td>Mouliherne</td><td>893</td></tr>
+<tr><td>49</td><td>Tuffalun</td><td>1808</td></tr>
+<tr><td>53</td><td>Ballée</td><td>701</td></tr>
+<tr><td>85</td><td>Saint-Martin-des-Tilleuls</td><td>1055</td></tr>
+<tr><td>85</td><td>Montaigu</td><td>5302</td></tr>
+<tr><td>49</td><td>Val-du-Layon</td><td>3372</td></tr>
+<tr><td>72</td><td>Champfleur</td><td>1435</td></tr>
+<tr><td>72</td><td>Mansigné</td><td>1634</td></tr>
+<tr><td>85</td><td>Saint-Sigismond</td><td>408</td></tr>
+<tr><td>44</td><td>Marsac-sur-Don</td><td>1514</td></tr>
+<tr><td>85</td><td>Chauché</td><td>2497</td></tr>
+<tr><td>53</td><td>Bouessay</td><td>782</td></tr>
+<tr><td>72</td><td>Conlie</td><td>1891</td></tr>
+<tr><td>49</td><td>La Séguinière</td><td>4080</td></tr>
+<tr><td>85</td><td>Grosbreuil</td><td>2179</td></tr>
+<tr><td>44</td><td>Saint-Joachim</td><td>4003</td></tr>
+<tr><td>53</td><td>La Dorée</td><td>307</td></tr>
+<tr><td>72</td><td>Mézières-sur-Ponthouin</td><td>694</td></tr>
+<tr><td>85</td><td>Pissotte</td><td>1167</td></tr>
+<tr><td>53</td><td>Louverné</td><td>4194</td></tr>
+<tr><td>72</td><td>Montbizot</td><td>1851</td></tr>
+<tr><td>49</td><td>Saint-Martin-du-Bois</td><td>977</td></tr>
+<tr><td>49</td><td>Blaison-Saint-Sulpice</td><td>1278</td></tr>
+<tr><td>72</td><td>Allonnes</td><td>11190</td></tr>
+<tr><td>72</td><td>Vaas</td><td>1570</td></tr>
+<tr><td>53</td><td>Saint-Denis-du-Maine</td><td>435</td></tr>
+<tr><td>72</td><td>Fresnay-sur-Sarthe</td><td>2065</td></tr>
+<tr><td>44</td><td>Saint-Herblain</td><td>45294</td></tr>
+<tr><td>72</td><td>Saint-Calez-en-Saosnois</td><td>165</td></tr>
+<tr><td>53</td><td>Préaux</td><td>173</td></tr>
+<tr><td>72</td><td>Beaufay</td><td>1466</td></tr>
+<tr><td>44</td><td>Puceul</td><td>1093</td></tr>
+<tr><td>49</td><td>Aviré</td><td>498</td></tr>
+<tr><td>49</td><td>Montguillon</td><td>236</td></tr>
+<tr><td>53</td><td>La Bazouge-de-Chemeré</td><td>524</td></tr>
+<tr><td>44</td><td>Vieillevigne</td><td>4016</td></tr>
+<tr><td>49</td><td>Fontevraud-l'Abbaye</td><td>1569</td></tr>
+<tr><td>49</td><td>La Ménitré</td><td>2155</td></tr>
+<tr><td>44</td><td>Chauvé</td><td>2737</td></tr>
+<tr><td>49</td><td>Coutures</td><td>530</td></tr>
+<tr><td>85</td><td>Bournezeau</td><td>3390</td></tr>
+<tr><td>85</td><td>Saint-Prouant</td><td>1534</td></tr>
+<tr><td>44</td><td>Bouguenais</td><td>19259</td></tr>
+<tr><td>72</td><td>Pruillé-le-Chétif</td><td>1335</td></tr>
+<tr><td>53</td><td>Ballots</td><td>1293</td></tr>
+<tr><td>72</td><td>Fontenay-sur-Vègre</td><td>343</td></tr>
+<tr><td>44</td><td>Saint-Malo-de-Guersac</td><td>3258</td></tr>
+<tr><td>85</td><td>L' Île-d'Elle</td><td>1554</td></tr>
+<tr><td>49</td><td>Montigné-lès-Rairies</td><td>398</td></tr>
+<tr><td>72</td><td>Coulongé</td><td>554</td></tr>
+<tr><td>72</td><td>Saint-Jean-du-Bois</td><td>642</td></tr>
+<tr><td>44</td><td>Vair-sur-Loire</td><td>4637</td></tr>
+<tr><td>72</td><td>Berfay</td><td>357</td></tr>
+<tr><td>53</td><td>Saint-Pierre-des-Nids</td><td>2002</td></tr>
+<tr><td>44</td><td>Saffré</td><td>3863</td></tr>
+<tr><td>72</td><td>Louzes</td><td>100</td></tr>
+<tr><td>53</td><td>Pommerieux</td><td>709</td></tr>
+<tr><td>72</td><td>Tennie</td><td>1158</td></tr>
+<tr><td>44</td><td>Grand-Auverné</td><td>804</td></tr>
+<tr><td>49</td><td>Durtal</td><td>3449</td></tr>
+<tr><td>72</td><td>Ardenay-sur-Mérize</td><td>488</td></tr>
+<tr><td>53</td><td>Saint-Hilaire-du-Maine</td><td>864</td></tr>
+<tr><td>49</td><td>Les Rosiers-sur-Loire</td><td>2355</td></tr>
+<tr><td>72</td><td>Arçonnay</td><td>2086</td></tr>
+<tr><td>85</td><td>Apremont</td><td>1803</td></tr>
+<tr><td>72</td><td>Flée</td><td>566</td></tr>
+<tr><td>44</td><td>Piriac-sur-Mer</td><td>2253</td></tr>
+<tr><td>53</td><td>Argenton-Notre-Dame</td><td>226</td></tr>
+<tr><td>85</td><td>La Guyonnière</td><td>2913</td></tr>
+<tr><td>85</td><td>Saint-Julien-des-Landes</td><td>1683</td></tr>
+<tr><td>85</td><td>Saint-Vincent-sur-Jard</td><td>1334</td></tr>
+<tr><td>44</td><td>Avessac</td><td>2601</td></tr>
+<tr><td>44</td><td>Plessé</td><td>5318</td></tr>
+<tr><td>72</td><td>Courcemont</td><td>694</td></tr>
+<tr><td>44</td><td>Petit-Mars</td><td>3676</td></tr>
+<tr><td>53</td><td>Saint-Céneré</td><td>526</td></tr>
+<tr><td>85</td><td>Saint-Vincent-sur-Graon</td><td>1444</td></tr>
+<tr><td>85</td><td>La Boissière-de-Montaigu</td><td>2316</td></tr>
+<tr><td>72</td><td>La Chapelle-Saint-Rémy</td><td>959</td></tr>
+<tr><td>53</td><td>Saint-Mars-sur-Colmont</td><td>472</td></tr>
+<tr><td>49</td><td>Soulaire-et-Bourg</td><td>1499</td></tr>
+<tr><td>53</td><td>Saint-Mars-du-Désert</td><td>168</td></tr>
+<tr><td>49</td><td>Segré</td><td>7342</td></tr>
+<tr><td>49</td><td>Béhuard</td><td>122</td></tr>
+<tr><td>72</td><td>Lhomme</td><td>896</td></tr>
+<tr><td>85</td><td>Saint-Laurent-de-la-Salle</td><td>374</td></tr>
+<tr><td>72</td><td>Saint-Longis</td><td>524</td></tr>
+<tr><td>72</td><td>Le Lude</td><td>3996</td></tr>
+<tr><td>72</td><td>Aillières-Beauvoir</td><td>223</td></tr>
+<tr><td>49</td><td>Cizay-la-Madeleine</td><td>493</td></tr>
+<tr><td>53</td><td>Fougerolles-du-Plessis</td><td>1287</td></tr>
+<tr><td>72</td><td>Voivres-lès-le-Mans</td><td>1354</td></tr>
+<tr><td>49</td><td>Bécon-les-Granits</td><td>2921</td></tr>
+<tr><td>53</td><td>Colombiers-du-Plessis</td><td>483</td></tr>
+<tr><td>72</td><td>Champagné</td><td>3909</td></tr>
+<tr><td>72</td><td>Contilly</td><td>142</td></tr>
+<tr><td>72</td><td>Thorigné-sur-Dué</td><td>1645</td></tr>
+<tr><td>44</td><td>La Plaine-sur-Mer</td><td>4079</td></tr>
+<tr><td>72</td><td>Cré-sur-Loir</td><td>816</td></tr>
+<tr><td>72</td><td>Saint-Martin-des-Monts</td><td>186</td></tr>
+<tr><td>72</td><td>Villaines-sous-Malicorne</td><td>1048</td></tr>
+<tr><td>53</td><td>Montjean</td><td>1043</td></tr>
+<tr><td>53</td><td>Le Horps</td><td>791</td></tr>
+<tr><td>44</td><td>Basse-Goulaine</td><td>8747</td></tr>
+<tr><td>49</td><td>Saint-Jean-de-Linières</td><td>1816</td></tr>
+<tr><td>49</td><td>Maulévrier</td><td>3230</td></tr>
+<tr><td>53</td><td>La Chapelle-Craonnaise</td><td>343</td></tr>
+<tr><td>44</td><td>Orvault</td><td>26030</td></tr>
+<tr><td>49</td><td>Notre-Dame-d'Allençon</td><td>692</td></tr>
+<tr><td>53</td><td>Saint-Ouën-des-Vallons</td><td>193</td></tr>
+<tr><td>72</td><td>Souillé</td><td>673</td></tr>
+<tr><td>53</td><td>Saint-Saturnin-du-Limet</td><td>521</td></tr>
+<tr><td>85</td><td>Saint-Philbert-de-Bouaine</td><td>3288</td></tr>
+<tr><td>72</td><td>Coulombiers</td><td>472</td></tr>
+<tr><td>72</td><td>La Milesse</td><td>2570</td></tr>
+<tr><td>85</td><td>Mouilleron-Saint-Germain</td><td>1925</td></tr>
+<tr><td>85</td><td>Les Brouzils</td><td>2791</td></tr>
+<tr><td>49</td><td>La Jaille-Yvon</td><td>325</td></tr>
+<tr><td>49</td><td>Les Alleuds</td><td>896</td></tr>
+<tr><td>53</td><td>Aron</td><td>1811</td></tr>
+<tr><td>72</td><td>Montmirail</td><td>417</td></tr>
+<tr><td>72</td><td>Chevillé</td><td>413</td></tr>
+<tr><td>85</td><td>L' Aiguillon-sur-Vie</td><td>1913</td></tr>
+<tr><td>53</td><td>Villepail</td><td>183</td></tr>
+<tr><td>72</td><td>Piacé</td><td>377</td></tr>
+<tr><td>72</td><td>La Chapelle-du-Bois</td><td>907</td></tr>
+<tr><td>72</td><td>Laigné-en-Belin</td><td>2494</td></tr>
+<tr><td>72</td><td>Marolles-les-Braults</td><td>2121</td></tr>
+<tr><td>72</td><td>Bourg-le-Roi</td><td>313</td></tr>
+<tr><td>49</td><td>Auverse</td><td>456</td></tr>
+<tr><td>85</td><td>Nesmy</td><td>2867</td></tr>
+<tr><td>72</td><td>Dangeul</td><td>485</td></tr>
+<tr><td>72</td><td>Malicorne-sur-Sarthe</td><td>1947</td></tr>
+<tr><td>44</td><td>Saint-Fiacre-sur-Maine</td><td>1177</td></tr>
+<tr><td>72</td><td>Étival-lès-le-Mans</td><td>1991</td></tr>
+<tr><td>85</td><td>Mareuil-sur-Lay-Dissais</td><td>2899</td></tr>
+<tr><td>85</td><td>Le Mazeau</td><td>466</td></tr>
+<tr><td>72</td><td>Bernay-en-Champagne</td><td>546</td></tr>
+<tr><td>85</td><td>Avrillé</td><td>1348</td></tr>
+<tr><td>49</td><td>Saint-Barthélemy-d'Anjou</td><td>9611</td></tr>
+<tr><td>72</td><td>Nogent-sur-Loir</td><td>381</td></tr>
+<tr><td>44</td><td>Le Pallet</td><td>3289</td></tr>
+<tr><td>53</td><td>Sacé</td><td>502</td></tr>
+<tr><td>49</td><td>Chazé-Henry</td><td>849</td></tr>
+<tr><td>53</td><td>Saint-Laurent-des-Mortiers</td><td>205</td></tr>
+<tr><td>85</td><td>Tiffauges</td><td>1651</td></tr>
+<tr><td>44</td><td>Thouaré-sur-Loire</td><td>9283</td></tr>
+<tr><td>72</td><td>La Bruère-sur-Loir</td><td>276</td></tr>
+<tr><td>44</td><td>Vay</td><td>2102</td></tr>
+<tr><td>49</td><td>Le Bourg-d'Iré</td><td>903</td></tr>
+<tr><td>85</td><td>Maillezais</td><td>1025</td></tr>
+<tr><td>72</td><td>Avessé</td><td>383</td></tr>
+<tr><td>53</td><td>Châtelain</td><td>506</td></tr>
+<tr><td>44</td><td>Campbon</td><td>4067</td></tr>
+<tr><td>44</td><td>Fercé</td><td>514</td></tr>
+<tr><td>44</td><td>Notre-Dame-des-Landes</td><td>2074</td></tr>
+<tr><td>85</td><td>Grues</td><td>861</td></tr>
+<tr><td>49</td><td>Cornillé-les-Caves</td><td>477</td></tr>
+<tr><td>49</td><td>Lasse</td><td>289</td></tr>
+<tr><td>53</td><td>Gesvres</td><td>546</td></tr>
+<tr><td>72</td><td>Château-du-Loir</td><td>4914</td></tr>
+<tr><td>72</td><td>Le Luart</td><td>1477</td></tr>
+<tr><td>44</td><td>Pornic</td><td>14946</td></tr>
+<tr><td>44</td><td>Corcoué-sur-Logne</td><td>2809</td></tr>
+<tr><td>53</td><td>Saint-Fort</td><td>1694</td></tr>
+<tr><td>53</td><td>Larchamp</td><td>1096</td></tr>
+<tr><td>49</td><td>Villevêque</td><td>2929</td></tr>
+<tr><td>72</td><td>Conflans-sur-Anille</td><td>545</td></tr>
+<tr><td>72</td><td>Lavardin</td><td>750</td></tr>
+<tr><td>72</td><td>La Chartre-sur-le-Loir</td><td>1500</td></tr>
+<tr><td>49</td><td>Vauchrétien</td><td>1544</td></tr>
+<tr><td>44</td><td>Le Pouliguen</td><td>4613</td></tr>
+<tr><td>49</td><td>Chalonnes-sous-le-Lude</td><td>131</td></tr>
+<tr><td>53</td><td>Crennes-sur-Fraubée</td><td>204</td></tr>
+<tr><td>53</td><td>Olivet</td><td>432</td></tr>
+<tr><td>72</td><td>Préval</td><td>694</td></tr>
+<tr><td>85</td><td>Saint-Laurent-sur-Sèvre</td><td>4359</td></tr>
+<tr><td>85</td><td>La Couture</td><td>220</td></tr>
+<tr><td>49</td><td>Vaudelnay</td><td>1225</td></tr>
+<tr><td>53</td><td>Montourtier</td><td>373</td></tr>
+<tr><td>44</td><td>Saint-Michel-Chef-Chef</td><td>4719</td></tr>
+
+      </tbody>
+</table>
+    <p>Source : Insee, Recensement de la population 2014</a></p>
+    
+    
+    
+</body></html>
