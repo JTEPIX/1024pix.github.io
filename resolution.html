@@ -54,11 +54,11 @@
                       if ($$('screen-form').validate()) {
                           var width = window.screen.width;
                           var height = window.screen.height;
-                          if (window.devicePixelRatio) {
-                            width = width*window.devicePixelRatio;
-                            height = height*window.devicePixelRatio;
+                          var test = ($$('width').getValue() == width && $$('height').getValue() == height);
+                          if (!test && window.devicePixelRatio) {
+                            test = ($$('width').getValue() == width*window.devicePixelRatio && $$('height').getValue() == height*window.devicePixelRatio);
                           }
-                          if ($$('width').getValue() == width && $$('height').getValue() == height) {
+                          if  (test) {
                           webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+getWord()+"&nbsp;&raquo;");
                         } else {
                           webix.alert("Désolé, ce n'est pas ça.");
