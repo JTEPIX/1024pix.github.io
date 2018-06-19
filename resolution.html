@@ -56,7 +56,7 @@
                           var height = window.screen.height;
                           var test = ($$('width').getValue() == width && $$('height').getValue() == height);
                           if (!test && window.devicePixelRatio) {
-                            test = ($$('width').getValue() == width*window.devicePixelRatio && $$('height').getValue() == height*window.devicePixelRatio);
+                            test = ($$('width').getValue() == Math.round(width*window.devicePixelRatio) && $$('height').getValue() == Math.round(height*window.devicePixelRatio));
                           }
                           if  (test) {
                           webix.alert("Bravo !<br>Le mot que vous cherchez est &laquo;&nbsp;"+getWord()+"&nbsp;&raquo;");
