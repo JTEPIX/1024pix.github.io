@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./webix/webix.css">
+  <link rel="stylesheet" href="./webix/pix.css">
+  <link rel="stylesheet" href="./webix/pix-apps.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>
+  <script src="./webix/pix-apps.js"></script>
+  <title>Propriétés</title>
+  <script src="js/utils.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
+  <style>
+    #answer {display:none;font-family:  'Coming Soon', cursive;;font-size:60px;position:absolute;right:100px;bottom:100px;z-index:100;}
+  </style>
+</head>
+<body>
+  <script>
+    secret = "AGSSQFfFSD0922JNFsdq___ZeQSDZORE9843";
+
+    webix.ready(function() {
+      webix.ui({
+        view:"pixDesktop",
+        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille", name:"Corbeille", image:"trash-icon.png"}],
+        open: {
+            corbeille : function() {
+              $$('corbeille_window').open();
+            },
+            parametres : function() {
+              $$('parametres_window').open();
+            }
+          },
+        background:"images/benji.jpg",
+        taskbar:true,
+        contextMenu: {
+          items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+          click: {
+            menu1: function(e, context) {
+              $$('proprietes_nom').config.value = context.obj.getItem(context.id).name;
+              $$('proprietes_nom').refresh();
+              $$('proprietes_window').show();
+            },
+            menu2: function(e, context) {
+              context.obj.remove(context.id);
+            }
+          }
+        },
+        backContextMenu:{
+          items:[{value:"Paramètres d'affichage", id:"menu1"}, {value:"Paramètres d'apparence", id:"menu2"}, {value:"Modifier date et heure", id:"menu3"}],
+          click: {
+            menu1: function(e, context) {
+              $$('display_window').open();
+            },
+            menu2: function(e, context) {
+              $$('appearance_window').open();
+            },
+            menu3: function(e, context) {
+              $$('date_window').open();
+            }
+          }
+        }
+      });
+
+      webix.ui({
+        view:"pixWindow",
+        id:"fichier_window",
+        label:"notes.txt",
+        icon:"file",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"textarea",
+              value: "Vous avez supprimé un élément important mais ne vous inquietez pas, il n'est pas supprimé définitivement. En effet, lors d'une suppression, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+            }
+          ]
+        }
+      });
+
+      // Corbeille elements
+      webix.ui({
+        view:"pixFolder",
+        id:"corbeille_window",
+        label:"Corbeille",
+        icon:"cogs",
+        items: [
+          {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
+          {id:"date", name:"Date et heure", icon:"fa-calendar"},
+          {id:"display", name:"Affichage", icon:"fa-desktop"},
+          {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
+        ]
+      });
+
+      webix.ui({
+        view:"pixWindow",
+        id:"theAnswerWindow",
+        label:"TheAnswer.txt",
+        icon:"file",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"textarea",
+              value: "The answer is 545545"
+            }
+          ]
+        }
+      });
+
+      // Parametres window
+      webix.ui({
+        view:"pixFolder",
+        id:"parametres_window",
+        label:"Paramètres",
+        icon:"cogs",
+        items: [
+          {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
+          {id:"date", name:"Date et heure", icon:"fa-calendar"},
+          {id:"display", name:"Affichage", icon:"fa-desktop"},
+          {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
+          {id:"storage", name:"Disques", icon:"fa-hdd-o"}
+        ],
+        contextMenu:
+        {
+          items:[{value:"Restaurer", id:"menu1"}, {value:"Supprimer Définitivement", id:"menu2"}],
+          click: {
+            menu1: function(e, context) {
+              // faire apparaitre l'élément sur le bureau
+
+              var desktop = $$("pixDesktop");
+              console.log(desktop);
+
+              var itemToPush = null;
+              var items = $$("parametres_window").config.items;
+
+              for (const item of items)
+              {
+                if (item.id === context.id)
+                {
+                  itemToPush = item;
+                  break;
+                }
+              }
+
+              if (itemToPush != null)
+                desktop.config.items.push(itemToPush);
+
+              console.log(desktop.config.items);
+
+              context.obj.remove(context.id);
+
+              desktop.refresh(desktop.config.id);
+
+              //desktop.refresh("");
+            },
+            menu2: function(e, context) {
+              context.obj.remove(context.id);
+
+              // fenetre de confirmation ???
+            }
+          }
+        }
+      });
+
+      // Properties window
+      webix.ui({
+        view:"pixWindow",
+        id:"proprietes_window",
+        height:300,
+        width:250,
+        label:"Propriétés",
+        icon:"info-circle",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"text",
+              label:"Nom",
+              id:"proprietes_nom",
+              value: "",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Date",
+              value: "19 juillet 2017",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Auteur",
+              value: "PIX",
+              readonly: true
+            }
+          ]
+        }
+      });
+
+      pixApps.load(["users", "display", "date", "appearance", "storage"]);
+      pixApps.get("appearance").addBackground({id:"images/gamma.jpg", value:"Californie"});
+      pixApps.get("appearance").addBackground({id:"images/girl.jpg", value:"Graffiti"});
+      pixApps.get("appearance").addBackgroundListener(function(value) {
+        var element = document.getElementById("answer");
+        if (value === "images/girl.jpg") {
+          element.style.display = "block";
+          element.innerHTML = getWord();
+        } else {
+          element.innerHTML = "";
+          element.style.display = "none";
+        }
+      });
+    });
+  </script>
+  <div id="answer"></div>
+</body>
+</html>
