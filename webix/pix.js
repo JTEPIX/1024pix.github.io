@@ -47,7 +47,7 @@ webix.protoUI({
             on: {
               onItemClick: function(e) {
                 $$("pixTaskbar").minimizeTask(this.getTopParentView().config.id);
-              }              
+              }
             },
             hidden:true
           },
@@ -161,8 +161,8 @@ webix.protoUI({
     }
     this.tasks.push({id: id, label: label, minimized:false});
     var buttonConfig = {
-      view:"button", 
-      id:"pix_task_"+id, 
+      view:"button",
+      id:"pix_task_"+id,
       autowidth:true,
       align:"left",
       height:40,
@@ -259,7 +259,7 @@ webix.protoUI({
           view.findCurrentTask(current_view);
         }
       });
-      view.startTime();      
+      view.startTime();
     });
   },
   updateTime: function(){
@@ -336,7 +336,7 @@ webix.protoUI({
         }
       },
       master:element,
-      autowidth:true      
+      autowidth:true
     });
   },
 }, webix.ui.list);
@@ -395,7 +395,7 @@ webix.protoUI({
       onContext:{}
     },{}],
     taskbar:false,
-    onContext:{}    
+    onContext:{}
    },
    getBackground: function() {
     return this.config.background;
@@ -419,7 +419,7 @@ webix.protoUI({
       autowidth:true,
       master:element.$view
     });
-  }   
+  }
 }, webix.ui.layout);
 
 /**
@@ -441,6 +441,9 @@ webix.protoUI({
           list.setContextMenu(config.contextMenu);
         }
       });
+    }
+    if (config.id) {
+      this.defaults.body.id = config.id + "_item-list";
     }
   },
   defaults: {
@@ -521,7 +524,7 @@ webix.i18n.locales["fr-FR"]= {
   },
   calendar:{
     monthFull:["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
-    monthShort:["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aôu", "Sep", "Oct", "Nov", "Déc"],	
+    monthShort:["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aôu", "Sep", "Oct", "Nov", "Déc"],
     dayFull:["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
       dayShort:["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
     hours: "Heures",
