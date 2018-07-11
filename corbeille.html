@@ -21,8 +21,13 @@
   <script>
     secret = "AGSSQFfFSD0922JNFsdq___ZeQSDZORE9843";
 
-    webix.ready(function() {
-      webix.ui({
+    // element to Delete with the trash contextual menu
+    var elementToDelete;
+
+    webix.ready(function()
+    {
+      webix.ui(
+        {
         view:"pixDesktop",
         items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille", name:"Corbeille", image:"trash-icon-placeholder.png"}],
         open: {
@@ -38,10 +43,11 @@
         contextMenu: {
           items:[{value:"Propriétés", id:"menu1"}/*, {value:"Supprimer", id:"menu2"}*/],
           click: {
-            menu1: function(e, context) {
-              $$('proprietes_nom').config.value = context.obj.getItem(context.id).name;
-              $$('proprietes_nom').refresh();
-              $$('proprietes_window').show();
+            menu1: function(e, context)
+            {
+              var item = context.obj.getItem(context.id);
+
+              openProperties(item);
             }/*,
             menu2: function(e, context) {
               context.obj.remove(context.id);
@@ -67,20 +73,28 @@
         }
       });
 
-      webix.ui({
-        view:"pixWindow",
-        id:"fichier_window",
-        label:"notes.txt",
-        icon:"file",
-        body:{
-          view:"layout",
-          padding:10,
-          rows:[{
-              view:"textarea",
-              value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
-            }]
-          }
-        });
+      webix.ui(
+      {
+      view:"pixWindow",
+      id:"fichier_window",
+      label:"notes.txt",
+      icon:"file",
+      body:{
+        view:"layout",
+        padding:10,
+        rows:[{
+            view:"textarea",
+            value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+          }]
+        }
+      });
+
+      function openProperties (paramItem)
+      {
+        $$('proprietes_nom').config.value = paramItem.name;
+        $$('proprietes_nom').refresh();
+        $$('proprietes_window').show();
+      }
 
       // Corbeille elements
       webix.ui(
@@ -89,11 +103,22 @@
         id:"corbeille_window",
         label:"Corbeille",
         icon:"trash",
-        items: [
+        open: {
+            theAnswerDeleted : function()
+            {
+              var item = getItemByIdInList("corbeille_window", "theAnswerDeleted");
+
+              openProperties(item);
+            }
+          },
+        items:
+        [
+          // difficulty : More items to make the player search the good one ???
           {
             id:"theAnswerDeleted",
             name:"theAnswer.txt",
             image:"file.png",
+            drag : false, // not working ?
           }
         ],
         contextMenu:
@@ -103,39 +128,50 @@
           {
             restore : function(e, context)
             {
-              var desktop = $$("pixDesktopItems");
-
-              // Get item to add to desktop
-              var itemToPush = null;
-              var items = $$("corbeille_window").config.items;
-
-              for (const item of items)
-              {
-                if (item.id === context.id)
-                {
-                  itemToPush = item;
-                  break;
-                }
-              }
-
-              // removal of suffix "Deleted" to allow interactivity with the element
-              itemToPush.id = itemToPush.id.replace("Deleted", "");
-
-              // Remove the item restored from trash
-              context.obj.remove(context.id);
-
-              // Add restored item to desktop at last index + 1
-              desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);
+              restoreItem(context);
             },
             delete : function(e, context)
             {
-              context.obj.remove(context.id);
+              $$("deleteConfirm").open();
 
-              // fenetre de confirmation ???
+              elementToDelete = context;
             }
           }
         }
       });
+
+      function restoreItem (paramItem)
+      {
+        var desktop = $$("pixDesktopItems");
+
+        // Get item to add to desktop
+        var itemToPush = null;
+
+        itemToPush = getItemByIdInList("corbeille_window", paramItem.id)
+
+        var items = $$("corbeille_window").config.items;
+
+        // removal of suffix "Deleted" to allow interactivity with the element
+        itemToPush.id = itemToPush.id.replace("Deleted", "");
+
+        // Remove the item restored from trash
+        paramItem.obj.remove(paramItem.id);
+
+        // Add restored item to desktop at last index + 1
+        desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);
+      }
+
+      function getItemByIdInList (viewId, itemId)
+      {
+        var items = $$(viewId).config.items;
+
+        for (const item of items)
+        {
+          if (item.id === itemId)
+            return item;
+        }
+        return null;
+      }
 
       webix.ui({
         view:"pixWindow",
@@ -152,6 +188,58 @@
           ]
         }
       });
+
+      webix.ui(
+      {
+        view:"pixWindow",
+        id:"deleteConfirm",
+        label:"Confirmation",
+        icon:"check-circle",
+        body:
+        {
+          view:"layout",
+          padding:10,
+          cols:
+          [
+            {
+              /*css : "name" pour ajouter un style au bouton*/
+              view:"button",
+              id:"validateBtn",
+              type:"iconButton",
+              icon : "check-circle",
+              label : "valider",
+              inputWidth:180,
+              click : function (e, context)
+              {
+                // instead of deleting the object, give player feedback : "wrong answer"
+                if (elementToDelete != null)
+                  elementToDelete.obj.remove(elementToDelete.id);
+
+                closeDeleteConfirm();
+              }
+            },
+            {
+              view:"button",
+              id:"cancelBtn",
+              type:"iconButton",
+              icon : "ban",
+              label : "annuler",
+              inputWidth:180,
+              click : function (e, context)
+              {
+                closeDeleteConfirm();
+              }
+            }
+          ]
+        }
+      });
+
+      function closeDeleteConfirm ()
+      {
+        $$("deleteConfirm").close();
+
+        elementToDelete = null;
+      }
 
       // Parametres window
       webix.ui({
