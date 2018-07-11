@@ -45,6 +45,9 @@
             },
             menu2: function(e, context) {
               context.obj.remove(context.id);
+
+              // add item to trash when suppr ?
+              //corbeille.add(context.obj, corbeille.getIndexById(corbeille.getLastId()) + 1);
             }
           }
         },
@@ -74,29 +77,68 @@
           padding:10,
           rows:[{
               view:"textarea",
-              value: "Vous avez supprimé un élément important mais ne vous inquietez pas, il n'est pas supprimé définitivement. En effet, lors d'une suppression, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
-            }
-          ]
-        }
-      });
+              value: "Vous avez supprimé un élément important mais ne vous inquietez pas, vous pouvez encore le récupérer. En effet, lors d'une suppression, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+            }]
+          }
+        });
 
       // Corbeille elements
-      webix.ui({
+      webix.ui(
+      {
         view:"pixFolder",
         id:"corbeille_window",
         label:"Corbeille",
         icon:"cogs",
         items: [
-          {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
-          {id:"date", name:"Date et heure", icon:"fa-calendar"},
-          {id:"display", name:"Affichage", icon:"fa-desktop"},
-          {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
-        ]
+          {id:"theAnswerDeleted", name:"theAnswer.txt", image:"file.png"}
+        ],
+        contextMenu:
+        {
+          items:[{value:"Restaurer", id:"restore"}, {value:"Supprimer Définitivement", id:"delete"}],
+          click:
+          {
+            restore : function(e, context)
+            {
+              var desktop = $$("pixDesktopItems");
+
+              // Get item to add to desktop
+              var itemToPush = null;
+              var items = $$("corbeille_window").config.items;
+
+              for (const item of items)
+              {
+                if (item.id === context.id)
+                {
+                  itemToPush = item;
+                  break;
+                }
+              }
+
+              console.log(itemToPush.id);
+
+              itemToPush.id = itemToPush.id.replace("Deleted", "");
+
+              console.log(itemToPush.id);
+
+              // Remove the item restored from trash
+              context.obj.remove(context.id);
+
+              // Add restored item to desktop at last index + 1
+              desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);
+            },
+            delete : function(e, context)
+            {
+              context.obj.remove(context.id);
+
+              // fenetre de confirmation ???
+            }
+          }
+        }
       });
 
       webix.ui({
         view:"pixWindow",
-        id:"theAnswerWindow",
+        id:"theAnswer_window",
         label:"TheAnswer.txt",
         icon:"file",
         body:{
@@ -116,53 +158,14 @@
         id:"parametres_window",
         label:"Paramètres",
         icon:"cogs",
-        items: [
+        items:
+        [
           {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
           {id:"date", name:"Date et heure", icon:"fa-calendar"},
           {id:"display", name:"Affichage", icon:"fa-desktop"},
           {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
           {id:"storage", name:"Disques", icon:"fa-hdd-o"}
-        ],
-        contextMenu:
-        {
-          items:[{value:"Restaurer", id:"menu1"}, {value:"Supprimer Définitivement", id:"menu2"}],
-          click: {
-            menu1: function(e, context) {
-              // faire apparaitre l'élément sur le bureau
-
-              var desktop = $$("pixDesktop");
-              console.log(desktop);
-
-              var itemToPush = null;
-              var items = $$("parametres_window").config.items;
-
-              for (const item of items)
-              {
-                if (item.id === context.id)
-                {
-                  itemToPush = item;
-                  break;
-                }
-              }
-
-              if (itemToPush != null)
-                desktop.config.items.push(itemToPush);
-
-              console.log(desktop.config.items);
-
-              context.obj.remove(context.id);
-
-              desktop.refresh(desktop.config.id);
-
-              //desktop.refresh("");
-            },
-            menu2: function(e, context) {
-              context.obj.remove(context.id);
-
-              // fenetre de confirmation ???
-            }
-          }
-        }
+        ]
       });
 
       // Properties window
