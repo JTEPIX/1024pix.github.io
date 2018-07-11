@@ -23,6 +23,7 @@
 
     // element to Delete with the trash contextual menu
     var elementToDelete;
+    var elementToRestore;
 
     webix.ready(function()
     {
@@ -89,11 +90,18 @@
         }
       });
 
-      function openProperties (paramItem)
+      function openProperties (paramItem, showRestoreButton = false)
       {
+        elementToRestore = paramItem;
+
         $$('proprietes_nom').config.value = paramItem.name;
         $$('proprietes_nom').refresh();
         $$('proprietes_window').show();
+
+        if (showRestoreButton)
+          $$("properties_RestoreButton").show();
+        else
+          $$("properties_RestoreButton").hide();
       }
 
       // Corbeille elements
@@ -108,7 +116,7 @@
             {
               var item = getItemByIdInList("corbeille_window", "theAnswerDeleted");
 
-              openProperties(item);
+              openProperties(item, true);
             }
           },
         items:
@@ -142,13 +150,12 @@
 
       function restoreItem (paramItem)
       {
+        console.log(paramItem);
+
         var desktop = $$("pixDesktopItems");
 
         // Get item to add to desktop
-        var itemToPush = null;
-
-        itemToPush = getItemByIdInList("corbeille_window", paramItem.id)
-
+        var itemToPush = getItemByIdInList("corbeille_window", paramItem.id);
         var items = $$("corbeille_window").config.items;
 
         // removal of suffix "Deleted" to allow interactivity with the element
@@ -286,6 +293,20 @@
               label:"Auteur",
               value: "PIX",
               readonly: true
+            },
+            {
+              view:"button",
+              id:"properties_RestoreButton",
+              type:"iconButton",
+              icon : "window-restore",
+              label : "restaurer",
+              inputWidth:150,
+              click : function (e, context)
+              {
+                console.log("restaurer");
+
+                restoreItem(elementToRestore);
+              }
             }
           ]
         }
