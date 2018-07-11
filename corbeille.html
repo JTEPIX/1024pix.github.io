@@ -24,7 +24,7 @@
     webix.ready(function() {
       webix.ui({
         view:"pixDesktop",
-        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille", name:"Corbeille", image:"trash-icon.png"}],
+        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille", name:"Corbeille", image:"trash-icon-placeholder.png"}],
         open: {
             corbeille : function() {
               $$('corbeille_window').open();
@@ -88,7 +88,7 @@
         view:"pixFolder",
         id:"corbeille_window",
         label:"Corbeille",
-        icon:"cogs",
+        icon:"trash",
         items: [
           {id:"theAnswerDeleted", name:"theAnswer.txt", image:"file.png"}
         ],
