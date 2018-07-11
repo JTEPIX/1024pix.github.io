@@ -36,19 +36,19 @@
         background:"images/benji.jpg",
         taskbar:true,
         contextMenu: {
-          items:[{value:"Propriétés", id:"menu1"}, {value:"Supprimer", id:"menu2"}],
+          items:[{value:"Propriétés", id:"menu1"}/*, {value:"Supprimer", id:"menu2"}*/],
           click: {
             menu1: function(e, context) {
               $$('proprietes_nom').config.value = context.obj.getItem(context.id).name;
               $$('proprietes_nom').refresh();
               $$('proprietes_window').show();
-            },
+            }/*,
             menu2: function(e, context) {
               context.obj.remove(context.id);
 
               // add item to trash when suppr ?
               //corbeille.add(context.obj, corbeille.getIndexById(corbeille.getLastId()) + 1);
-            }
+            }*/
           }
         },
         backContextMenu:{
@@ -77,7 +77,7 @@
           padding:10,
           rows:[{
               view:"textarea",
-              value: "Vous avez supprimé un élément important mais ne vous inquietez pas, vous pouvez encore le récupérer. En effet, lors d'une suppression, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+              value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
             }]
           }
         });
@@ -90,7 +90,11 @@
         label:"Corbeille",
         icon:"trash",
         items: [
-          {id:"theAnswerDeleted", name:"theAnswer.txt", image:"file.png"}
+          {
+            id:"theAnswerDeleted",
+            name:"theAnswer.txt",
+            image:"file.png",
+          }
         ],
         contextMenu:
         {
@@ -114,11 +118,8 @@
                 }
               }
 
-              console.log(itemToPush.id);
-
+              // removal of suffix "Deleted" to allow interactivity with the element
               itemToPush.id = itemToPush.id.replace("Deleted", "");
-
-              console.log(itemToPush.id);
 
               // Remove the item restored from trash
               context.obj.remove(context.id);
