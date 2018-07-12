@@ -150,19 +150,16 @@
 
       function restoreItem (paramItem)
       {
-        console.log(paramItem);
-
-        var desktop = $$("pixDesktopItems");
+        var desktop = $$("pixDesktop").getItemList();
 
         // Get item to add to desktop
         var itemToPush = getItemByIdInList("corbeille_window", paramItem.id);
-        var items = $$("corbeille_window").config.items;
+
+        // Remove the item restored from trash
+        $$("corbeille_window").getItemList().remove(itemToPush.id);
 
         // removal of suffix "Deleted" to allow interactivity with the element
         itemToPush.id = itemToPush.id.replace("Deleted", "");
-
-        // Remove the item restored from trash
-        paramItem.obj.remove(paramItem.id);
 
         // Add restored item to desktop at last index + 1
         desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);

@@ -385,7 +385,8 @@ webix.protoUI({
     }
     config.id = "pixDesktop";
   },
-  defaults:{
+  defaults:
+  {
     css:"pix-desktop",
     rows:[{
       view:"pixItemList",
@@ -396,22 +397,29 @@ webix.protoUI({
     },{}],
     taskbar:false,
     onContext:{}
-   },
-   getBackground: function() {
+  },
+  getBackground: function()
+  {
     return this.config.background;
-   },
-   setBackground: function(image) {
-     this.config.background = image;
-     this.getNode().style.backgroundImage = "url('"+image+"')";
-   },
-   setContextMenu: function(data) {
+  },
+  setBackground: function(image)
+  {
+    this.config.background = image;
+    this.getNode().style.backgroundImage = "url('"+image+"')";
+  },
+  setContextMenu: function(data)
+  {
     var element = this;
-    var menu = webix.ui({
+    var menu =
+    webix.ui({
       view:"contextmenu",
       data:data.items,
-      on:{
-        onItemClick:function(id, e){
-          if (data.click && data.click[id]) {
+      on:
+      {
+        onItemClick:function(id, e)
+        {
+          if (data.click && data.click[id])
+          {
             data.click[id].call(this, e);
           }
         }
@@ -419,7 +427,11 @@ webix.protoUI({
       autowidth:true,
       master:element.$view
     });
-  }
+  },
+  getItemList : function ()
+  {
+    return $$("pixDesktopItems");
+  },
 }, webix.ui.layout);
 
 /**
@@ -456,6 +468,11 @@ webix.protoUI({
       // context menu
       onContext:{}
     }
+  },
+  getItemList : function ()
+  {
+    console.log(this.config.id + "_item-list");
+    return $$(this.config.id + "_item-list");
   }
 }, webix.ui.pixWindow);
 
@@ -536,4 +553,3 @@ webix.i18n.locales["fr-FR"]= {
 };
 webix.Date.startOnMonday = true;
 webix.i18n.setLocale("fr-FR");
-
