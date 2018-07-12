@@ -471,7 +471,6 @@ webix.protoUI({
   },
   getItemList : function ()
   {
-    console.log(this.config.id + "_item-list");
     return $$(this.config.id + "_item-list");
   }
 }, webix.ui.pixWindow);

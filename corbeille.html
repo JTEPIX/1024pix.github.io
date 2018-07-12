@@ -114,7 +114,7 @@
         open: {
             theAnswerDeleted : function()
             {
-              var item = getItemByIdInList("corbeille_window", "theAnswerDeleted");
+              var item = $$("corbeille_window").getItemList().getItem("theAnswerDeleted");
 
               openProperties(item, true);
             }
@@ -152,29 +152,19 @@
       {
         var desktop = $$("pixDesktop").getItemList();
 
+        var corbeilleItemList = $$("corbeille_window").getItemList();
+
         // Get item to add to desktop
-        var itemToPush = getItemByIdInList("corbeille_window", paramItem.id);
+        var itemToPush = corbeilleItemList.getItem(paramItem.id);
 
         // Remove the item restored from trash
-        $$("corbeille_window").getItemList().remove(itemToPush.id);
+        corbeilleItemList.remove(itemToPush.id);
 
         // removal of suffix "Deleted" to allow interactivity with the element
         itemToPush.id = itemToPush.id.replace("Deleted", "");
 
         // Add restored item to desktop at last index + 1
         desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);
-      }
-
-      function getItemByIdInList (viewId, itemId)
-      {
-        var items = $$(viewId).config.items;
-
-        for (const item of items)
-        {
-          if (item.id === itemId)
-            return item;
-        }
-        return null;
       }
 
       webix.ui({
@@ -187,7 +177,7 @@
           padding:10,
           rows:[{
               view:"textarea",
-              value: "The answer is 545545"
+              value: "The answer is " + getWord()
             }
           ]
         }
@@ -206,7 +196,7 @@
           cols:
           [
             {
-              /*css : "name" pour ajouter un style au bouton*/
+              /*css : "pix-item", pour ajouter un style au bouton*/
               view:"button",
               id:"validateBtn",
               type:"iconButton",
@@ -300,9 +290,9 @@
               inputWidth:150,
               click : function (e, context)
               {
-                console.log("restaurer");
-
                 restoreItem(elementToRestore);
+
+                $$("proprietes_window").close();
               }
             }
           ]
