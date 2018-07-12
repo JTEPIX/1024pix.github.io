@@ -15,6 +15,47 @@
   <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
   <style>
     #answer {display:none;font-family:  'Coming Soon', cursive;;font-size:60px;position:absolute;right:100px;bottom:100px;z-index:100;}
+
+    .pixValidateButton button
+    {
+  	   background-color : red;
+
+       border:1px solid #000000;
+    }
+
+    .pixValidateButton button:hover
+    {
+      background-color: green;
+    }
+
+    .pixValidateButton button:active
+    {
+      background-color: yellow;
+    }
+
+    .pixCancelButton button
+    {
+
+    }
+
+    .pixPropertiesRestoreButton button
+    {
+      background-color: green;
+    }
+
+    .pixPropertiesRestoreButton button:hover
+    {
+      background-color: darkGreen;
+    }
+
+    .pixConfirmText
+    {
+      color : red;
+      border : 0px;
+    }
+
+  }
+
   </style>
 </head>
 <body>
@@ -76,18 +117,18 @@
 
       webix.ui(
       {
-      view:"pixWindow",
-      id:"fichier_window",
-      label:"notes.txt",
-      icon:"file",
-      body:{
-        view:"layout",
-        padding:10,
-        rows:[{
-            view:"textarea",
-            value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
-          }]
-        }
+        view:"pixWindow",
+        id:"fichier_window",
+        label:"notes.txt",
+        icon:"file",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"textarea",
+              value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+            }]
+          }
       });
 
       function openProperties (paramItem, showRestoreButton = false)
@@ -177,7 +218,8 @@
           padding:10,
           rows:[{
               view:"textarea",
-              value: "The answer is " + getWord()
+              value: "The answer is " + getWord(),
+              readonly : true
             }
           ]
         }
@@ -189,40 +231,51 @@
         id:"deleteConfirm",
         label:"Confirmation",
         icon:"check-circle",
+        resize : false,
         body:
         {
           view:"layout",
           padding:10,
-          cols:
+          rows :
           [
             {
-              /*css : "pix-item", pour ajouter un style au bouton*/
-              view:"button",
-              id:"validateBtn",
-              type:"iconButton",
-              icon : "check-circle",
-              label : "valider",
-              inputWidth:180,
-              click : function (e, context)
-              {
-                // instead of deleting the object, give player feedback : "wrong answer"
-                if (elementToDelete != null)
-                  elementToDelete.obj.remove(elementToDelete.id);
-
-                closeDeleteConfirm();
-              }
+              view:"label",
+              label:"Voulez-vous vraiment supprimer ce fichier ?",
             },
             {
-              view:"button",
-              id:"cancelBtn",
-              type:"iconButton",
-              icon : "ban",
-              label : "annuler",
-              inputWidth:180,
-              click : function (e, context)
-              {
-                closeDeleteConfirm();
-              }
+              cols :
+              [
+                {
+                  view:"button",
+                  id:"validateBtn",
+                  type:"iconButton",
+                  icon : "check-circle",
+                  label : "OUI",
+                  css : "pixValidateButton",
+                  inputWidth:180,
+                  click : function (e, context)
+                  {
+                    // instead of deleting the object, give player feedback : "wrong answer"
+                    if (elementToDelete != null)
+                      elementToDelete.obj.remove(elementToDelete.id);
+
+                    closeDeleteConfirm();
+                  }
+                },
+                {
+                  view:"button",
+                  id:"cancelBtn",
+                  type:"iconButton",
+                  icon : "ban",
+                  label : "NON",
+                  css : "pixCancelButton",
+                  inputWidth:180,
+                  click : function (e, context)
+                  {
+                    closeDeleteConfirm();
+                  }
+                }
+              ]
             }
           ]
         }
@@ -284,9 +337,9 @@
             {
               view:"button",
               id:"properties_RestoreButton",
-              type:"iconButton",
-              icon : "window-restore",
+              type:"button",
               label : "restaurer",
+              css : "pixPropertiesRestoreButton",
               inputWidth:150,
               click : function (e, context)
               {

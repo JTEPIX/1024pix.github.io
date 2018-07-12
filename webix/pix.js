@@ -8,7 +8,7 @@ webix.protoUI({
   name:"pixWindow",
   $init:function(config) {
     var view = this;
-    webix.extend(config,this.getUI());
+    webix.extend(config,this.getUI(config.resize));
     if (config.label||this.defaults.label) {
       this.$ready.push(function() {
         var head = view.getChildViews()[0];
@@ -33,11 +33,76 @@ webix.protoUI({
     css:'pix-window',
     toFront:true
   },
-  getUI: function() {
-    return {
+  getUI: function(paramResize)
+  {
+    var pixWindowWithMaximise =
+    {
       head:{
         view:"toolbar",
-        cols:[{
+        id : "windowToolbar",
+        cols:[
+          {
+            view: "label",
+            label: ""
+          },
+          {
+            view:"icon",
+            icon:"window-minimize",
+            on: {
+              onItemClick: function(e) {
+                $$("pixTaskbar").minimizeTask(this.getTopParentView().config.id);
+              }
+            },
+            hidden:true
+          },
+          {
+            view:"icon",
+            icon:"window-restore",
+            on: {
+              onItemClick: function(e) {
+                var element = this.getTopParentView();
+                element.define({
+                  fullscreen:false,
+                  move:true
+                });
+                if (typeof element.lastX !== 'undefined') {
+                  element.setPosition(element.lastX, element.lastY);
+                }
+                element.resize();
+                this.hide();
+                var items = this.getParentView().getChildViews();
+                items[1].blur();
+                for (var i=1; i<items.length; i++) {
+                  var icon = items[i];
+                  if (icon.config.icon === "window-maximize") {
+                    icon.show();
+                    break;
+                  }
+                }
+              }
+            },
+            hidden: true
+          },
+          {
+            view:"icon",
+            icon:"times-circle",
+            on: {
+              onItemClick: function(e) {
+                this.getTopParentView().close();
+              }
+            }
+          }
+        ]
+      }
+    }
+
+    var pixWindowWithoutMaximise =
+    {
+      head:{
+        view:"toolbar",
+        id : "windowToolbar",
+        cols:[
+          {
             view: "label",
             label: ""
           },
@@ -118,7 +183,9 @@ webix.protoUI({
           }
         ]
       }
-    };
+    }
+
+    return paramResize == null && this.defaults.resize || paramResize ? pixWindowWithoutMaximise : pixWindowWithMaximise;
   },
   open: function() {
     this.show();
