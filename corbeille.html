@@ -71,7 +71,7 @@
       webix.ui(
       {
         view:"pixDesktop",
-        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille_icon", name:"Corbeille", image:"trash-icon-placeholder.png"}],
+        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille_icon", name:"Corbeille", image:"images/trash-icon-placeholder.png"}],
         open: {
             corbeille_icon : function()
             {
@@ -124,9 +124,6 @@
       var test = $$("pixDesktopItems").attachEvent("onBeforeDrop",
       function (context, e)
       {
-        console.log(context.from);
-
-        console.log(context.start);
         var droppedItem = context.from.getItem(context.start);
 
         if (droppedItem.deleted != null && droppedItem.deleted)
