@@ -64,18 +64,18 @@
     var elementToDelete;
     var elementToRestore;
 
-    const DELETED_PREFIX = "Deleted";
+    const DELETED_SUFFIX = "Deleted";
 
     webix.ready(function()
     {
       webix.ui(
       {
         view:"pixDesktop",
-        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille", name:"Corbeille", image:"trash-icon-placeholder.png"}],
+        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille_icon", name:"Corbeille", image:"trash-icon-placeholder.png"}],
         open: {
-            corbeille : function()
+            corbeille_icon : function()
             {
-              $$('corbeille_window').open();
+              $$('corbeille').open();
             },
             parametres : function()
             {
@@ -121,20 +121,18 @@
         }
       });
 
-      $$("pixDesktopItems").attachEvent("onBeforeDrop",
+      var test = $$("pixDesktopItems").attachEvent("onBeforeDrop",
       function (context, e)
       {
-        console.log(context);
+        console.log(context.from);
 
-        // gestion drag&drop depuis la corbeille
-        var deletedIndex = context.start.search(DELETED_PREFIX);
+        console.log(context.start);
+        var droppedItem = context.from.getItem(context.start);
 
-        if (deletedIndex > 0)
+        if (droppedItem.deleted != null && droppedItem.deleted)
         {
-          //élément sorti de la corbeille
-          restoreItem(context.start);
+          $$("corbeille").config.restoreItem(context.start);
 
-          // Permet de cancel le drag&drop
           return false;
         }
       });
@@ -173,13 +171,13 @@
       webix.ui(
       {
         view:"pixFolder",
-        id:"corbeille_window",
+        id:"corbeille",
         label:"Corbeille",
         icon:"trash",
         open: {
             theAnswerDeleted : function()
             {
-              var item = $$("corbeille_window").getItemList().getItem("theAnswerDeleted");
+              var item = $$("corbeille").getItemList().getItem("theAnswerDeleted");
 
               openProperties(item, true);
             }
@@ -191,6 +189,7 @@
             id:"theAnswerDeleted",
             name:"theAnswer.txt",
             image:"file.png",
+            deleted : true
           }
         ],
         contextMenu:
@@ -200,7 +199,7 @@
           {
             restore : function(e, context)
             {
-              restoreItem(context.id);
+              $$('corbeille').config.restoreItem(context.id);
             },
             delete : function(e, context)
             {
@@ -209,27 +208,25 @@
               elementToDelete = context;
             }
           }
+        },
+        restoreItem : function (itemId, targetList = $$("pixDesktop").getItemList())
+        {
+          var corbeilleItemList = $$('corbeille').getItemList();
+
+          // Get item to add to desktop
+          var itemToPush = corbeilleItemList.getItem(itemId);
+
+          // Remove the item restored from trash
+          corbeilleItemList.remove(itemToPush.id);
+
+          // removal of suffix DELETED_SUFFIX to allow interactivity with the element
+          itemToPush.id = itemToPush.id.replace(DELETED_SUFFIX, "");
+          itemToPush.deleted = false;
+
+          // Add restored item to desktop at last index + 1
+          targetList.add(itemToPush, targetList.getIndexById(targetList.getLastId()) + 1);
         }
       });
-
-      function restoreItem (paramItem)
-      {
-        var desktop = $$("pixDesktop").getItemList();
-
-        var corbeilleItemList = $$("corbeille_window").getItemList();
-
-        // Get item to add to desktop
-        var itemToPush = corbeilleItemList.getItem(paramItem);
-
-        // Remove the item restored from trash
-        corbeilleItemList.remove(itemToPush.id);
-
-        // removal of suffix DELETED_PREFIX to allow interactivity with the element
-        itemToPush.id = itemToPush.id.replace(DELETED_PREFIX, "");
-
-        // Add restored item to desktop at last index + 1
-        desktop.add(itemToPush, desktop.getIndexById(desktop.getLastId()) + 1);
-      }
 
       webix.ui({
         view:"pixWindow",
@@ -366,7 +363,7 @@
               inputWidth:150,
               click : function (e, context)
               {
-                restoreItem(elementToRestore);
+                $$('corbeille').config.restoreItem(elementToRestore.id);
 
                 $$("proprietes_window").close();
               }
