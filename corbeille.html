@@ -121,7 +121,7 @@
         }
       });
 
-      var test = $$("pixDesktopItems").attachEvent("onBeforeDrop",
+      $$("pixDesktopItems").attachEvent("onBeforeDrop",
       function (context, e)
       {
         var droppedItem = context.from.getItem(context.start);
@@ -133,6 +133,7 @@
           return false;
         }
       });
+
 
       webix.ui(
       {
@@ -206,7 +207,7 @@
             }
           }
         },
-        restoreItem : function (itemId, targetList = $$("pixDesktop").getItemList())
+        restoreItem : function (itemId, targetList = $$('pixDesktop').getItemList())
         {
           var corbeilleItemList = $$('corbeille').getItemList();
 
@@ -223,6 +224,13 @@
           // Add restored item to desktop at last index + 1
           targetList.add(itemToPush, targetList.getIndexById(targetList.getLastId()) + 1);
         }
+      });
+
+      $$("corbeille").getItemList().attachEvent("onBeforeDrop",
+      function (context, e)
+      {
+        console.log("onBeforeDrop Corbeille");
+        console.log(context);
       });
 
       webix.ui({
