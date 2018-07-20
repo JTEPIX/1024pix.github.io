@@ -15,12 +15,24 @@
   <title>Propriétés</title>
 </head>
 <body>
+  <style>
+    .webix_layout_toolbar.webix_toolbar {
+      background-color:#9999aa;
+    }
+
+    .pix-taskbar-time div {
+      text-align:center;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:bold;
+    }
+  </style>
   <script>
       webix.ready(function() {
         webix.ui({
           view:"pixDesktop",
           items:[{id:"file", name:"fichier.txt", image:"file.png"}],
-          background:"images/benji.jpg",
+          background:"images/bg.jpg",
           taskbar:true,
           contextMenu:{
             items:[{value:"Ouvrir", id:"menu1"}, {value:"Propriétés", id:"menu2"}, {value:"Supprimer", id:"menu3"}],
