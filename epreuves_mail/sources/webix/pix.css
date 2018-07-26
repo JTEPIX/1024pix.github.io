@@ -1,0 +1,137 @@
+.pix-desktop {
+  background-size:cover;
+  width:100%;
+  height:100%;
+}
+
+.webix_view div:focus {
+  outline:none;
+}
+
+.pix-items{
+  background-color:transparent;
+  padding:5px;
+  box-sizing:border-box;
+  overflow-y:auto !important;
+}
+
+.pix-items.webix_view.webix_list-x {
+  white-space:normal;
+}
+
+.pix-items .webix_list_item {
+  display:inline-block;
+  cursor:default;
+  line-height:inherit;
+  border-right:none;
+  padding:5px 10px;
+}
+
+.pix-items .webix_list_item.webix_selected{
+  padding:5px 10px;
+  background-color:rgba(204, 204, 255, 0.3);
+  box-shadow: 0 0 0 1px rgba(120, 120, 120, 0.5) inset;
+  border:none;
+}
+
+.pix-item-inner {
+  text-align:center;
+}
+
+img.pix-item-icon {
+  width:80px;
+  height:80px;
+}
+
+span.pix-item-icon {
+  font-size:70px;
+  display:inline;
+  color:#000;
+}
+
+span.pix-item-icon + div {
+  margin-top:10px;
+}
+
+.pix-item-name {
+  color:#000000;
+  text-align:center;
+}
+
+.pix-desktop .pix-item-name {
+  color:#fff;
+  text-shadow: 1px 1px #000;
+}
+
+.pix-desktop .pix-items .webix_list_item.webix_selected{
+  background-color:rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  border:none;
+}
+
+.webix_drag_zone .webix_list_item.webix_selected {
+  background-color:#ffffff;
+  border:none;
+}
+
+.pix-window.webix_window {
+  box-shadow:none;
+}
+
+.webix_layout_toolbar.webix_toolbar {
+  background-color:#9999aa;
+}
+
+.webix_toolbar.pix_taskbar .webix_el_box {
+  padding-top:0;
+  padding-bottom:0;
+}
+
+.webix_toolbar.pix_taskbar button {
+  border:none;
+  border-radius:initial;
+  cursor:default;
+}
+
+.webix_toolbar.pix_taskbar .webix_el_button.active button,
+.webix_toolbar.pix_taskbar .webix_el_button.active button:hover {
+  background-color:rgba(255,255,255,0.3)
+}
+
+
+.webix_layout_toolbar.webix_toolbar.pix_taskbar .webix_el_button button:focus {
+  background-color:inherit;
+}
+
+.webix_toolbar.pix_taskbar {
+  position:relative;
+  z-index:1000;
+}
+
+.webix_toolbar.pix_taskbar .webix_icon_btn {
+  margin-right:4px;
+}
+
+.webix_toolbar.pix_taskbar button.webix_img_btn {
+  line-height:normal !important;
+  padding-left:4px;
+}
+
+.pix-taskbar-time {
+  background-color:transparent;
+}
+
+.pix-taskbar-time div {
+  text-align:center;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.pix-taskbar-time .webix_template {
+  padding: 2px;
+}
+
+/*.webix_drag_zone .webix_list_item {
+  width:auto !important;
+}*/
