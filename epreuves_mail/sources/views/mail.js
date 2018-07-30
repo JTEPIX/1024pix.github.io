@@ -6,11 +6,7 @@ export default class Mail extends JetView
 {
   config ()
   {
-    var placeholderMessage = "Proin id sapien quis tortor condimentum ornare nec ac ligula. " +
-		"Vestibulum varius euismod lacus sit amet eleifend. " +
-		"Quisque in faucibus nulla. Pellentesque a egestas ipsum. " +
-		"Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" +
-		" Quisque massa lectus, rutrum vitae risus sit amet, porttitor tempus libero."
+
 
     var header =
     {
@@ -20,6 +16,7 @@ export default class Mail extends JetView
 
 		var menu =
     {
+      localId : "mailtree",
 			view:"tree",
 			css: "rounded_top",
 			select: true,
@@ -36,7 +33,7 @@ export default class Mail extends JetView
 				{
           id:"1",
           value:"Inbox",
-          icon:"inbox" // besoin de png
+          icon:"inbox"
         },
 				{
           id:"2",
@@ -88,7 +85,7 @@ export default class Mail extends JetView
       [
 				{
           view:"button",
-          id: "reply",
+          localId : "reply",
           type: "iconButton",
           label:"Reply",
           icon:"reply",
@@ -113,9 +110,9 @@ export default class Mail extends JetView
 			]
     }
 
-    var mailList =
+    var maillist =
     {
-      id : "mailList",
+      localId : "maillist",
       view:"datatable",
       css: "rounded_top",
       scrollX:false,
@@ -144,11 +141,7 @@ export default class Mail extends JetView
         }
 			],
       select:"row",
-      data: mailsData,
-      ready:function()
-      {
-				this.select(1);
-			}
+      data: mailsData
 		};
 
     var mailPreviewHeader =
@@ -165,6 +158,7 @@ export default class Mail extends JetView
 
 		var ui =
     {
+      id : "mail",
 			type:"wide",
       cols:
 			[
@@ -194,7 +188,7 @@ export default class Mail extends JetView
           rows:
           [
             //mailHeader,
-            mailList,
+            maillist,
             mailOptions
           ]
         },
@@ -210,26 +204,36 @@ export default class Mail extends JetView
             mailPreview
           ]
         }
-			 ]
+      ]
 		 };
 
-     /* SELECTION IMPLEMENTER LA DEDANS, MAINTENANT IL FAUT CHERCHER */
-     /*$$("$datatable1").bind(
-       $$("$tree1"),
-       function(obj,filter)
-       {
-			      return obj.folder == filter.id;
-		   }
-     );
-
-		$$("$datatable1").attachEvent("onAfterSelect",function()
-    {
-			$$("reply").show();
-			$$("details").define("template", placeholderMessage);
-			$$("details").render();
-		});
-		$$("$tree1").select(1);*/
-
 		return ui;
+  }
+
+  ready (view)
+  {
+    var jetView = this;
+    jetView.$$("maillist").bind(
+      jetView.$$("mailtree"),
+      function (obj, filter)
+      {
+        return obj.folder == filter.id;
+      }
+    );
+
+    jetView.$$("maillist").attachEvent("onAfterSelect",function()
+    {
+      var placeholderMessage = "Proin id sapien quis tortor condimentum ornare nec ac ligula. " +
+      "Vestibulum varius euismod lacus sit amet eleifend. " +
+      "Quisque in faucibus nulla. Pellentesque a egestas ipsum. " +
+      "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" +
+      " Quisque massa lectus, rutrum vitae risus sit amet, porttitor tempus libero."
+
+      jetView.$$("reply").show();
+      jetView.$$("mailPreview").define("template", placeholderMessage);
+      jetView.$$("mailPreview").render();
+    });
+
+    jetView.$$("mailtree").select(1);
   }
 }

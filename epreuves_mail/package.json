@@ -2,11 +2,10 @@
   "name": "webix-jet-app",
   "version": "1.1.0",
   "description": "Webix Jet App",
-  "main": "sources/app.js",
+  "main": "sources/myapp.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint sources/",
-    "debug" : "webpack --env.production false",
     "build": "webpack --env.production true",
     "module": "webpack --env.production true --env.module true",
     "standalone": "webpack --env.production true --env.module true --env.standalone true",
