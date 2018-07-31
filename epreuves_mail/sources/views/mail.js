@@ -6,8 +6,6 @@ export default class Mail extends JetView
 {
   config ()
   {
-
-
     var header =
     {
 			type:"header",
@@ -85,27 +83,65 @@ export default class Mail extends JetView
       [
 				{
           view:"button",
+          localId : "create",
+          type: "iconButton",
+          label:"Create",
+          icon:"envelope",
+          width: 95,
+          click : function ()
+          {
+            console.log("create");
+          }
+        },
+        {
+          view:"button",
           localId : "reply",
           type: "iconButton",
           label:"Reply",
           icon:"reply",
           width: 95,
-          hidden: true
-        },
-				{
-          view:"button",
-          type: "iconButton",
-          label:"Create",
-          icon:"envelope",
-          width: 95
+          hidden: true,
+          click : function ()
+          {
+            console.log("reply");
+          }
         },
 				{},
 				{
           view:"button",
+          localId : "delete",
           type: "iconButton",
           label:"Delete",
           icon:"times",
-          width: 95
+          width: 95,
+          click : function ()
+          {
+            const CORBEILLE_FOLDER = 4;
+
+            var maillist = this.$scope.$$("maillist");
+
+            if (maillist.getSelectedId() != null)
+            {
+              var mailtree = this.$scope.$$("mailtree");
+              var initalFolder = maillist.getSelectedItem(true)[0].folder;
+
+              for (var selectedId of maillist.getSelectedId(true))
+              {
+                var item = maillist.getItem(selectedId);
+                item.folder = CORBEILLE_FOLDER;
+
+                maillist.updateItem(selectedId, item);
+              }
+
+              mailtree.select(CORBEILLE_FOLDER);
+
+              //maillist.refresh();
+
+              mailtree.select(initalFolder);
+
+              this.$scope.$$("reply").hide();
+            }
+          }
         }
 			]
     }
@@ -118,12 +154,12 @@ export default class Mail extends JetView
       scrollX:false,
       columns:
       [
-				{
+				/*{
           id:"checked",
           header:{ content:"masterCheckbox" },
           template:"{common.checkbox()}",
           width: 40
-        },
+        },*/
 				{
           id:"name",
           width: 180,
@@ -152,9 +188,20 @@ export default class Mail extends JetView
 
     var mailPreview =
     {
+      layout : "wide",
       id:"mailPreview",
-      template:"No message selected"
-    }
+      rows :
+      [
+        {
+          id : "mailPreview_subject",
+          template : "no message selected",
+          height : 50
+        },
+        {
+
+        }
+      ]
+    };
 
 		var ui =
     {
@@ -213,15 +260,19 @@ export default class Mail extends JetView
   ready (view)
   {
     var jetView = this;
-    jetView.$$("maillist").bind(
-      jetView.$$("mailtree"),
+
+    var maillist = jetView.$$("maillist");
+    var mailtree = jetView.$$("mailtree");
+
+    maillist.bind(
+      mailtree,
       function (obj, filter)
       {
         return obj.folder == filter.id;
       }
     );
 
-    jetView.$$("maillist").attachEvent("onAfterSelect",function()
+    maillist.attachEvent("onAfterSelect",function()
     {
       var placeholderMessage = "Proin id sapien quis tortor condimentum ornare nec ac ligula. " +
       "Vestibulum varius euismod lacus sit amet eleifend. " +
@@ -229,11 +280,33 @@ export default class Mail extends JetView
       "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" +
       " Quisque massa lectus, rutrum vitae risus sit amet, porttitor tempus libero."
 
+      var preview = jetView.$$("mailPreview");
+      var previewSubject = jetView.$$("mailPreview_subject");
+
       jetView.$$("reply").show();
-      jetView.$$("mailPreview").define("template", placeholderMessage);
-      jetView.$$("mailPreview").render();
+
+      if (maillist.getSelectedItem().subject != null)
+        previewSubject.define("template",maillist.getSelectedItem().subject);
+
+      previewSubject.render();
     });
 
-    jetView.$$("mailtree").select(1);
+    mailtree.select(1);
+
+    mailtree.attachEvent("onAfterSelect", function (id)
+    {
+      const CORBEILLE_FOLDER = 4;
+
+      if (mailtree.getSelectedId() == CORBEILLE_FOLDER)
+      {
+        this.$scope.$$("delete").hide();
+        this.$scope.$$("create").hide();
+      }
+      else
+      {
+        this.$scope.$$("delete").show();
+        this.$scope.$$("create").show();
+      }
+    });
   }
 }

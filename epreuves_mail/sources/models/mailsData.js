@@ -2,7 +2,7 @@ export const mailsData = new webix.DataCollection(
 	{
 		data:
 		[
-			{id:1, folder:1, name: "Alex Stern", email: "alex@spam.com", subject:"Invitation", date: "25/07/2013 12:30:20"},
+			{id:1, folder:1, name: "Alex Stern", email: "alex@spam.com", subject:"Invitation", date: "25/07/2013 12:30:20", message : "BLblbblblbllblblbllblblblblblblbllblblblbl"},
 			{id:2, folder:1, name: "Sofia O'Neal", email: "sofia@spam.com", subject:"Report", date: "25/07/2013 16:10:07"},
 			{id:3, folder:1, name: "Jacob Erickson", email: "jacob@spam.com", subject:"Go ahead, make my day", date: "26/07/2013 11:25:50"},
 			{id:4, folder:1, name: "Alice", email: "alice@spam.com", subject:"Confirmation request", date: "26/07/2013 15:28:46"},
