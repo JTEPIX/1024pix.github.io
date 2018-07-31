@@ -259,6 +259,9 @@ export default class Mail extends JetView
 
   ready (view)
   {
+    const CORBEILLE_FOLDER = 4;
+    const BASE_FOLDER = 1;
+
     var jetView = this;
 
     var maillist = jetView.$$("maillist");
@@ -274,33 +277,24 @@ export default class Mail extends JetView
 
     maillist.attachEvent("onAfterSelect",function()
     {
-      var placeholderMessage = "Proin id sapien quis tortor condimentum ornare nec ac ligula. " +
-      "Vestibulum varius euismod lacus sit amet eleifend. " +
-      "Quisque in faucibus nulla. Pellentesque a egestas ipsum. " +
-      "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" +
-      " Quisque massa lectus, rutrum vitae risus sit amet, porttitor tempus libero."
-
       var preview = jetView.$$("mailPreview");
       var previewSubject = jetView.$$("mailPreview_subject");
 
       jetView.$$("reply").show();
 
       if (maillist.getSelectedItem().subject != null)
-        previewSubject.define("template",maillist.getSelectedItem().subject);
+        previewSubject.define("template", maillist.getSelectedItem().subject);
 
       previewSubject.render();
     });
 
-    mailtree.select(1);
-
     mailtree.attachEvent("onAfterSelect", function (id)
     {
-      const CORBEILLE_FOLDER = 4;
-
       if (mailtree.getSelectedId() == CORBEILLE_FOLDER)
       {
         this.$scope.$$("delete").hide();
         this.$scope.$$("create").hide();
+        this.$scope.$$("reply").hide();
       }
       else
       {
@@ -308,5 +302,7 @@ export default class Mail extends JetView
         this.$scope.$$("create").show();
       }
     });
+
+    mailtree.select(BASE_FOLDER);
   }
 }
