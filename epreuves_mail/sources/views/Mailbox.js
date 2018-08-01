@@ -2,7 +2,7 @@ import {JetView} from "webix-jet";
 
 import {mailsData} from "models/mailsData";
 
-export default class Mail extends JetView
+export default class Mailbox extends JetView
 {
   config ()
   {
@@ -135,11 +135,9 @@ export default class Mail extends JetView
 
               mailtree.select(CORBEILLE_FOLDER);
 
-              //maillist.refresh();
-
               mailtree.select(initalFolder);
 
-              this.$scope.$$("reply").hide();
+              this.$scope.clearFocus();
             }
           }
         }
@@ -180,29 +178,6 @@ export default class Mail extends JetView
       data: mailsData
 		};
 
-    var mailPreviewHeader =
-    {
-			type:"header",
-      template: "Preview"
-		};
-
-    var mailPreview =
-    {
-      layout : "wide",
-      id:"mailPreview",
-      rows :
-      [
-        {
-          id : "mailPreview_subject",
-          template : "no message selected",
-          height : 50
-        },
-        {
-
-        }
-      ]
-    };
-
 		var ui =
     {
       id : "mail",
@@ -240,16 +215,8 @@ export default class Mail extends JetView
           ]
         },
         {
-          type : "clean",
-          gravity : 10,
-          padding : 2,
-          margin : 10,
-          borderless:true,
-          rows :
-          [
-            //mailPreviewHeader,
-            mailPreview
-          ]
+           $subview:"MailDisplay",
+           name : "mailPreview"
         }
       ]
 		 };
@@ -277,15 +244,9 @@ export default class Mail extends JetView
 
     maillist.attachEvent("onAfterSelect",function()
     {
-      var preview = jetView.$$("mailPreview");
-      var previewSubject = jetView.$$("mailPreview_subject");
-
       jetView.$$("reply").show();
 
-      if (maillist.getSelectedItem().subject != null)
-        previewSubject.define("template", maillist.getSelectedItem().subject);
-
-      previewSubject.render();
+      jetView.getSubView("mailPreview").changeMail(maillist.getSelectedItem());
     });
 
     mailtree.attachEvent("onAfterSelect", function (id)
@@ -304,5 +265,12 @@ export default class Mail extends JetView
     });
 
     mailtree.select(BASE_FOLDER);
+  }
+
+  clearFocus ()
+  {
+    this.getSubView("mailPreview").clear();
+
+    this.$$("reply").hide();
   }
 }

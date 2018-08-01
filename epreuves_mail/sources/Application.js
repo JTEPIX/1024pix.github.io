@@ -10,10 +10,10 @@ export class Application extends JetApp
 			version : VERSION,
 			router 	: BUILD_AS_MODULE ? EmptyRouter : HashRouter,
 			debug 	: !PRODUCTION,
-			start 	: "/mail",
+			start 	: "/Mailbox",
 			routes :
 			{
-				
+
 			}
 		};
 
