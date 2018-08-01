@@ -49,10 +49,19 @@ export default class MailDisplay extends JetView
   {
     this.changeHeaderText(data.subject);
 
+    var messages = this.$$("messages");
+
+    var messagesViews = messages.getChildViews();
+
+    for (var i = messagesViews.length - 1; i >= 0; i --)
+    {
+      messages.removeView(messagesViews[i]);
+    }
+
     var mail = new MailView (data);
     mail.app = this.app;
 
-    this.$$("messages").addView(mail);
+    messages.addView(mail);
   }
 
   changeHeaderText (newText)

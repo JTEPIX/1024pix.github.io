@@ -67,7 +67,7 @@ export class MailView extends JetView
     {
       gravity : 10,
       layout : "line",
-      autoHeight : false,
+      padding : 10,
       rows :
       [
         header,
