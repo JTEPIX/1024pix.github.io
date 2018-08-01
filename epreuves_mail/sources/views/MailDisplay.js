@@ -1,4 +1,5 @@
 import {JetView} from "webix-jet";
+import {MailView} from "views/MailView";
 
 import {mailsData} from "models/mailsData";
 
@@ -20,8 +21,12 @@ export default class MailDisplay extends JetView
       rows :
       [
         {
-          localId : "text",
-          template : "no message selected"
+          localId : "messages",
+          layout : "line",
+          rows :
+          [
+
+          ]
         }
       ]
     };
@@ -43,6 +48,11 @@ export default class MailDisplay extends JetView
   changeMail (data)
   {
     this.changeHeaderText(data.subject);
+
+    var mail = new MailView (data);
+    mail.app = this.app;
+
+    this.$$("messages").addView(mail);
   }
 
   changeHeaderText (newText)
@@ -60,5 +70,10 @@ export default class MailDisplay extends JetView
   clear ()
   {
     console.log("clear");
+  }
+
+  addMail (data)
+  {
+    var mail = new MailView ();
   }
 }
