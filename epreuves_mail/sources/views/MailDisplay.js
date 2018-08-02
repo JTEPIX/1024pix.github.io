@@ -51,12 +51,12 @@ export default class MailDisplay extends JetView
     this.mails = [];
   }
 
-  changeMail (data)
+  showMail (data)
   {
     this.$$("header").show();
     this.changeHeaderText(data.subject);
 
-    this.showMail(data);
+    this.showMailView(data);
   }
 
   changeHeaderText (newText)
@@ -90,7 +90,7 @@ export default class MailDisplay extends JetView
     }
   }
 
-  showMail (data)
+  showMailView (data)
   {
     var messages = this.$$("messages");
 

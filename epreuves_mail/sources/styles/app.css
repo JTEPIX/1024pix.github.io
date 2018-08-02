@@ -103,3 +103,20 @@
 .status_good{
 	color:#ddd;
 }
+/* read mail status */
+.read, .notRead
+{
+  
+}
+
+.read
+{
+  color : white;
+  background-color: green;
+}
+
+.notRead
+{
+  color : white;
+  background-color: red;
+}

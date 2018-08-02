@@ -221,6 +221,8 @@ export default class Mailbox extends JetView
     var maillist = jetView.$$("maillist");
     var mailtree = jetView.$$("mailtree");
 
+    this.applyReadCss();
+
     maillist.bind(
       mailtree,
       function (obj, filter)
@@ -231,7 +233,7 @@ export default class Mailbox extends JetView
 
     maillist.attachEvent("onAfterSelect",function()
     {
-      jetView.getSubView("mailPreview").changeMail(maillist.getSelectedItem());
+      jetView.getSubView("mailPreview").showMail(maillist.getSelectedItem());
     });
 
     mailtree.attachEvent("onAfterSelect", function (id)
@@ -258,5 +260,17 @@ export default class Mailbox extends JetView
   clearFocus ()
   {
     this.getSubView("mailPreview").clear();
+  }
+
+  applyReadCss ()
+  {
+    var maillist = this.$$("maillist");
+
+    maillist.eachRow(function (row)
+    {
+      var styleToApply = maillist.getItem(row).read ? "read" : "notRead";
+
+        maillist.addRowCss(row, styleToApply);
+    });
   }
 }
