@@ -15,10 +15,11 @@ export class MailView extends JetView
   {
     var header =
     {
+      type : "form",
       rows :
       [
         {
-          layout : "clean",
+          height : 30,
           cols :
           [
             {
@@ -29,6 +30,40 @@ export class MailView extends JetView
               localId : "senderMail",
               template : "testsenderMail"
             },
+            {}
+          ]
+        },
+        {
+          cols :
+          [
+            {
+              height : 30,
+              width : 150,
+              localId : "receiverName",
+              template : "testmail"
+            },
+            {
+
+            }
+          ]
+        }
+      ]
+		};
+
+    var view =
+    {
+      layout : "wide",
+      localId:"view",
+      paddingY : 10,
+      rows :
+      [
+        {
+          localId : "text",
+          template : "no message selected"
+        },
+        {
+          cols :
+          [
             {},
             {
               view:"button",
@@ -42,30 +77,12 @@ export class MailView extends JetView
               }
             }
           ]
-        },
-        {
-          localId : "receiverName",
-          template : "testmail"
-        }
-      ]
-		};
-
-    var view =
-    {
-      layout : "wide",
-      localId:"view",
-      rows :
-      [
-        {
-          localId : "text",
-          template : "no message selected"
         }
       ]
     };
 
 		var ui =
     {
-      gravity : 10,
       layout : "line",
       padding : 10,
       rows :
@@ -80,8 +97,6 @@ export class MailView extends JetView
 
   ready (view)
   {
-    console.log(this.data);
-
     var senderName = this.$$("senderName");
 
     senderName.define("template", this.data.name)

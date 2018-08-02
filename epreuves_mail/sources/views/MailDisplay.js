@@ -34,6 +34,7 @@ export default class MailDisplay extends JetView
 		var ui =
     {
       gravity : 10,
+      minWidth : 1000,
       layout : "wide",
       rows :
       [
@@ -45,23 +46,17 @@ export default class MailDisplay extends JetView
 		return ui;
   }
 
+  init ()
+  {
+    this.mails = [];
+  }
+
   changeMail (data)
   {
+    this.$$("header").show();
     this.changeHeaderText(data.subject);
 
-    var messages = this.$$("messages");
-
-    var messagesViews = messages.getChildViews();
-
-    for (var i = messagesViews.length - 1; i >= 0; i --)
-    {
-      messages.removeView(messagesViews[i]);
-    }
-
-    var mail = new MailView (data);
-    mail.app = this.app;
-
-    messages.addView(mail);
+    this.showMail(data);
   }
 
   changeHeaderText (newText)
@@ -78,11 +73,33 @@ export default class MailDisplay extends JetView
 
   clear ()
   {
-    console.log("clear");
+    this.clearMails();
+
+    this.$$("header").hide();
   }
 
-  addMail (data)
+  clearMails ()
   {
-    var mail = new MailView ();
+    var messages = this.$$("messages");
+
+    var messagesViews = messages.getChildViews();
+
+    for (var i = messagesViews.length - 1; i >= 0; i --)
+    {
+      messages.removeView(messagesViews[i]);
+    }
+  }
+
+  showMail (data)
+  {
+    var messages = this.$$("messages");
+
+    this.clearMails();
+
+    var mail = new MailView (data);
+    mail.app = this.app;
+    mail.name = "mailView";
+
+    messages.addView(mail);
   }
 }

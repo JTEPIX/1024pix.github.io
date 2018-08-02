@@ -93,19 +93,6 @@ export default class Mailbox extends JetView
             console.log("create");
           }
         },
-        {
-          view:"button",
-          localId : "reply",
-          type: "iconButton",
-          label:"Reply",
-          icon:"reply",
-          width: 95,
-          hidden: true,
-          click : function ()
-          {
-            console.log("reply");
-          }
-        },
 				{},
 				{
           view:"button",
@@ -244,8 +231,6 @@ export default class Mailbox extends JetView
 
     maillist.attachEvent("onAfterSelect",function()
     {
-      jetView.$$("reply").show();
-
       jetView.getSubView("mailPreview").changeMail(maillist.getSelectedItem());
     });
 
@@ -255,13 +240,16 @@ export default class Mailbox extends JetView
       {
         this.$scope.$$("delete").hide();
         this.$scope.$$("create").hide();
-        this.$scope.$$("reply").hide();
       }
       else
       {
         this.$scope.$$("delete").show();
         this.$scope.$$("create").show();
       }
+
+      var mailPreview = jetView.getSubView("mailPreview");
+
+      mailPreview.clear();
     });
 
     mailtree.select(BASE_FOLDER);
@@ -270,7 +258,5 @@ export default class Mailbox extends JetView
   clearFocus ()
   {
     this.getSubView("mailPreview").clear();
-
-    this.$$("reply").hide();
   }
 }
