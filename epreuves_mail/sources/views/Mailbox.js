@@ -158,7 +158,12 @@ export default class Mailbox extends JetView
 				{
           id:"date",
           header:"Date",
-          width: 150
+          width: 160
+        },
+        {
+          id : "attachment",
+          header : "",
+          width : 30
         }
 			],
       select:"row",

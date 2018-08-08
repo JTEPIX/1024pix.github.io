@@ -34,7 +34,6 @@ export default class MailDisplay extends JetView
 		var ui =
     {
       gravity : 10,
-      minWidth : 1000,
       layout : "wide",
       rows :
       [
