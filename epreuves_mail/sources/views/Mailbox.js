@@ -164,11 +164,23 @@ export default class Mailbox extends JetView
           id : "attachment",
           header : "",
           width : 30,
-          template : "<span class='webix_icon fa-paperclip info'></span>"
+          template : function (data)
+          {
+            return data.attachment ? "<span class='webix_icon fa-paperclip info'></span>" : "";
+          }
         }
 			],
       select:"row",
-      data: mailsData
+      data: mailsData,
+      ready : function ()
+      {
+        this.eachRow(function (row)
+        {
+          console.log(row);
+          console.log(this.getItem(row));
+
+        });
+      }
 		};
 
 		var ui =
