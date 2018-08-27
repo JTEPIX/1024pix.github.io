@@ -166,21 +166,12 @@ export default class Mailbox extends JetView
           width : 30,
           template : function (data)
           {
-            return data.attachment ? "<span class='webix_icon fa-paperclip info'></span>" : "";
+            return data.attachment != null ? "<span class='webix_icon fa-paperclip info'></span>" : "";
           }
         }
 			],
       select:"row",
-      data: mailsData,
-      ready : function ()
-      {
-        this.eachRow(function (row)
-        {
-          console.log(row);
-          console.log(this.getItem(row));
-
-        });
-      }
+      data: mailsData
 		};
 
 		var ui =
@@ -220,8 +211,8 @@ export default class Mailbox extends JetView
           ]
         },
         {
-           $subview:"MailDisplay",
-           name : "mailPreview"
+           name : "mailPreview",
+           $subview:"MailDisplay"
         }
       ]
 		 };

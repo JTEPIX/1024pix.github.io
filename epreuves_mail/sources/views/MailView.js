@@ -11,6 +11,19 @@ export class MailView extends JetView
     this.data = data;
   }
 
+  initAttachment (data)
+  {
+    var attachment = this.$$("attachment");
+
+    if (data == null || data.length == 0)
+    {
+      attachment.hide();
+      return;
+    }
+
+    console.log(data);
+  }
+
   config ()
   {
     var header =
@@ -50,17 +63,30 @@ export class MailView extends JetView
       ]
 		};
 
-    var view =
+    var text =
+    {
+      localId : "text",
+      gravity : 5,
+      template : "no message selected"
+    }
+
+    var attachments =
+    {
+      localId : "attachment",
+      gravity : 1,
+      cols :
+      [
+        {}
+      ]
+		};
+
+    var reply =
     {
       layout : "wide",
-      localId:"view",
+      localId : "view",
       paddingY : 10,
       rows :
       [
-        {
-          localId : "text",
-          template : "no message selected"
-        },
         {
           cols :
           [
@@ -85,10 +111,13 @@ export class MailView extends JetView
     {
       layout : "line",
       padding : 10,
+      margin : 10,
       rows :
       [
         header,
-        view
+        text,
+        attachments,
+        reply
       ]
 		};
 
@@ -99,22 +128,24 @@ export class MailView extends JetView
   {
     var senderName = this.$$("senderName");
 
-    senderName.define("template", this.data.name)
-    senderName.refresh()
+    senderName.define("template", this.data.name);
+    senderName.refresh();
 
     var senderMail = this.$$("senderMail");
 
-    senderMail.define("template","< " + this.data.email + " >")
-    senderMail.refresh()
+    senderMail.define("template","< " + this.data.email + " >");
+    senderMail.refresh();
 
     var receiverName = this.$$("receiverName");
 
     receiverName.define("template", "receiverName");
-    receiverName.refresh()
+    receiverName.refresh();
 
     var message = this.$$('text');
 
     message.define("template", this.data.message);
     message.refresh();
+
+    this.initAttachment(this.data.attachment);
   }
 }
