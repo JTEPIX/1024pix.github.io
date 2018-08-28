@@ -193,8 +193,7 @@ export default class Mailbox extends JetView
                 header,
                 menu,
               ]
-            },
-            {}
+            }
           ]
         },
 				{
