@@ -11,54 +11,21 @@
   <script src="./webix/pix.js"></script>
   <script src="./webix/pix-apps.js"></script>
   <script src="js/utils.js"></script>
-  <title>Propriétés</title>
-  <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
+  <title>Suppression</title>
   <style>
-    #answer {display:none;font-family:  'Coming Soon', cursive;;font-size:60px;position:absolute;right:100px;bottom:100px;z-index:100;}
 
-    .pixValidateButton button
-    {
-  	   background-color : red;
-
-       border:1px solid #000000;
-    }
-
-    .pixValidateButton button:hover
-    {
-      background-color: green;
-    }
-
-    .pixValidateButton button:active
-    {
-      background-color: yellow;
-    }
-
-    .pixCancelButton button
-    {
-
-    }
-
-    .pixPropertiesRestoreButton button
-    {
-      background-color: green;
-    }
-
-    .pixPropertiesRestoreButton button:hover
-    {
-      background-color: darkGreen;
-    }
 
     .pixConfirmText
     {
       color : red;
       border : 0px;
     }
-  }
+
   </style>
 </head>
 <body>
   <script>
-    secret = "AGSSQFfFSD0922JNFsdq___ZeQSDZORE9843";
+    secret = "AGSSQFfFSD0922JNFsdqAASEEE9843";
 
     // element to Delete with the trash contextual menu
     var elementToDelete;
@@ -146,7 +113,7 @@
           padding:10,
           rows:[{
               view:"textarea",
-              value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+              value: "Vous avez supprimé un document important mais ne vous inquiétez pas, vous pouvez encore le récupérer."
             }]
           }
       });
@@ -173,9 +140,9 @@
         label:"Corbeille",
         icon:"trash",
         open: {
-            theAnswerDeleted : function()
+          deletedFile : function()
             {
-              var item = $$("corbeille").getItemList().getItem("theAnswerDeleted");
+              var item = $$("corbeille").getItemList().getItem("deletedFile");
 
               openProperties(item, true);
             }
@@ -184,8 +151,8 @@
         [
           // difficulty : More items to make the player search the good one ???
           {
-            id:"theAnswerDeleted",
-            name:"theAnswer.txt",
+            id:"deletedFile",
+            name:"Liste des courses.txt",
             image:"file.png",
             deleted : true
           }
@@ -235,15 +202,15 @@
 
       webix.ui({
         view:"pixWindow",
-        id:"theAnswer_window",
-        label:"TheAnswer.txt",
+        id:"deletedFile_window",
+        label:"Liste des courses.txt",
         icon:"file",
         body:{
           view:"layout",
           padding:10,
           rows:[{
               view:"textarea",
-              value: "The answer is " + getWord(),
+              value: "À acheter : " + getWord(),
               readonly : true
             }
           ]
@@ -356,16 +323,19 @@
             {
               view:"text",
               label:"Auteur",
-              value: "PIX",
+              value: "Olivier",
               readonly: true
+            },
+            {
+              height:10
             },
             {
               view:"button",
               id:"properties_RestoreButton",
-              type:"button",
               label : "restaurer",
               css : "pixPropertiesRestoreButton",
               inputWidth:150,
+              align: "center",
               click : function (e, context)
               {
                 $$('corbeille').config.restoreItem(elementToRestore.id);
