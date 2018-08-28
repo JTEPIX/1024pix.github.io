@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./webix/webix.css">
+  <link rel="stylesheet" href="./webix/pix.css">
+  <link rel="stylesheet" href="./webix/pix-apps.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>
+  <script src="./webix/pix-apps.js"></script>
+  <title>OS</title>
+  <script src="js/utils.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
+  <style>
+    #answer {display:none;font-family:  'Coming Soon', cursive;;font-size:60px;position:absolute;right:100px;bottom:100px;z-index:100;}
+
+    .gridtest
+    {
+    	background-color : red
+    }
+
+    .boxy .webix_template
+    {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <script>
+    secret = "AGSSQFfFSD0922JNFsdq___ZeQSDZORE9843";
+    
+    webix.ready(
+      function()
+      {
+        webix.ui(
+          {
+              view:"button",
+              id:"validateBtn",
+              type:"iconButtonTop",
+              icon : "check-circle",
+              label : "OUI",
+          }
+        )
+
+        webix.ui(
+        {
+          css : "gridtest",
+          id : "desk",
+          view:"gridlayout",
+
+          height : 500,
+          gridColumns:10,
+          gridRows:8,
+          margin : 10,
+
+          cells:[
+            { css:"boxy", template:"Single", x:0, y:0, dx:1, dy:1},
+            { css:"boxy", template:"Wide 1", x:1, y:0, dx:1, dy:1 },
+            { css:"boxy", template:"Wide 2", x:0, y:1, dx:1, dy:1 },
+            { css:"boxy", template:"Square", x:2, y:1, dx:1, dy:1 },
+            {
+      		    view:"button",
+              id:"validateBtn",
+              type:"iconButtonTop",
+              icon : "check-circle",
+              label : "OUI",
+
+              x : 3,
+              y : 0,
+              dx : 1,
+              dy : 1
+            },
+            {
+              view:"icon",
+              icon: "envelope",
+              css : "font-button",
+
+              x : 5,
+              y : 5,
+              dx : 1,
+              dy : 1
+            }
+          ]
+        });
+
+        var element = document.getElementById("answer");
+        if (value === "images/girl.jpg")
+        {
+          element.style.display = "block";
+          element.innerHTML = getWord();
+        }
+        else
+        {
+          element.innerHTML = "";
+          element.style.display = "none";
+        }
+
+      });
+
+    /*var answer = document.createElement("div");
+    answer.id = "answer";
+    document.body.append(answer);*/
+  </script>
+  <div id="answer"></div>
+</body>
+</html>

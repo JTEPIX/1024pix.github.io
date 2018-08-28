@@ -8,7 +8,7 @@ webix.protoUI({
   name:"pixWindow",
   $init:function(config) {
     var view = this;
-    webix.extend(config,this.getUI());
+    webix.extend(config,this.getUI(config.resize));
     if (config.label||this.defaults.label) {
       this.$ready.push(function() {
         var head = view.getChildViews()[0];
@@ -33,11 +33,76 @@ webix.protoUI({
     css:'pix-window',
     toFront:true
   },
-  getUI: function() {
-    return {
+  getUI: function(paramResize)
+  {
+    var pixWindowWithMaximise =
+    {
       head:{
         view:"toolbar",
-        cols:[{
+        id : "windowToolbar",
+        cols:[
+          {
+            view: "label",
+            label: ""
+          },
+          {
+            view:"icon",
+            icon:"window-minimize",
+            on: {
+              onItemClick: function(e) {
+                $$("pixTaskbar").minimizeTask(this.getTopParentView().config.id);
+              }
+            },
+            hidden:true
+          },
+          {
+            view:"icon",
+            icon:"window-restore",
+            on: {
+              onItemClick: function(e) {
+                var element = this.getTopParentView();
+                element.define({
+                  fullscreen:false,
+                  move:true
+                });
+                if (typeof element.lastX !== 'undefined') {
+                  element.setPosition(element.lastX, element.lastY);
+                }
+                element.resize();
+                this.hide();
+                var items = this.getParentView().getChildViews();
+                items[1].blur();
+                for (var i=1; i<items.length; i++) {
+                  var icon = items[i];
+                  if (icon.config.icon === "window-maximize") {
+                    icon.show();
+                    break;
+                  }
+                }
+              }
+            },
+            hidden: true
+          },
+          {
+            view:"icon",
+            icon:"times-circle",
+            on: {
+              onItemClick: function(e) {
+                this.getTopParentView().close();
+              }
+            }
+          }
+        ]
+      }
+    }
+
+    var pixWindowWithoutMaximise =
+    {
+      head:{
+        view:"toolbar",
+        id : "windowToolbar",
+        cols:[
+          {
             view: "label",
             label: ""
           },
@@ -118,7 +183,9 @@ webix.protoUI({
           }
         ]
       }
-    };
+    }
+
+    return paramResize == null && this.defaults.resize || paramResize ? pixWindowWithoutMaximise : pixWindowWithMaximise;
   },
   open: function() {
     this.show();
@@ -385,7 +452,8 @@ webix.protoUI({
     }
     config.id = "pixDesktop";
   },
-  defaults:{
+  defaults:
+  {
     css:"pix-desktop",
     rows:[{
       view:"pixItemList",
@@ -396,22 +464,29 @@ webix.protoUI({
     },{}],
     taskbar:false,
     onContext:{}
-   },
-   getBackground: function() {
+  },
+  getBackground: function()
+  {
     return this.config.background;
-   },
-   setBackground: function(image) {
-     this.config.background = image;
-     this.getNode().style.backgroundImage = "url('"+image+"')";
-   },
-   setContextMenu: function(data) {
+  },
+  setBackground: function(image)
+  {
+    this.config.background = image;
+    this.getNode().style.backgroundImage = "url('"+image+"')";
+  },
+  setContextMenu: function(data)
+  {
     var element = this;
-    var menu = webix.ui({
+    var menu =
+    webix.ui({
       view:"contextmenu",
       data:data.items,
-      on:{
-        onItemClick:function(id, e){
-          if (data.click && data.click[id]) {
+      on:
+      {
+        onItemClick:function(id, e)
+        {
+          if (data.click && data.click[id])
+          {
             data.click[id].call(this, e);
           }
         }
@@ -419,7 +494,11 @@ webix.protoUI({
       autowidth:true,
       master:element.$view
     });
-  }
+  },
+  getItemList : function ()
+  {
+    return $$("pixDesktopItems");
+  },
 }, webix.ui.layout);
 
 /**
@@ -456,6 +535,10 @@ webix.protoUI({
       // context menu
       onContext:{}
     }
+  },
+  getItemList : function ()
+  {
+    return $$(this.config.id + "_item-list");
   }
 }, webix.ui.pixWindow);
 
@@ -536,4 +619,3 @@ webix.i18n.locales["fr-FR"]= {
 };
 webix.Date.startOnMonday = true;
 webix.i18n.setLocale("fr-FR");
-

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./webix/webix.css">
+  <link rel="stylesheet" href="./webix/pix.css">
+  <link rel="stylesheet" href="./webix/pix-apps.css">
+  <script src="./webix/webix.js"></script>
+  <script src="./webix/pix.js"></script>
+  <script src="./webix/pix-apps.js"></script>
+  <script src="js/utils.js"></script>
+  <title>Propriétés</title>
+  <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
+  <style>
+    #answer {display:none;font-family:  'Coming Soon', cursive;;font-size:60px;position:absolute;right:100px;bottom:100px;z-index:100;}
+
+    .pixValidateButton button
+    {
+  	   background-color : red;
+
+       border:1px solid #000000;
+    }
+
+    .pixValidateButton button:hover
+    {
+      background-color: green;
+    }
+
+    .pixValidateButton button:active
+    {
+      background-color: yellow;
+    }
+
+    .pixCancelButton button
+    {
+
+    }
+
+    .pixPropertiesRestoreButton button
+    {
+      background-color: green;
+    }
+
+    .pixPropertiesRestoreButton button:hover
+    {
+      background-color: darkGreen;
+    }
+
+    .pixConfirmText
+    {
+      color : red;
+      border : 0px;
+    }
+  }
+  </style>
+</head>
+<body>
+  <script>
+    secret = "AGSSQFfFSD0922JNFsdq___ZeQSDZORE9843";
+
+    // element to Delete with the trash contextual menu
+    var elementToDelete;
+    var elementToRestore;
+
+    const DELETED_SUFFIX = "Deleted";
+
+    webix.ready(function()
+    {
+      webix.ui(
+      {
+        view:"pixDesktop",
+        items:[{id:"parametres", name:"Paramètres", icon:"fa-cogs"}, {id:"fichier", name:"notes.txt", image:"file.png"}, {id:"corbeille_icon", name:"Corbeille", image:"images/trash-icon-placeholder.png"}],
+        open: {
+            corbeille_icon : function()
+            {
+              $$('corbeille').open();
+            },
+            parametres : function()
+            {
+              $$('parametres_window').open();
+            },
+            theAnswer : function ()
+            {
+              $$('theAnswer_window').open();
+            }
+          },
+        background:"images/benji.jpg",
+        taskbar:true,
+        contextMenu: {
+          items:[{value:"Propriétés", id:"menu1"}/*, {value:"Supprimer", id:"menu2"}*/],
+          click: {
+            menu1: function(e, context)
+            {
+              var item = context.obj.getItem(context.id);
+
+              openProperties(item);
+            }/*,
+            menu2: function(e, context) {
+              context.obj.remove(context.id);
+
+              // add item to trash when suppr ?
+              //corbeille.add(context.obj, corbeille.getIndexById(corbeille.getLastId()) + 1);
+            }*/
+          }
+        },
+        backContextMenu:{
+          items:[{value:"Paramètres d'affichage", id:"menu1"}, {value:"Paramètres d'apparence", id:"menu2"}, {value:"Modifier date et heure", id:"menu3"}],
+          click: {
+            menu1: function(e, context) {
+              $$('display_window').open();
+            },
+            menu2: function(e, context) {
+              $$('appearance_window').open();
+            },
+            menu3: function(e, context) {
+              $$('date_window').open();
+            }
+          }
+        }
+      });
+
+      $$("pixDesktopItems").attachEvent("onBeforeDrop",
+      function (context, e)
+      {
+        var droppedItem = context.from.getItem(context.start);
+
+        if (droppedItem.deleted != null && droppedItem.deleted)
+        {
+          $$("corbeille").config.restoreItem(context.start);
+
+          return false;
+        }
+      });
+
+
+      webix.ui(
+      {
+        view:"pixWindow",
+        id:"fichier_window",
+        label:"notes.txt",
+        icon:"file",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"textarea",
+              value: "Vous avez supprimé un élément important mais ne vous inquiétez pas, vous pouvez encore le récupérer. \nEn effet, les éléments supprimés sont stockés dans la corbeille avant d'être détruits définitivement"
+            }]
+          }
+      });
+
+      function openProperties (paramItem, showRestoreButton = false)
+      {
+        elementToRestore = paramItem;
+
+        $$('proprietes_nom').config.value = paramItem.name;
+        $$('proprietes_nom').refresh();
+        $$('proprietes_window').show();
+
+        if (showRestoreButton)
+          $$("properties_RestoreButton").show();
+        else
+          $$("properties_RestoreButton").hide();
+      }
+
+      // Corbeille elements
+      webix.ui(
+      {
+        view:"pixFolder",
+        id:"corbeille",
+        label:"Corbeille",
+        icon:"trash",
+        open: {
+            theAnswerDeleted : function()
+            {
+              var item = $$("corbeille").getItemList().getItem("theAnswerDeleted");
+
+              openProperties(item, true);
+            }
+          },
+        items:
+        [
+          // difficulty : More items to make the player search the good one ???
+          {
+            id:"theAnswerDeleted",
+            name:"theAnswer.txt",
+            image:"file.png",
+            deleted : true
+          }
+        ],
+        contextMenu:
+        {
+          items:[{value:"Restaurer", id:"restore"}, {value:"Supprimer Définitivement", id:"delete"}],
+          click:
+          {
+            restore : function(e, context)
+            {
+              $$('corbeille').config.restoreItem(context.id);
+            },
+            delete : function(e, context)
+            {
+              $$("deleteConfirm").open();
+
+              elementToDelete = context;
+            }
+          }
+        },
+        restoreItem : function (itemId, targetList = $$('pixDesktop').getItemList())
+        {
+          var corbeilleItemList = $$('corbeille').getItemList();
+
+          // Get item to add to desktop
+          var itemToPush = corbeilleItemList.getItem(itemId);
+
+          // Remove the item restored from trash
+          corbeilleItemList.remove(itemToPush.id);
+
+          // removal of suffix DELETED_SUFFIX to allow interactivity with the element
+          itemToPush.id = itemToPush.id.replace(DELETED_SUFFIX, "");
+          itemToPush.deleted = false;
+
+          // Add restored item to desktop at last index + 1
+          targetList.add(itemToPush, targetList.getIndexById(targetList.getLastId()) + 1);
+        }
+      });
+
+      $$("corbeille").getItemList().attachEvent("onBeforeDrop",
+      function (context, e)
+      {
+        console.log("onBeforeDrop Corbeille");
+        console.log(context);
+      });
+
+      webix.ui({
+        view:"pixWindow",
+        id:"theAnswer_window",
+        label:"TheAnswer.txt",
+        icon:"file",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"textarea",
+              value: "The answer is " + getWord(),
+              readonly : true
+            }
+          ]
+        }
+      });
+
+      webix.ui(
+      {
+        view:"pixWindow",
+        id:"deleteConfirm",
+        label:"Confirmation",
+        icon:"check-circle",
+        resize : false,
+        body:
+        {
+          view:"layout",
+          padding:10,
+          rows :
+          [
+            {
+              view:"label",
+              label:"Voulez-vous vraiment supprimer ce fichier ?",
+            },
+            {
+              cols :
+              [
+                {
+                  view:"button",
+                  id:"validateBtn",
+                  type:"iconButton",
+                  icon : "check-circle",
+                  label : "OUI",
+                  css : "pixValidateButton",
+                  inputWidth:180,
+                  click : function (e, context)
+                  {
+                    // instead of deleting the object, give player feedback : "wrong answer"
+                    if (elementToDelete != null)
+                      elementToDelete.obj.remove(elementToDelete.id);
+
+                    closeDeleteConfirm();
+                  }
+                },
+                {
+                  view:"button",
+                  id:"cancelBtn",
+                  type:"iconButton",
+                  icon : "ban",
+                  label : "NON",
+                  css : "pixCancelButton",
+                  inputWidth:180,
+                  click : function (e, context)
+                  {
+                    closeDeleteConfirm();
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      });
+
+      function closeDeleteConfirm ()
+      {
+        $$("deleteConfirm").close();
+
+        elementToDelete = null;
+      }
+
+      // Parametres window
+      webix.ui({
+        view:"pixFolder",
+        id:"parametres_window",
+        label:"Paramètres",
+        icon:"cogs",
+        items:
+        [
+          {id:"users", name:"Utilisateurs", icon:"fa-user-circle"},
+          {id:"date", name:"Date et heure", icon:"fa-calendar"},
+          {id:"display", name:"Affichage", icon:"fa-desktop"},
+          {id:"appearance", name:"Apparence", icon:"fa-paint-brush"},
+          {id:"storage", name:"Disques", icon:"fa-hdd-o"}
+        ]
+      });
+
+      // Properties window
+      webix.ui({
+        view:"pixWindow",
+        id:"proprietes_window",
+        height:300,
+        width:250,
+        label:"Propriétés",
+        icon:"info-circle",
+        body:{
+          view:"layout",
+          padding:10,
+          rows:[{
+              view:"text",
+              label:"Nom",
+              id:"proprietes_nom",
+              value: "",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Date",
+              value: "19 juillet 2017",
+              readonly: true
+            },
+            {
+              view:"text",
+              label:"Auteur",
+              value: "PIX",
+              readonly: true
+            },
+            {
+              view:"button",
+              id:"properties_RestoreButton",
+              type:"button",
+              label : "restaurer",
+              css : "pixPropertiesRestoreButton",
+              inputWidth:150,
+              click : function (e, context)
+              {
+                $$('corbeille').config.restoreItem(elementToRestore.id);
+
+                $$("proprietes_window").close();
+              }
+            }
+          ]
+        }
+      });
+
+      pixApps.load(["users", "display", "date", "appearance", "storage"]);
+      pixApps.get("appearance").addBackground({id:"images/gamma.jpg", value:"Californie"});
+      pixApps.get("appearance").addBackground({id:"images/girl.jpg", value:"Graffiti"});
+      pixApps.get("appearance").addBackgroundListener(function(value) {
+        var element = document.getElementById("answer");
+        if (value === "images/girl.jpg") {
+          element.style.display = "block";
+          element.innerHTML = getWord();
+        } else {
+          element.innerHTML = "";
+          element.style.display = "none";
+        }
+      });
+    });
+  </script>
+  <div id="answer"></div>
+</body>
+</html>
