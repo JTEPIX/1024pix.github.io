@@ -9,16 +9,16 @@ export default class Mailbox extends JetView
     var header =
     {
 			type:"header",
-      template: "Messagerie"
+      template: "Messagerie",
+      css : "mailAppHeader"
 		};
 
 		var menu =
     {
       localId : "mailtree",
 			view:"tree",
-			css: "rounded_top",
+			css: "mailOptionsList",
 			select: true,
-      height : 215,
 			type:
       {
 				folder:function(obj)
@@ -81,7 +81,7 @@ export default class Mailbox extends JetView
       height: 45,
       cols:
       [
-				{
+        {
           view:"button",
           localId : "create",
           type: "iconButton",
@@ -135,7 +135,7 @@ export default class Mailbox extends JetView
     {
       localId : "maillist",
       view:"datatable",
-      css: "rounded_top",
+      css: "mailList",
       scrollX:false,
       columns:
       [
@@ -147,7 +147,7 @@ export default class Mailbox extends JetView
         },*/
 				{
           id:"name",
-          width: 180,
+          width: 160,
           header:"De :"
         },
 				{
@@ -166,7 +166,7 @@ export default class Mailbox extends JetView
           width : 30,
           template : function (data)
           {
-            return data.attachment != null ? "<span class='webix_icon fa-paperclip info'></span>" : "";
+            return data.attachment != null && data.attachment.length != 0 ? "<span class='webix_icon fa-paperclip info'></span>" : "";
           }
         }
 			],
@@ -191,7 +191,7 @@ export default class Mailbox extends JetView
               rows:
               [
                 header,
-                menu
+                menu,
               ]
             },
             {}
@@ -206,8 +206,8 @@ export default class Mailbox extends JetView
           rows:
           [
             //mailHeader,
-            maillist,
-            mailOptions
+            maillist/*,
+            mailOptions*/
           ]
         },
         {
@@ -258,7 +258,7 @@ export default class Mailbox extends JetView
 
     mailtree.attachEvent("onAfterSelect", function (id)
     {
-      if (mailtree.getSelectedId() == CORBEILLE_FOLDER)
+      /*if (mailtree.getSelectedId() == CORBEILLE_FOLDER)
       {
         this.$scope.$$("delete").hide();
         this.$scope.$$("create").hide();
@@ -267,7 +267,7 @@ export default class Mailbox extends JetView
       {
         this.$scope.$$("delete").show();
         this.$scope.$$("create").show();
-      }
+      }*/
 
       var mailPreview = jetView.getSubView("mailPreview");
 

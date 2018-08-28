@@ -1,4 +1,5 @@
 import {JetView} from "webix-jet";
+import {MailAttachment} from "views/MailAttachment";
 
 import {mailsData} from "models/mailsData";
 
@@ -21,7 +22,19 @@ export class MailView extends JetView
       return;
     }
 
+    attachment.show();
+
     console.log(data);
+
+    var mailAttachment = new MailAttachment (data);
+    mailAttachment.app = this.app;
+    mailAttachment.name = "mailAttachment";
+
+    attachment.addView(mailAttachment, 0);
+
+    console.log(attachment);
+
+    attachment.reconstruct();
   }
 
   config ()
@@ -116,8 +129,8 @@ export class MailView extends JetView
       [
         header,
         text,
-        attachments,
-        reply
+        attachments/*,
+        reply*/
       ]
 		};
 

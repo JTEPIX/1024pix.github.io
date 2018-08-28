@@ -26,6 +26,7 @@
 .invalid_login{
     -webkit-animation: formshake .5s linear;
 }
+
 @-webkit-keyframes formshake {
     8%, 41% {
         -webkit-transform: translateX(-10px);
@@ -77,7 +78,7 @@
 	color:#ddd;
 }
 .app-left-panel .webix_menu .webix_list_item.webix_selected{
-	color:#fff;
+	color:black;
 }
 .app-left-panel .webix_menu .webix_list_item:hover{
 	background-color: #f5f5f5;
@@ -90,33 +91,59 @@
 	padding-left:0px;
 }
 
-/*right side panel*/
-.app-right-panel{
-	border-top-left-radius:4px;
-}
-.app-right-panel .webix_layout_wide{
-	background: #fff;
-}
-
-
 /* sync status */
 .status_good{
 	color:#ddd;
 }
+
+/* datatable selection */
+.webix_column>div.webix_row_select
+{
+  background-color : #444444;
+}
+
+
 /* read mail status */
 .read, .notRead
 {
-  
+  color : black;
 }
 
 .read
 {
-  color : white;
-  background-color: green;
+  background-color: grey;
 }
 
 .notRead
 {
+  background-color: white;
+  font-weight : bold;
+}
+
+/* mail */
+.mailAppHeader
+{
   color : white;
-  background-color: red;
+  background-color: black;
+  text-align: center;
+  font-weight: bold;
+  font-size: 27px;
+}
+
+.mailHeader
+{
+  color : white;
+  background-color: black;
+  font-weight: bold;
+  font-size: 27px;
+}
+
+.mailOptionsList
+{
+
+}
+
+.mailList .webix_hcell, .mailList .webix_ss_vscroll_header{
+    background: #333333;
+    color : white;
 }

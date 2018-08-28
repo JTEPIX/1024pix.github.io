@@ -11,7 +11,8 @@ export default class MailDisplay extends JetView
     {
       localId : "header",
 			type : "header",
-      template : "TEST"
+      template : "TEST",
+      css : "mailHeader"
 		};
 
     var view =
