@@ -30,39 +30,39 @@ export default class Mailbox extends JetView
       [
 				{
           id:"1",
-          value:"Inbox",
+          value:"Mails",
           icon:"inbox"
         },
 				{
           id:"2",
-          value:"Sent",
+          value:"Envoyés",
           icon:"paper-plane"
         },
 				{
           id:"3",
-          value:"Drafts",
+          value:"Brouillons",
           icon:"edit"
         },
 				{
           id:"4",
-          value:"Trash",
+          value:"Corbeille",
           icon:"trash"
         },
 				{
           id:"5",
-          value:"Contact Groups",
+          value:"Contacts",
           open:true,
           icon:"folder",
           data:
           [
   					{
               id:"5-1",
-              value:"Friends",
+              value:"Amis",
               icon:"users"
             },
   					{
               id:"5-2",
-              value:"Blocked",
+              value:"Blockés",
               icon:"ban"
             }
   				]
@@ -70,24 +70,48 @@ export default class Mailbox extends JetView
 			]
 		};
 
-    var mailHeader =
+    var mailToolBar =
     {
-			type:"header",
-      template: "Mails"
-		};
+      view : "toolbar",
+      id : "mailToolbar",
+      css : "mailToolbar",
+      cols :
+      [
+        {
+          view : "button",
+          id : "returnButton",
+          type : "icon",
+          icon : "arrow-left",
+          align : "center",
+          css : "mailToolbarButton",
+          click : function ()
+          {
+            console.log("return to maillist");
+
+            var maillist = this.$scope.getSubView("mailList");
+            var mailDisplay = this.$scope.getSubView("mailDisplay");
+
+            maillist.getRoot().show();
+            mailDisplay.getRoot().hide();
+
+
+          }
+        }
+      ]
+    }
 
     var mailOptions =
     {
-      height: 45,
-      cols:
+      height : 45,
+      cols :
       [
         {
-          view:"button",
+          view : "button",
           localId : "create",
-          type: "iconButton",
-          label:"Create",
-          icon:"envelope",
-          width: 95,
+          type : "iconButton",
+          label :"Create",
+          icon :"envelope",
+          width : 95,
           click : function ()
           {
             console.log("create");
@@ -95,17 +119,17 @@ export default class Mailbox extends JetView
         },
 				{},
 				{
-          view:"button",
+          view : "button",
           localId : "delete",
-          type: "iconButton",
-          label:"Delete",
-          icon:"times",
-          width: 95,
+          type : "iconButton",
+          label : "Delete",
+          icon : "times",
+          width : 95,
           click : function ()
           {
             const CORBEILLE_FOLDER = 4;
 
-            var maillist = this.$scope.$$("maillist");
+            var maillist = this.getSubView("mailList");
 
             if (maillist.getSelectedId() != null)
             {
@@ -130,49 +154,6 @@ export default class Mailbox extends JetView
         }
 			]
     }
-
-    var maillist =
-    {
-      localId : "maillist",
-      view:"datatable",
-      css: "mailList",
-      scrollX:false,
-      columns:
-      [
-				/*{
-          id:"checked",
-          header:{ content:"masterCheckbox" },
-          template:"{common.checkbox()}",
-          width: 40
-        },*/
-				{
-          id:"name",
-          width: 160,
-          header:"De :"
-        },
-				{
-          id:"subject",
-          header:"Sujet",
-          fillspace:true
-        },
-				{
-          id:"date",
-          header:"Date",
-          width: 160
-        },
-        {
-          id : "attachment",
-          header : "",
-          width : 30,
-          template : function (data)
-          {
-            return data.attachment != null && data.attachment.length != 0 ? "<span class='webix_icon fa-paperclip info'></span>" : "";
-          }
-        }
-			],
-      select:"row",
-      data: mailsData
-		};
 
 		var ui =
     {
@@ -204,14 +185,16 @@ export default class Mailbox extends JetView
           borderless:true,
           rows:
           [
-            //mailHeader,
-            maillist/*,
-            mailOptions*/
+            mailToolBar,
+            {
+              name : "mailList",
+              $subview : "MailList"
+            },
+            {
+              name : "mailDisplay",
+              $subview : "MailDisplay"
+            }
           ]
-        },
-        {
-           name : "mailPreview",
-           $subview:"MailDisplay"
         }
       ]
 		 };
@@ -226,10 +209,12 @@ export default class Mailbox extends JetView
 
     var jetView = this;
 
-    var maillist = jetView.$$("maillist");
-    var mailtree = jetView.$$("mailtree");
+    var mailDisplay = this.getSubView("mailDisplay").getRoot();
+    mailDisplay.hide();
 
-    this.applyReadCss();
+    var maillist = this.getSubView("mailList").getRoot();
+
+    var mailtree = jetView.$$("mailtree");
 
     maillist.bind(
       mailtree,
@@ -238,22 +223,6 @@ export default class Mailbox extends JetView
         return obj.folder == filter.id;
       }
     );
-
-    maillist.attachEvent("onAfterSelect",function()
-    {
-      var selectedMail = maillist.getSelectedItem();
-
-      if (selectedMail.read == false)
-      {
-        selectedMail.read = true;
-
-        maillist.updateItem(selectedMail.id, selectedMail);
-      }
-
-      jetView.applyReadCss();
-
-      jetView.getSubView("mailPreview").showMail(selectedMail);
-    });
 
     mailtree.attachEvent("onAfterSelect", function (id)
     {
@@ -268,9 +237,9 @@ export default class Mailbox extends JetView
         this.$scope.$$("create").show();
       }*/
 
-      var mailPreview = jetView.getSubView("mailPreview");
+      //var mailPreview = jetView.getSubView("mailPreview");
 
-      mailPreview.clear();
+      //mailPreview.clear();
     });
 
     mailtree.select(BASE_FOLDER);
@@ -278,27 +247,6 @@ export default class Mailbox extends JetView
 
   clearFocus ()
   {
-    this.getSubView("mailPreview").clear();
-  }
-
-  applyReadCss ()
-  {
-    var maillist = this.$$("maillist");
-
-    maillist.eachRow(function (row)
-    {
-      if (maillist.hasCss(row, "read"))
-      {
-        maillist.removeRowCss(row, "read");
-      }
-      else if (maillist.hasCss(row, "notRead"))
-      {
-        maillist.removeRowCss(row, "notRead");
-      }
-
-      var styleToApply = maillist.getItem(row).read ? "read" : "notRead";
-
-      maillist.addRowCss(row, styleToApply);
-    });
+    //this.getSubView("mailPreview").clear();
   }
 }

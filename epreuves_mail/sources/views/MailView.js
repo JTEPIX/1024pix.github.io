@@ -14,6 +14,9 @@ export class MailView extends JetView
 
   initAttachment (data)
   {
+    console.log("--------------");
+    console.log("initAttachment");
+
     var attachment = this.$$("attachment");
 
     if (data == null || data.length == 0)
@@ -32,9 +35,9 @@ export class MailView extends JetView
 
     attachment.addView(mailAttachment, 0);
 
-    console.log(attachment);
-
     attachment.reconstruct();
+
+    console.log("--------------");
   }
 
   config ()

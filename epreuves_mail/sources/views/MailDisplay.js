@@ -53,7 +53,6 @@ export default class MailDisplay extends JetView
 
   showMail (data)
   {
-    this.$$("header").show();
     this.changeHeaderText(data.subject);
 
     this.showMailView(data);

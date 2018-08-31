@@ -46,9 +46,9 @@
 }
 
 /*siberia theme*/
-.webix_layout_toolbar.webix_toolbar.form-bottom-bar{
+/*.webix_layout_toolbar.webix_toolbar.form-bottom-bar{
 	background: #34495E;
-}
+}*/
 
 .center{
 	text-align: center;
@@ -111,7 +111,7 @@
 
 .read
 {
-  background-color: grey;
+  background-color: lightgrey;
 }
 
 .notRead
@@ -146,4 +146,14 @@
 .mailList .webix_hcell, .mailList .webix_ss_vscroll_header{
     background: #333333;
     color : white;
+}
+
+/* mail toolbar */
+.mailToolBar .webix_toolbar
+{
+  background: #333333;
+}
+.mailToolbar
+{
+
 }
