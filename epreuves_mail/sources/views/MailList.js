@@ -76,8 +76,6 @@ export default class MailList extends JetView
 
       var mailDisplay = app.getParentView().getSubView("mailDisplay");
 
-      console.log(mailDisplay);
-
       mailDisplay.getRoot().show();
       mailDisplay.showMail(selectedMail);
 
