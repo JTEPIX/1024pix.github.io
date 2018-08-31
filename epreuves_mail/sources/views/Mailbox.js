@@ -84,17 +84,14 @@ export default class Mailbox extends JetView
           icon : "arrow-left",
           align : "center",
           css : "mailToolbarButton",
+          width : 30,
           click : function ()
           {
-            console.log("return to maillist");
-
             var maillist = this.$scope.getSubView("mailList");
             var mailDisplay = this.$scope.getSubView("mailDisplay");
 
             maillist.getRoot().show();
             mailDisplay.getRoot().hide();
-
-
           }
         }
       ]
