@@ -144,8 +144,6 @@ export default class Mailbox extends JetView
               mailtree.select(CORBEILLE_FOLDER);
 
               mailtree.select(initalFolder);
-
-              this.$scope.clearFocus();
             }
           }
         }
@@ -233,17 +231,8 @@ export default class Mailbox extends JetView
         this.$scope.$$("delete").show();
         this.$scope.$$("create").show();
       }*/
-
-      //var mailPreview = jetView.getSubView("mailPreview");
-
-      //mailPreview.clear();
     });
 
     mailtree.select(BASE_FOLDER);
-  }
-
-  clearFocus ()
-  {
-    //this.getSubView("mailPreview").clear();
   }
 }

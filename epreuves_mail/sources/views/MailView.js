@@ -35,6 +35,7 @@ export class MailView extends JetView
 
     attachment.addView(mailAttachment, 0);
 
+    // RECONSTRUCT SEEMS TO NOT WORK
     attachment.reconstruct();
 
     console.log("--------------");
