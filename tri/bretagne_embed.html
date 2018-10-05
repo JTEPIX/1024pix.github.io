@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>PIX - trier un tableau</title>
+
+<style>
+body{font-family: Arial;text-align:center;}
+/* les flèches */
+.flecheDesc {
+  width: 0;
+  height: 0;
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+.flecheAsc {
+  width: 0;
+  height: 0;
+  float:right;
+  margin: 10px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+/* le tableau */
+table {table-layout: fixed;border-collapse: collapse;text-align:left;margin-left:auto;margin-right:auto;}
+td {padding:.5rem}
+tr {background-color: #F1EDEB;border-bottom:1px solid #ccc;color:#444;}
+.bande tbody tr:hover:nth-child(odd) {background-color: #7F8A8C;color:#ffffff;}
+.bande tbody tr:hover:nth-child(even) {background-color: #7F8A8C;color:#ffffff;}
+th {text-align:center;padding:5px 0 0 5px;vertical-align: middle;background-color:#4B5259;color:#F1EDEB;cursor:pointer;
+}
+th.choisi {background-color:#5d625c;color:#fff;}
+th.choisi .flecheDesc {border-bottom-color: white;}
+th.choisi .flecheAsc {border-top-color: white;}
+caption{text-align:center; font-size: 1.5em;padding:1em}
+</style>
+
+<script>
+  // Tri dynamique
+  function initialiseTab() {
+    // Initialise le tableau, la première fois, les fleche sont toutes vers le bas
+       [].forEach.call(document.getElementsByTagName("table"), function(monTab) {
+           var sonEntete = monTab.getElementsByTagName("tr")[0];
+           var ncol = 1;
+          // maj attribut de chaque colonne selon la capture du clic
+          // soit : affichage du picto flèche, attribut sens du tri (0 Asc - 1 Desc), et num colonne
+
+          [].forEach.call(sonEntete.querySelectorAll("th"), function(sonTH) {
+            // déclenche la fonction trier au clic sur l'en tête de la colonne
+            sonTH.addEventListener("click", trier, false);
+            sonTH.setAttribute("data-pos", ncol);
+            if(sonTH.getAttribute("data-tri")=="1") {
+             sonTH.innerHTML += "<span class=\"flecheDesc\"></span>";
+            } else {
+              sonTH.setAttribute("data-tri", "0");
+              sonTH.innerHTML += "<span class=\"flecheAsc\"></span>";
+            }
+            // Tri par défaut
+            if (sonTH.className=="choisi") {
+              sonTH.click();
+            }
+            ncol++;
+          });
+        });
+      }
+
+  function trier() {
+    // afficher le tableau dans le tri choisi mémorisé dans data-tri
+    var sensTri = this.getAttribute("data-tri");
+    this.setAttribute("data-tri", (sensTri=="0") ? "1" : "0");
+    // Supprime la classe « choisi » de chaque colonne.
+    [].forEach.call( this.parentNode.querySelectorAll("th"), function(sonTH) {sonTH.classList.remove("choisi");});
+    // Ajoute la classe « choisi » à la colonne cliquée (this).
+    this.className = "choisi";
+    // Ajuste la flèche
+    this.querySelector("span").className = (sensTri=="0") ? "flecheAsc" : "flecheDesc";
+
+    // Récupère les info du tableau (tbody) - remonte de 3 niveaux la hiérarchie des objets
+    // NE PAS MODIFIER STRUCTURE DU TABLEAU
+    var sonTBody = this.parentNode.parentNode.parentNode.getElementsByTagName("tbody")[0];
+    var sesLignes = sonTBody.rows;
+    var nNbrLigne = sesLignes.length;
+    var laCol = new Array(), i, j, laCel;
+    for(i = 0; i < nNbrLigne; i++) {
+      laCel = sesLignes[i].cells;
+      laCol[i] = new Array();
+      for(j = 0; j < laCel.length; j++){
+        laCol[i][j] = laCel[j].innerHTML;
+      }
+    }
+
+    // Trier la matrice (array)
+    var nCol = this.getAttribute("data-pos");
+    // Récupère le type de tri (numérique ou par défaut « local »)
+    var sFonctionTri = (this.getAttribute("data-type")=="num") ? "compareNombres" : "compareLocale";
+    // Tri
+    laCol.sort(eval(sFonctionTri));
+    // Tri numérique
+    function compareNombres(a, b) {return a[nCol-1] - b[nCol-1];}
+    // Tri local (pour support utf-8)
+    function compareLocale(a, b) {return a[nCol-1].localeCompare(b[nCol-1]);}
+    // Renverse la matrice dans le cas d’un tri descendant
+    if (sensTri==0) laCol.reverse();
+
+    // Construit les colonne du nouveau tableau
+    for(i = 0; i < nNbrLigne; i++){
+      laCol[i] = "<td>"+laCol[i].join("</td><td>")+"</td>";
+    }
+
+    // assigne les lignes au tableau
+    sonTBody.innerHTML = "<tr>"+laCol.join("</tr><tr>")+"</tr>";
+  }
+</script>
+</head>
+
+<body onload="initialiseTab()">
+<table>
+    <caption>Les communes de Bretagne</caption>
+  <thead>
+    <tr>
+        <th data-type="num">Département</th>
+        <th>Communes</th>
+        <th data-type="num">Population</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr><td>22</td><td>Trémargat</td><td>206</td></tr>
+<tr><td>56</td><td>Pluméliau</td><td>3718</td></tr>
+<tr><td>29</td><td>Carhaix-Plouguer</td><td>8003</td></tr>
+<tr><td>29</td><td>Taulé</td><td>3077</td></tr>
+<tr><td>35</td><td>Lécousse</td><td>3222</td></tr>
+<tr><td>56</td><td>Saint-Servant</td><td>835</td></tr>
+<tr><td>29</td><td>Plabennec</td><td>8560</td></tr>
+<tr><td>22</td><td>Bulat-Pestivien</td><td>444</td></tr>
+<tr><td>35</td><td>Dompierre-du-Chemin</td><td>590</td></tr>
+<tr><td>35</td><td>Châteaubourg</td><td>7003</td></tr>
+<tr><td>29</td><td>Locronan</td><td>845</td></tr>
+<tr><td>29</td><td>Saint-Thonan</td><td>1651</td></tr>
+<tr><td>22</td><td>Matignon</td><td>1680</td></tr>
+<tr><td>22</td><td>Saint-Fiacre</td><td>221</td></tr>
+<tr><td>56</td><td>Saint-Dolay</td><td>2461</td></tr>
+<tr><td>22</td><td>Ploufragan</td><td>11764</td></tr>
+<tr><td>29</td><td>Brest</td><td>143027</td></tr>
+<tr><td>22</td><td>Plancoët</td><td>3110</td></tr>
+<tr><td>35</td><td>Langan</td><td>936</td></tr>
+<tr><td>29</td><td>Tréglonou</td><td>636</td></tr>
+<tr><td>29</td><td>La Martyre</td><td>780</td></tr>
+<tr><td>22</td><td>Trébeurden</td><td>3754</td></tr>
+<tr><td>29</td><td>Camaret-sur-Mer</td><td>2631</td></tr>
+<tr><td>35</td><td>Boistrudan</td><td>689</td></tr>
+<tr><td>29</td><td>Pleyber-Christ</td><td>3197</td></tr>
+<tr><td>22</td><td>Créhen</td><td>1747</td></tr>
+<tr><td>56</td><td>Béganne</td><td>1412</td></tr>
+<tr><td>29</td><td>Cléder</td><td>3901</td></tr>
+<tr><td>35</td><td>Irodouër</td><td>2229</td></tr>
+<tr><td>29</td><td>Gouesnou</td><td>6075</td></tr>
+<tr><td>56</td><td>Lanester</td><td>22418</td></tr>
+<tr><td>35</td><td>Mellé</td><td>670</td></tr>
+<tr><td>29</td><td>Coray</td><td>1945</td></tr>
+<tr><td>35</td><td>Roz-Landrieux</td><td>1356</td></tr>
+<tr><td>22</td><td>Plaine-Haute</td><td>1576</td></tr>
+<tr><td>22</td><td>Merléac</td><td>509</td></tr>
+<tr><td>56</td><td>Saint-Léry</td><td>197</td></tr>
+<tr><td>22</td><td>Pommerit-Jaudy</td><td>1730</td></tr>
+<tr><td>35</td><td>Landavran</td><td>690</td></tr>
+<tr><td>22</td><td>Squiffiec</td><td>824</td></tr>
+<tr><td>22</td><td>Le Fœil</td><td>1512</td></tr>
+<tr><td>29</td><td>Plogoff</td><td>1281</td></tr>
+<tr><td>56</td><td>Berric</td><td>1754</td></tr>
+<tr><td>35</td><td>Vieux-Vy-sur-Couesnon</td><td>1160</td></tr>
+<tr><td>56</td><td>Priziac</td><td>1204</td></tr>
+<tr><td>56</td><td>Elven</td><td>5813</td></tr>
+<tr><td>56</td><td>Bignan</td><td>2836</td></tr>
+<tr><td>22</td><td>La Motte</td><td>2163</td></tr>
+<tr><td>22</td><td>La Harmoye</td><td>401</td></tr>
+<tr><td>56</td><td>Saint-Gonnery</td><td>1101</td></tr>
+<tr><td>29</td><td>Saint-Coulitz</td><td>436</td></tr>
+<tr><td>35</td><td>Ercé-près-Liffré</td><td>1779</td></tr>
+<tr><td>29</td><td>Plomelin</td><td>4361</td></tr>
+<tr><td>22</td><td>Caulnes</td><td>2609</td></tr>
+<tr><td>35</td><td>Lieuron</td><td>799</td></tr>
+<tr><td>29</td><td>Locmaria-Berrien</td><td>251</td></tr>
+<tr><td>22</td><td>Le Faouët</td><td>377</td></tr>
+<tr><td>22</td><td>Saint-Guen</td><td>464</td></tr>
+<tr><td>56</td><td>Brech</td><td>6959</td></tr>
+<tr><td>22</td><td>Éréac</td><td>686</td></tr>
+<tr><td>35</td><td>Poligné</td><td>1190</td></tr>
+<tr><td>35</td><td>Saint-Maugan</td><td>570</td></tr>
+<tr><td>56</td><td>Muzillac</td><td>5078</td></tr>
+<tr><td>56</td><td>Théhillac</td><td>577</td></tr>
+<tr><td>22</td><td>Saint-Agathon</td><td>2264</td></tr>
+<tr><td>56</td><td>Saint-Avé</td><td>11171</td></tr>
+<tr><td>29</td><td>Botmeur</td><td>222</td></tr>
+<tr><td>35</td><td>Parcé</td><td>658</td></tr>
+<tr><td>29</td><td>Lampaul-Ploudalmézeau</td><td>839</td></tr>
+<tr><td>29</td><td>Logonna-Daoulas</td><td>2179</td></tr>
+<tr><td>35</td><td>Combourtillé</td><td>612</td></tr>
+<tr><td>22</td><td>Plurien</td><td>1505</td></tr>
+<tr><td>22</td><td>Tréguidel</td><td>627</td></tr>
+<tr><td>35</td><td>Langouet</td><td>603</td></tr>
+<tr><td>22</td><td>Plestin-les-Grèves</td><td>3711</td></tr>
+<tr><td>22</td><td>Ruca</td><td>598</td></tr>
+<tr><td>35</td><td>Saint-Erblon</td><td>2829</td></tr>
+<tr><td>29</td><td>Kerlaz</td><td>863</td></tr>
+<tr><td>22</td><td>Peumerit-Quintin</td><td>181</td></tr>
+<tr><td>56</td><td>Belz</td><td>3712</td></tr>
+<tr><td>29</td><td>Saint-Pol-de-Léon</td><td>6889</td></tr>
+<tr><td>29</td><td>Landrévarzec</td><td>1867</td></tr>
+<tr><td>29</td><td>Plouider</td><td>1965</td></tr>
+<tr><td>56</td><td>Saint-Allouestre</td><td>632</td></tr>
+<tr><td>22</td><td>Quintin</td><td>3020</td></tr>
+<tr><td>22</td><td>Plougrescant</td><td>1265</td></tr>
+<tr><td>22</td><td>Les Champs-Géraux</td><td>1062</td></tr>
+<tr><td>22</td><td>Kerfot</td><td>719</td></tr>
+<tr><td>22</td><td>Plémy</td><td>1608</td></tr>
+<tr><td>29</td><td>Leuhan</td><td>809</td></tr>
+<tr><td>22</td><td>Lanrelas</td><td>835</td></tr>
+<tr><td>22</td><td>Lanvellec</td><td>591</td></tr>
+<tr><td>35</td><td>Mecé</td><td>605</td></tr>
+<tr><td>22</td><td>Tréveneuc</td><td>800</td></tr>
+<tr><td>29</td><td>Bohars</td><td>3627</td></tr>
+<tr><td>56</td><td>Étel</td><td>2122</td></tr>
+<tr><td>35</td><td>Le Vivier-sur-Mer</td><td>1056</td></tr>
+<tr><td>56</td><td>Le Hézo</td><td>792</td></tr>
+<tr><td>29</td><td>Lampaul-Guimiliau</td><td>2145</td></tr>
+<tr><td>22</td><td>Jugon-les-Lacs - Commune nouvelle</td><td>2534</td></tr>
+<tr><td>22</td><td>Gurunhuel</td><td>450</td></tr>
+<tr><td>35</td><td>Eancé</td><td>411</td></tr>
+<tr><td>22</td><td>Landebaëron</td><td>188</td></tr>
+<tr><td>29</td><td>Saint-Divy</td><td>1495</td></tr>
+<tr><td>29</td><td>Port-Launay</td><td>442</td></tr>
+<tr><td>56</td><td>Camors</td><td>3019</td></tr>
+<tr><td>56</td><td>Séné</td><td>9222</td></tr>
+<tr><td>35</td><td>Montgermont</td><td>3343</td></tr>
+<tr><td>29</td><td>Le Cloître-Pleyben</td><td>561</td></tr>
+<tr><td>35</td><td>La Chapelle du Lou du Lac</td><td>980</td></tr>
+<tr><td>22</td><td>Plouguenast</td><td>1933</td></tr>
+<tr><td>35</td><td>Le Petit-Fougeray</td><td>912</td></tr>
+<tr><td>22</td><td>La Prénessaye</td><td>891</td></tr>
+<tr><td>35</td><td>Grand-Fougeray</td><td>2470</td></tr>
+<tr><td>29</td><td>Lanhouarneau</td><td>1350</td></tr>
+<tr><td>35</td><td>Feins</td><td>949</td></tr>
+<tr><td>22</td><td>Lanfains</td><td>1103</td></tr>
+<tr><td>35</td><td>Saint-Étienne-en-Coglès</td><td>1816</td></tr>
+<tr><td>56</td><td>Réguiny</td><td>1965</td></tr>
+<tr><td>29</td><td>Plogonnec</td><td>3179</td></tr>
+<tr><td>29</td><td>Douarnenez</td><td>14992</td></tr>
+<tr><td>56</td><td>Saint-Gérand</td><td>1096</td></tr>
+<tr><td>29</td><td>Trézilidé</td><td>324</td></tr>
+<tr><td>22</td><td>Trébry</td><td>866</td></tr>
+<tr><td>29</td><td>Botsorhel</td><td>447</td></tr>
+<tr><td>35</td><td>Baguer-Pican</td><td>1652</td></tr>
+<tr><td>29</td><td>La Forêt-Fouesnant</td><td>3392</td></tr>
+<tr><td>22</td><td>Trézény</td><td>374</td></tr>
+<tr><td>56</td><td>Néant-sur-Yvel</td><td>1030</td></tr>
+<tr><td>29</td><td>Tréflez</td><td>931</td></tr>
+<tr><td>22</td><td>Cavan</td><td>1509</td></tr>
+<tr><td>56</td><td>Buléon</td><td>519</td></tr>
+<tr><td>29</td><td>Baye</td><td>1187</td></tr>
+<tr><td>56</td><td>Saint-Brieuc-de-Mauron</td><td>349</td></tr>
+<tr><td>56</td><td>Saint-Gildas-de-Rhuys</td><td>1734</td></tr>
+<tr><td>56</td><td>Gourin</td><td>4268</td></tr>
+<tr><td>35</td><td>Comblessac</td><td>717</td></tr>
+<tr><td>29</td><td>Guilers</td><td>8090</td></tr>
+<tr><td>22</td><td>Lantic</td><td>1690</td></tr>
+<tr><td>35</td><td>Princé</td><td>379</td></tr>
+<tr><td>22</td><td>Langoat</td><td>1186</td></tr>
+<tr><td>35</td><td>Noyal-sous-Bazouges</td><td>399</td></tr>
+<tr><td>22</td><td>Moustéru</td><td>695</td></tr>
+<tr><td>56</td><td>Ruffiac</td><td>1473</td></tr>
+<tr><td>35</td><td>Iffendic</td><td>4548</td></tr>
+<tr><td>35</td><td>Laignelet</td><td>1177</td></tr>
+<tr><td>29</td><td>Cléden-Poher</td><td>1152</td></tr>
+<tr><td>22</td><td>Plélo</td><td>3451</td></tr>
+<tr><td>35</td><td>Hirel</td><td>1391</td></tr>
+<tr><td>35</td><td>La Mézière</td><td>4705</td></tr>
+<tr><td>35</td><td>Drouges</td><td>549</td></tr>
+<tr><td>22</td><td>Perret</td><td>187</td></tr>
+<tr><td>29</td><td>Gouézec</td><td>1145</td></tr>
+<tr><td>29</td><td>Lannédern</td><td>320</td></tr>
+<tr><td>35</td><td>Miniac-sous-Bécherel</td><td>765</td></tr>
+<tr><td>35</td><td>Maxent</td><td>1463</td></tr>
+<tr><td>22</td><td>Trémeur</td><td>736</td></tr>
+<tr><td>22</td><td>Loc-Envel</td><td>70</td></tr>
+<tr><td>29</td><td>Plounéour-Trez</td><td>1261</td></tr>
+<tr><td>35</td><td>Nouvoitou</td><td>2899</td></tr>
+<tr><td>22</td><td>Taden</td><td>2379</td></tr>
+<tr><td>22</td><td>Tréfumel</td><td>286</td></tr>
+<tr><td>29</td><td>Roscoff</td><td>3439</td></tr>
+<tr><td>35</td><td>Pocé-les-Bois</td><td>1305</td></tr>
+<tr><td>35</td><td>Montreuil-des-Landes</td><td>250</td></tr>
+<tr><td>22</td><td>Coatascorn</td><td>246</td></tr>
+<tr><td>35</td><td>Saint-Médard-sur-Ille</td><td>1383</td></tr>
+<tr><td>35</td><td>Saint-Aubin-d'Aubigné</td><td>3597</td></tr>
+<tr><td>29</td><td>Lanneuffret</td><td>141</td></tr>
+<tr><td>35</td><td>Loutehel</td><td>260</td></tr>
+<tr><td>29</td><td>Île-de-Batz</td><td>502</td></tr>
+<tr><td>29</td><td>Lannilis</td><td>5562</td></tr>
+<tr><td>22</td><td>Senven-Léhart</td><td>235</td></tr>
+<tr><td>56</td><td>Plaudren</td><td>1855</td></tr>
+<tr><td>35</td><td>Servon-sur-Vilaine</td><td>3643</td></tr>
+<tr><td>56</td><td>Hœdic</td><td>120</td></tr>
+<tr><td>29</td><td>Plougoulm</td><td>1834</td></tr>
+<tr><td>29</td><td>Sainte-Sève</td><td>1013</td></tr>
+<tr><td>35</td><td>Saint-Rémy-du-Plain</td><td>853</td></tr>
+<tr><td>22</td><td>Plumaugat</td><td>1165</td></tr>
+<tr><td>35</td><td>Le Ferré</td><td>707</td></tr>
+<tr><td>56</td><td>Monterblanc</td><td>3327</td></tr>
+<tr><td>56</td><td>Ploemeur</td><td>18808</td></tr>
+<tr><td>56</td><td>La Chapelle-Neuve</td><td>957</td></tr>
+<tr><td>22</td><td>Trégomeur</td><td>957</td></tr>
+<tr><td>22</td><td>Ploubezre</td><td>3688</td></tr>
+<tr><td>56</td><td>Glénac</td><td>928</td></tr>
+<tr><td>56</td><td>La Grée-Saint-Laurent</td><td>348</td></tr>
+<tr><td>29</td><td>Saint-Nic</td><td>797</td></tr>
+<tr><td>29</td><td>Crozon</td><td>7893</td></tr>
+<tr><td>35</td><td>Javené</td><td>2116</td></tr>
+<tr><td>56</td><td>Ménéac</td><td>1616</td></tr>
+<tr><td>56</td><td>Saint-Abraham</td><td>563</td></tr>
+<tr><td>35</td><td>Beaucé</td><td>1349</td></tr>
+<tr><td>29</td><td>Primelin</td><td>737</td></tr>
+<tr><td>35</td><td>Rannée</td><td>1150</td></tr>
+<tr><td>35</td><td>La Couyère</td><td>515</td></tr>
+<tr><td>35</td><td>Chartres-de-Bretagne</td><td>7504</td></tr>
+<tr><td>22</td><td>Ploumagoar</td><td>5448</td></tr>
+<tr><td>35</td><td>Lourmais</td><td>352</td></tr>
+<tr><td>22</td><td>Broons</td><td>2981</td></tr>
+<tr><td>29</td><td>Telgruc-sur-Mer</td><td>2219</td></tr>
+<tr><td>29</td><td>Brélès</td><td>903</td></tr>
+<tr><td>35</td><td>Thorigné-Fouillard</td><td>8296</td></tr>
+<tr><td>56</td><td>Brandérion</td><td>1454</td></tr>
+<tr><td>22</td><td>Trélévern</td><td>1362</td></tr>
+<tr><td>56</td><td>Questembert</td><td>7732</td></tr>
+<tr><td>29</td><td>Plouescat</td><td>3607</td></tr>
+<tr><td>22</td><td>La Chapelle-Blanche</td><td>199</td></tr>
+<tr><td>29</td><td>Scrignac</td><td>835</td></tr>
+<tr><td>22</td><td>Saint-Servais</td><td>423</td></tr>
+<tr><td>29</td><td>Plouzané</td><td>12485</td></tr>
+<tr><td>29</td><td>Saint-Hernin</td><td>769</td></tr>
+<tr><td>35</td><td>Le Rheu</td><td>8435</td></tr>
+<tr><td>29</td><td>Landeleau</td><td>968</td></tr>
+<tr><td>56</td><td>La Roche-Bernard</td><td>682</td></tr>
+<tr><td>29</td><td>Plougastel-Daoulas</td><td>13633</td></tr>
+<tr><td>35</td><td>Saint-Guinoux</td><td>1121</td></tr>
+<tr><td>56</td><td>Lignol</td><td>920</td></tr>
+<tr><td>22</td><td>Trébédan</td><td>431</td></tr>
+<tr><td>29</td><td>Melgven</td><td>3490</td></tr>
+<tr><td>22</td><td>Saint-Carné</td><td>1027</td></tr>
+<tr><td>29</td><td>Guilligomarc'h</td><td>752</td></tr>
+<tr><td>56</td><td>Sulniac</td><td>3547</td></tr>
+<tr><td>22</td><td>Pléguien</td><td>1327</td></tr>
+<tr><td>22</td><td>Plumieux</td><td>1061</td></tr>
+<tr><td>35</td><td>Poilley</td><td>394</td></tr>
+<tr><td>56</td><td>Melrand</td><td>1534</td></tr>
+<tr><td>35</td><td>Les Brulais</td><td>522</td></tr>
+<tr><td>35</td><td>Melesse</td><td>6091</td></tr>
+<tr><td>35</td><td>Aubigné</td><td>498</td></tr>
+<tr><td>35</td><td>Saint-Christophe-des-Bois</td><td>594</td></tr>
+<tr><td>35</td><td>La Chapelle-Erbrée</td><td>695</td></tr>
+<tr><td>22</td><td>Lohuec</td><td>280</td></tr>
+<tr><td>22</td><td>Ploëzal</td><td>1314</td></tr>
+<tr><td>35</td><td>Chantepie</td><td>10904</td></tr>
+<tr><td>22</td><td>Glomel</td><td>1473</td></tr>
+<tr><td>35</td><td>Acigné</td><td>6574</td></tr>
+<tr><td>22</td><td>Saint-Gilles-Vieux-Marché</td><td>342</td></tr>
+<tr><td>56</td><td>Calan</td><td>1138</td></tr>
+<tr><td>22</td><td>Mégrit</td><td>805</td></tr>
+<tr><td>22</td><td>Le Hinglé</td><td>897</td></tr>
+<tr><td>56</td><td>Le Faouët</td><td>2886</td></tr>
+<tr><td>22</td><td>Saint-Launeuc</td><td>201</td></tr>
+<tr><td>35</td><td>Campel</td><td>500</td></tr>
+<tr><td>35</td><td>Saint-Ganton</td><td>424</td></tr>
+<tr><td>35</td><td>Saint-Senoux</td><td>1832</td></tr>
+<tr><td>29</td><td>Lanildut</td><td>963</td></tr>
+<tr><td>29</td><td>Plougar</td><td>817</td></tr>
+<tr><td>22</td><td>Saint-Gilles-les-Bois</td><td>422</td></tr>
+<tr><td>56</td><td>Quelneuc</td><td>556</td></tr>
+<tr><td>22</td><td>Pléhédel</td><td>1305</td></tr>
+<tr><td>22</td><td>La Roche-Derrien</td><td>1066</td></tr>
+<tr><td>29</td><td>Edern</td><td>2247</td></tr>
+<tr><td>35</td><td>Saint-M'Hervé</td><td>1419</td></tr>
+<tr><td>22</td><td>Pommerit-le-Vicomte</td><td>1847</td></tr>
+<tr><td>35</td><td>Pont-Péan</td><td>4135</td></tr>
+<tr><td>56</td><td>Carnac</td><td>4332</td></tr>
+<tr><td>56</td><td>Malansac</td><td>2192</td></tr>
+<tr><td>35</td><td>Sixt-sur-Aff</td><td>2152</td></tr>
+<tr><td>35</td><td>Dourdain</td><td>1138</td></tr>
+<tr><td>35</td><td>La Gouesnière</td><td>1794</td></tr>
+<tr><td>35</td><td>Teillay</td><td>1093</td></tr>
+<tr><td>22</td><td>Kermaria-Sulard</td><td>1061</td></tr>
+<tr><td>22</td><td>Pleubian</td><td>2492</td></tr>
+<tr><td>56</td><td>Saint-Jacut-les-Pins</td><td>1840</td></tr>
+<tr><td>56</td><td>Billio</td><td>378</td></tr>
+<tr><td>22</td><td>Saint-Thélo</td><td>419</td></tr>
+<tr><td>22</td><td>Plédran</td><td>6619</td></tr>
+<tr><td>22</td><td>Saint-Clet</td><td>903</td></tr>
+<tr><td>22</td><td>Plouisy</td><td>2183</td></tr>
+<tr><td>35</td><td>Montours</td><td>1089</td></tr>
+<tr><td>56</td><td>Lantillac</td><td>312</td></tr>
+<tr><td>35</td><td>Sainte-Marie</td><td>2346</td></tr>
+<tr><td>22</td><td>Brusvily</td><td>1176</td></tr>
+<tr><td>22</td><td>Vildé-Guingalan</td><td>1278</td></tr>
+<tr><td>56</td><td>Plouray</td><td>1167</td></tr>
+<tr><td>29</td><td>Plounévézel</td><td>1259</td></tr>
+<tr><td>29</td><td>Landudal</td><td>908</td></tr>
+<tr><td>29</td><td>Guilvinec</td><td>2853</td></tr>
+<tr><td>22</td><td>La Méaugon</td><td>1321</td></tr>
+<tr><td>29</td><td>Loperhet</td><td>3675</td></tr>
+<tr><td>35</td><td>Pléchâtel</td><td>2744</td></tr>
+<tr><td>56</td><td>Saint-Malo-des-Trois-Fontaines</td><td>561</td></tr>
+<tr><td>35</td><td>Saint-Briac-sur-Mer</td><td>2048</td></tr>
+<tr><td>35</td><td>Treffendel</td><td>1295</td></tr>
+<tr><td>56</td><td>Locmariaquer</td><td>1632</td></tr>
+<tr><td>29</td><td>Ploudaniel</td><td>3770</td></tr>
+<tr><td>22</td><td>Minihy-Tréguier</td><td>1330</td></tr>
+<tr><td>35</td><td>Vignoc</td><td>1832</td></tr>
+<tr><td>29</td><td>Roscanvel</td><td>876</td></tr>
+<tr><td>35</td><td>Villamée</td><td>321</td></tr>
+<tr><td>35</td><td>Fougères</td><td>21056</td></tr>
+<tr><td>22</td><td>Saint-Nicolas-du-Pélem</td><td>1730</td></tr>
+<tr><td>22</td><td>Étables-sur-Mer</td><td>3138</td></tr>
+<tr><td>29</td><td>Dirinon</td><td>2420</td></tr>
+<tr><td>22</td><td>Grâces</td><td>2530</td></tr>
+<tr><td>35</td><td>Le Sel-de-Bretagne</td><td>1061</td></tr>
+<tr><td>35</td><td>Martigné-Ferchaud</td><td>2685</td></tr>
+<tr><td>29</td><td>Bodilis</td><td>1630</td></tr>
+<tr><td>35</td><td>Saint-M'Hervon</td><td>554</td></tr>
+<tr><td>35</td><td>Saint-Malo-de-Phily</td><td>1089</td></tr>
+<tr><td>35</td><td>Saint-Ouen-des-Alleux</td><td>1318</td></tr>
+<tr><td>29</td><td>Lanrivoaré</td><td>1489</td></tr>
+<tr><td>22</td><td>Le Vieux-Marché</td><td>1360</td></tr>
+<tr><td>56</td><td>Tréhorenteuc</td><td>116</td></tr>
+<tr><td>22</td><td>Calorguen</td><td>713</td></tr>
+<tr><td>35</td><td>Saint-Malo</td><td>47670</td></tr>
+<tr><td>35</td><td>Saint-Grégoire</td><td>9635</td></tr>
+<tr><td>35</td><td>Mézières-sur-Couesnon</td><td>1685</td></tr>
+<tr><td>35</td><td>Liffré</td><td>7399</td></tr>
+<tr><td>35</td><td>Saint-Germain-sur-Ille</td><td>907</td></tr>
+<tr><td>35</td><td>Bréal-sous-Vitré</td><td>668</td></tr>
+<tr><td>22</td><td>Trégueux</td><td>8462</td></tr>
+<tr><td>35</td><td>Noyal-sur-Vilaine</td><td>5789</td></tr>
+<tr><td>35</td><td>Gennes-sur-Seiche</td><td>928</td></tr>
+<tr><td>29</td><td>Landéda</td><td>3697</td></tr>
+<tr><td>29</td><td>Le Conquet</td><td>2738</td></tr>
+<tr><td>22</td><td>Andel</td><td>1138</td></tr>
+<tr><td>35</td><td>Combourg</td><td>5956</td></tr>
+<tr><td>35</td><td>Bais</td><td>2331</td></tr>
+<tr><td>29</td><td>Langolen</td><td>894</td></tr>
+<tr><td>35</td><td>Langon</td><td>1481</td></tr>
+<tr><td>35</td><td>Pleine-Fougères</td><td>1984</td></tr>
+<tr><td>22</td><td>Canihuel</td><td>384</td></tr>
+<tr><td>22</td><td>Duault</td><td>373</td></tr>
+<tr><td>35</td><td>Le Châtellier</td><td>405</td></tr>
+<tr><td>22</td><td>Saint-Carreuc</td><td>1522</td></tr>
+<tr><td>22</td><td>Uzel</td><td>1131</td></tr>
+<tr><td>29</td><td>Penmarch</td><td>5604</td></tr>
+<tr><td>56</td><td>Le Tour-du-Parc</td><td>1248</td></tr>
+<tr><td>29</td><td>Saint-Urbain</td><td>1688</td></tr>
+<tr><td>56</td><td>Saint-Martin-sur-Oust</td><td>1378</td></tr>
+<tr><td>29</td><td>Saint-Rivoal</td><td>174</td></tr>
+<tr><td>29</td><td>Saint-Sauveur</td><td>826</td></tr>
+<tr><td>35</td><td>Antrain</td><td>1375</td></tr>
+<tr><td>22</td><td>Callac</td><td>2266</td></tr>
+<tr><td>29</td><td>Plouarzel</td><td>3768</td></tr>
+<tr><td>35</td><td>Bovel</td><td>613</td></tr>
+<tr><td>22</td><td>Landéhen</td><td>1427</td></tr>
+<tr><td>56</td><td>Kerfourn</td><td>876</td></tr>
+<tr><td>56</td><td>Saint-Congard</td><td>764</td></tr>
+<tr><td>22</td><td>Trégon</td><td>252</td></tr>
+<tr><td>35</td><td>Guignen</td><td>3795</td></tr>
+<tr><td>35</td><td>Pleugueneuc</td><td>1830</td></tr>
+<tr><td>29</td><td>Lesneven</td><td>7716</td></tr>
+<tr><td>56</td><td>Kervignac</td><td>6708</td></tr>
+<tr><td>22</td><td>Saint-Denoual</td><td>434</td></tr>
+<tr><td>56</td><td>Locminé</td><td>4395</td></tr>
+<tr><td>35</td><td>Crevin</td><td>2683</td></tr>
+<tr><td>22</td><td>Saint-Jean-Kerdaniel</td><td>619</td></tr>
+<tr><td>29</td><td>Confort-Meilars</td><td>915</td></tr>
+<tr><td>35</td><td>Dol-de-Bretagne</td><td>5836</td></tr>
+<tr><td>29</td><td>Île-Tudy</td><td>764</td></tr>
+<tr><td>56</td><td>Port-Louis</td><td>2717</td></tr>
+<tr><td>56</td><td>Rieux</td><td>2967</td></tr>
+<tr><td>35</td><td>Saint-Hilaire-des-Landes</td><td>1050</td></tr>
+<tr><td>22</td><td>Trémuson</td><td>2040</td></tr>
+<tr><td>29</td><td>Brennilis</td><td>470</td></tr>
+<tr><td>56</td><td>Réminiac</td><td>382</td></tr>
+<tr><td>56</td><td>Lizio</td><td>765</td></tr>
+<tr><td>56</td><td>Pluherlin</td><td>1528</td></tr>
+<tr><td>29</td><td>Goulven</td><td>453</td></tr>
+<tr><td>35</td><td>Lanrigan</td><td>151</td></tr>
+<tr><td>35</td><td>Châteauneuf-d'Ille-et-Vilaine</td><td>1626</td></tr>
+<tr><td>22</td><td>Plélauff</td><td>716</td></tr>
+<tr><td>29</td><td>Plouigneau</td><td>5072</td></tr>
+<tr><td>22</td><td>Gouarec</td><td>919</td></tr>
+<tr><td>22</td><td>Plouagat</td><td>2842</td></tr>
+<tr><td>22</td><td>Plounévez-Moëdec</td><td>1464</td></tr>
+<tr><td>29</td><td>Landévennec</td><td>347</td></tr>
+<tr><td>22</td><td>Yvignac-la-Tour</td><td>1206</td></tr>
+<tr><td>35</td><td>Luitré</td><td>1351</td></tr>
+<tr><td>56</td><td>Molac</td><td>1524</td></tr>
+<tr><td>29</td><td>Tréogat</td><td>587</td></tr>
+<tr><td>35</td><td>La Selle-en-Coglès</td><td>635</td></tr>
+<tr><td>35</td><td>Trévérien</td><td>913</td></tr>
+<tr><td>35</td><td>Domloup</td><td>3120</td></tr>
+<tr><td>29</td><td>Plouyé</td><td>722</td></tr>
+<tr><td>56</td><td>Saint-Marcel</td><td>1091</td></tr>
+<tr><td>22</td><td>Plessix-Balisson</td><td>93</td></tr>
+<tr><td>56</td><td>Pluneret</td><td>5484</td></tr>
+<tr><td>35</td><td>Sens-de-Bretagne</td><td>2560</td></tr>
+<tr><td>29</td><td>Ploumoguer</td><td>2004</td></tr>
+<tr><td>56</td><td>Beignon</td><td>1875</td></tr>
+<tr><td>56</td><td>Kernascléden</td><td>449</td></tr>
+<tr><td>56</td><td>Pont-Scorff</td><td>3695</td></tr>
+<tr><td>22</td><td>Plouzélambre</td><td>234</td></tr>
+<tr><td>56</td><td>Île-aux-Moines</td><td>622</td></tr>
+<tr><td>56</td><td>Inguiniel</td><td>2163</td></tr>
+<tr><td>22</td><td>Quemper-Guézennec</td><td>1161</td></tr>
+<tr><td>35</td><td>Saint-Thurial</td><td>2101</td></tr>
+<tr><td>35</td><td>Arbrissel</td><td>309</td></tr>
+<tr><td>56</td><td>Caden</td><td>1682</td></tr>
+<tr><td>56</td><td>Peillac</td><td>1910</td></tr>
+<tr><td>22</td><td>Caouënnec-Lanvézéac</td><td>875</td></tr>
+<tr><td>22</td><td>Mérillac</td><td>244</td></tr>
+<tr><td>22</td><td>Lanloup</td><td>257</td></tr>
+<tr><td>29</td><td>Saint-Thois</td><td>731</td></tr>
+<tr><td>29</td><td>Guiclan</td><td>2525</td></tr>
+<tr><td>22</td><td>Tréméven</td><td>343</td></tr>
+<tr><td>35</td><td>Moulins</td><td>735</td></tr>
+<tr><td>22</td><td>Saint-Jouan-de-l'Isle</td><td>489</td></tr>
+<tr><td>35</td><td>Chancé</td><td>302</td></tr>
+<tr><td>35</td><td>Saint-Père</td><td>2428</td></tr>
+<tr><td>22</td><td>Bréhand</td><td>1637</td></tr>
+<tr><td>35</td><td>Availles-sur-Seiche</td><td>702</td></tr>
+<tr><td>56</td><td>Damgan</td><td>1707</td></tr>
+<tr><td>22</td><td>Tréglamus</td><td>1011</td></tr>
+<tr><td>22</td><td>Bourbriac</td><td>2372</td></tr>
+<tr><td>35</td><td>Mont-Dol</td><td>1167</td></tr>
+<tr><td>22</td><td>Hénanbihen</td><td>1441</td></tr>
+<tr><td>22</td><td>Troguéry</td><td>294</td></tr>
+<tr><td>22</td><td>Loguivy-Plougras</td><td>918</td></tr>
+<tr><td>29</td><td>Arzano</td><td>1418</td></tr>
+<tr><td>35</td><td>Saint-Sulpice-la-Forêt</td><td>1422</td></tr>
+<tr><td>22</td><td>Rostrenen</td><td>3470</td></tr>
+<tr><td>35</td><td>Talensac</td><td>2529</td></tr>
+<tr><td>56</td><td>Hennebont</td><td>15954</td></tr>
+<tr><td>56</td><td>Sérent</td><td>3102</td></tr>
+<tr><td>56</td><td>Saint-Guyomard</td><td>1334</td></tr>
+<tr><td>56</td><td>Gestel</td><td>2816</td></tr>
+<tr><td>22</td><td>Trévou-Tréguignec</td><td>1357</td></tr>
+<tr><td>56</td><td>Noyal-Pontivy</td><td>3795</td></tr>
+<tr><td>29</td><td>Pleuven</td><td>2860</td></tr>
+<tr><td>56</td><td>Séglien</td><td>725</td></tr>
+<tr><td>35</td><td>Montfort-sur-Meu</td><td>6653</td></tr>
+<tr><td>29</td><td>Clohars-Fouesnant</td><td>2106</td></tr>
+<tr><td>35</td><td>Bédée</td><td>4153</td></tr>
+<tr><td>35</td><td>Betton</td><td>11038</td></tr>
+<tr><td>29</td><td>Saint-Ségal</td><td>1082</td></tr>
+<tr><td>35</td><td>La Guerche-de-Bretagne</td><td>4475</td></tr>
+<tr><td>35</td><td>Breteil</td><td>3544</td></tr>
+<tr><td>22</td><td>Maël-Pestivien</td><td>410</td></tr>
+<tr><td>22</td><td>Laniscat</td><td>788</td></tr>
+<tr><td>29</td><td>Landunvez</td><td>1524</td></tr>
+<tr><td>22</td><td>Trémorel</td><td>1157</td></tr>
+<tr><td>56</td><td>Péaule</td><td>2636</td></tr>
+<tr><td>56</td><td>Baud</td><td>6334</td></tr>
+<tr><td>35</td><td>Saint-Gonlay</td><td>346</td></tr>
+<tr><td>22</td><td>Saint-Alban</td><td>2127</td></tr>
+<tr><td>35</td><td>Moutiers</td><td>959</td></tr>
+<tr><td>35</td><td>Le Verger</td><td>1488</td></tr>
+<tr><td>22</td><td>Tonquédec</td><td>1217</td></tr>
+<tr><td>29</td><td>Lampaul-Plouarzel</td><td>2141</td></tr>
+<tr><td>22</td><td>Plénée-Jugon</td><td>2498</td></tr>
+<tr><td>35</td><td>Saint-Thual</td><td>863</td></tr>
+<tr><td>56</td><td>Plescop</td><td>5832</td></tr>
+<tr><td>35</td><td>Saint-Jean-sur-Couesnon</td><td>1158</td></tr>
+<tr><td>22</td><td>Planguenoual</td><td>2229</td></tr>
+<tr><td>35</td><td>Saint-Jacques-de-la-Lande</td><td>12463</td></tr>
+<tr><td>56</td><td>Brignac</td><td>181</td></tr>
+<tr><td>29</td><td>Rosnoën</td><td>982</td></tr>
+<tr><td>22</td><td>Caurel</td><td>374</td></tr>
+<tr><td>29</td><td>Quimperlé</td><td>12681</td></tr>
+<tr><td>22</td><td>Pontrieux</td><td>1044</td></tr>
+<tr><td>56</td><td>Monteneuf</td><td>792</td></tr>
+<tr><td>56</td><td>Landévant</td><td>3593</td></tr>
+<tr><td>22</td><td>Plougras</td><td>432</td></tr>
+<tr><td>35</td><td>Moussé</td><td>326</td></tr>
+<tr><td>35</td><td>Saint-Sulpice-des-Landes</td><td>806</td></tr>
+<tr><td>35</td><td>Montreuil-sous-Pérouse</td><td>1054</td></tr>
+<tr><td>35</td><td>Saint-Armel</td><td>1850</td></tr>
+<tr><td>29</td><td>Carantec</td><td>3259</td></tr>
+<tr><td>35</td><td>Rennes</td><td>219370</td></tr>
+<tr><td>29</td><td>Pont-Aven</td><td>2890</td></tr>
+<tr><td>29</td><td>Plouégat-Guérand</td><td>1113</td></tr>
+<tr><td>56</td><td>Le Palais</td><td>2640</td></tr>
+<tr><td>35</td><td>Sainte-Colombe</td><td>328</td></tr>
+<tr><td>35</td><td>Gaël</td><td>1674</td></tr>
+<tr><td>35</td><td>Mouazé</td><td>1311</td></tr>
+<tr><td>22</td><td>Guenroc</td><td>220</td></tr>
+<tr><td>56</td><td>Pontivy</td><td>15133</td></tr>
+<tr><td>35</td><td>Epiniac</td><td>1431</td></tr>
+<tr><td>35</td><td>Saint-Broladre</td><td>1149</td></tr>
+<tr><td>29</td><td>Le Folgoët</td><td>3258</td></tr>
+<tr><td>29</td><td>Plounéventer</td><td>2155</td></tr>
+<tr><td>35</td><td>Marpiré</td><td>1101</td></tr>
+<tr><td>35</td><td>Saint-Benoît-des-Ondes</td><td>1058</td></tr>
+<tr><td>22</td><td>Illifaut</td><td>723</td></tr>
+<tr><td>22</td><td>Le Cambout</td><td>453</td></tr>
+<tr><td>35</td><td>Saint-Onen-la-Chapelle</td><td>1233</td></tr>
+<tr><td>35</td><td>Balazé</td><td>2369</td></tr>
+<tr><td>56</td><td>Bohal</td><td>820</td></tr>
+<tr><td>22</td><td>Pléboulle</td><td>782</td></tr>
+<tr><td>29</td><td>Lanvéoc</td><td>2233</td></tr>
+<tr><td>35</td><td>Cuguen</td><td>825</td></tr>
+<tr><td>22</td><td>Saint-Rieul</td><td>547</td></tr>
+<tr><td>56</td><td>Locmaria</td><td>885</td></tr>
+<tr><td>35</td><td>Romagné</td><td>2394</td></tr>
+<tr><td>35</td><td>La Chapelle-Bouëxic</td><td>1396</td></tr>
+<tr><td>22</td><td>Pabu</td><td>2925</td></tr>
+<tr><td>35</td><td>Trans-la-Forêt</td><td>558</td></tr>
+<tr><td>22</td><td>Plorec-sur-Arguenon</td><td>407</td></tr>
+<tr><td>35</td><td>Bonnemain</td><td>1494</td></tr>
+<tr><td>22</td><td>Le Mené</td><td>6549</td></tr>
+<tr><td>22</td><td>Goudelin</td><td>1757</td></tr>
+<tr><td>56</td><td>La Vraie-Croix</td><td>1472</td></tr>
+<tr><td>29</td><td>Lannéanou</td><td>389</td></tr>
+<tr><td>29</td><td>Goulien</td><td>440</td></tr>
+<tr><td>29</td><td>Plounévez-Lochrist</td><td>2478</td></tr>
+<tr><td>22</td><td>Yvias</td><td>775</td></tr>
+<tr><td>35</td><td>Coësmes</td><td>1501</td></tr>
+<tr><td>29</td><td>Daoulas</td><td>1817</td></tr>
+<tr><td>35</td><td>L' Hermitage</td><td>4216</td></tr>
+<tr><td>22</td><td>Runan</td><td>237</td></tr>
+<tr><td>56</td><td>Kergrist</td><td>711</td></tr>
+<tr><td>22</td><td>Magoar</td><td>89</td></tr>
+<tr><td>22</td><td>Lézardrieux</td><td>1611</td></tr>
+<tr><td>35</td><td>Bourg-des-Comptes</td><td>3300</td></tr>
+<tr><td>29</td><td>Pouldreuzic</td><td>2178</td></tr>
+<tr><td>56</td><td>La Trinité-Porhoët</td><td>702</td></tr>
+<tr><td>35</td><td>La Fresnais</td><td>2433</td></tr>
+<tr><td>35</td><td>Saint-Aubin-des-Landes</td><td>950</td></tr>
+<tr><td>22</td><td>Plufur</td><td>560</td></tr>
+<tr><td>35</td><td>Retiers</td><td>4266</td></tr>
+<tr><td>56</td><td>Cruguel</td><td>642</td></tr>
+<tr><td>29</td><td>Fouesnant</td><td>9882</td></tr>
+<tr><td>22</td><td>Lamballe</td><td>13783</td></tr>
+<tr><td>35</td><td>Le Tiercent</td><td>167</td></tr>
+<tr><td>29</td><td>Plovan</td><td>699</td></tr>
+<tr><td>29</td><td>Mespaul</td><td>946</td></tr>
+<tr><td>35</td><td>Coglès</td><td>665</td></tr>
+<tr><td>22</td><td>Merdrignac</td><td>3171</td></tr>
+<tr><td>22</td><td>Saint-Judoce</td><td>589</td></tr>
+<tr><td>29</td><td>Peumerit</td><td>813</td></tr>
+<tr><td>22</td><td>Boqueho</td><td>1104</td></tr>
+<tr><td>22</td><td>Lannion</td><td>20774</td></tr>
+<tr><td>56</td><td>Locmalo</td><td>934</td></tr>
+<tr><td>56</td><td>Quéven</td><td>8867</td></tr>
+<tr><td>22</td><td>Plouguiel</td><td>1819</td></tr>
+<tr><td>56</td><td>Surzur</td><td>4243</td></tr>
+<tr><td>22</td><td>Lanrodec</td><td>1295</td></tr>
+<tr><td>35</td><td>Forges-la-Forêt</td><td>277</td></tr>
+<tr><td>29</td><td>Commana</td><td>1107</td></tr>
+<tr><td>56</td><td>Moréac</td><td>3869</td></tr>
+<tr><td>22</td><td>Kerien</td><td>285</td></tr>
+<tr><td>22</td><td>Langast</td><td>644</td></tr>
+<tr><td>22</td><td>Lanvollon</td><td>1768</td></tr>
+<tr><td>29</td><td>Dinéault</td><td>2090</td></tr>
+<tr><td>35</td><td>Montauban-de-Bretagne</td><td>5283</td></tr>
+<tr><td>22</td><td>Perros-Guirec</td><td>7532</td></tr>
+<tr><td>56</td><td>Crach</td><td>3398</td></tr>
+<tr><td>29</td><td>Trébabu</td><td>347</td></tr>
+<tr><td>35</td><td>Louvigné-de-Bais</td><td>1819</td></tr>
+<tr><td>22</td><td>Aucaleuc</td><td>991</td></tr>
+<tr><td>29</td><td>Bolazec</td><td>204</td></tr>
+<tr><td>56</td><td>Larré</td><td>1025</td></tr>
+<tr><td>22</td><td>Plésidy</td><td>631</td></tr>
+<tr><td>22</td><td>Saint-Maudan</td><td>418</td></tr>
+<tr><td>56</td><td>Val d'Oust</td><td>2697</td></tr>
+<tr><td>35</td><td>Saint-Domineuc</td><td>2510</td></tr>
+<tr><td>22</td><td>Saint-Juvat</td><td>667</td></tr>
+<tr><td>35</td><td>Lalleu</td><td>614</td></tr>
+<tr><td>22</td><td>Plestan</td><td>1602</td></tr>
+<tr><td>22</td><td>Saint-Vran</td><td>771</td></tr>
+<tr><td>35</td><td>Chauvigné</td><td>870</td></tr>
+<tr><td>35</td><td>Billé</td><td>1074</td></tr>
+<tr><td>22</td><td>Paimpol</td><td>7569</td></tr>
+<tr><td>56</td><td>Bréhan</td><td>2386</td></tr>
+<tr><td>35</td><td>Baillé</td><td>311</td></tr>
+<tr><td>22</td><td>Gomené</td><td>557</td></tr>
+<tr><td>35</td><td>Les Iffs</td><td>280</td></tr>
+<tr><td>35</td><td>La Chapelle-Chaussée</td><td>1282</td></tr>
+<tr><td>29</td><td>Ploéven</td><td>540</td></tr>
+<tr><td>35</td><td>Marcillé-Raoul</td><td>803</td></tr>
+<tr><td>22</td><td>Prat</td><td>1160</td></tr>
+<tr><td>22</td><td>Plouguernével</td><td>1791</td></tr>
+<tr><td>22</td><td>Trédrez-Locquémeau</td><td>1480</td></tr>
+<tr><td>56</td><td>Nostang</td><td>1543</td></tr>
+<tr><td>22</td><td>Plélan-le-Petit</td><td>1918</td></tr>
+<tr><td>29</td><td>Plogastel-Saint-Germain</td><td>1920</td></tr>
+<tr><td>29</td><td>Saint-Derrien</td><td>826</td></tr>
+<tr><td>29</td><td>Clohars-Carnoët</td><td>4357</td></tr>
+<tr><td>22</td><td>Languenan</td><td>1188</td></tr>
+<tr><td>29</td><td>Audierne</td><td>3807</td></tr>
+<tr><td>35</td><td>La Nouaye</td><td>368</td></tr>
+<tr><td>35</td><td>Saint-Jouan-des-Guérets</td><td>2706</td></tr>
+<tr><td>22</td><td>Treffrin</td><td>594</td></tr>
+<tr><td>35</td><td>Saint-Ouen-la-Rouërie</td><td>823</td></tr>
+<tr><td>35</td><td>Cherrueix</td><td>1151</td></tr>
+<tr><td>29</td><td>Brasparts</td><td>1071</td></tr>
+<tr><td>35</td><td>Broualan</td><td>392</td></tr>
+<tr><td>35</td><td>Saint-Jean-sur-Vilaine</td><td>1159</td></tr>
+<tr><td>56</td><td>Saint-Pierre-Quiberon</td><td>2139</td></tr>
+<tr><td>56</td><td>Le Saint</td><td>619</td></tr>
+<tr><td>22</td><td>Paule</td><td>749</td></tr>
+<tr><td>22</td><td>Le Quiou</td><td>326</td></tr>
+<tr><td>22</td><td>Plouvara</td><td>1161</td></tr>
+<tr><td>56</td><td>Berné</td><td>1660</td></tr>
+<tr><td>22</td><td>Brélidy</td><td>306</td></tr>
+<tr><td>29</td><td>Tréméoc</td><td>1351</td></tr>
+<tr><td>56</td><td>Bono</td><td>2180</td></tr>
+<tr><td>22</td><td>Plourhan</td><td>2028</td></tr>
+<tr><td>56</td><td>Pleugriffet</td><td>1230</td></tr>
+<tr><td>56</td><td>Plouharnel</td><td>2189</td></tr>
+<tr><td>56</td><td>Locqueltas</td><td>1680</td></tr>
+<tr><td>22</td><td>Hénon</td><td>2245</td></tr>
+<tr><td>35</td><td>Saint-Marc-le-Blanc</td><td>1368</td></tr>
+<tr><td>56</td><td>Brandivy</td><td>1294</td></tr>
+<tr><td>22</td><td>Saint-Trimoël</td><td>501</td></tr>
+<tr><td>56</td><td>Bangor</td><td>1007</td></tr>
+<tr><td>56</td><td>Plouay</td><td>5570</td></tr>
+<tr><td>22</td><td>Quévert</td><td>3858</td></tr>
+<tr><td>35</td><td>Vieux-Viel</td><td>323</td></tr>
+<tr><td>22</td><td>Plussulien</td><td>519</td></tr>
+<tr><td>29</td><td>Santec</td><td>2405</td></tr>
+<tr><td>56</td><td>Landaul</td><td>2294</td></tr>
+<tr><td>35</td><td>Le Loroux</td><td>687</td></tr>
+<tr><td>35</td><td>La Fontenelle</td><td>555</td></tr>
+<tr><td>22</td><td>Le Leslay</td><td>153</td></tr>
+<tr><td>22</td><td>Le Bodéo</td><td>164</td></tr>
+<tr><td>22</td><td>Kerpert</td><td>294</td></tr>
+<tr><td>35</td><td>Saint-Germain-en-Coglès</td><td>2064</td></tr>
+<tr><td>22</td><td>Plouër-sur-Rance</td><td>3552</td></tr>
+<tr><td>35</td><td>Corps-Nuds</td><td>3249</td></tr>
+<tr><td>29</td><td>Garlan</td><td>1053</td></tr>
+<tr><td>56</td><td>Plouhinec</td><td>5422</td></tr>
+<tr><td>29</td><td>Bannalec</td><td>5738</td></tr>
+<tr><td>29</td><td>Saint-Frégant</td><td>783</td></tr>
+<tr><td>56</td><td>Lorient</td><td>59296</td></tr>
+<tr><td>35</td><td>Gosné</td><td>2000</td></tr>
+<tr><td>35</td><td>Saint-Sauveur-des-Landes</td><td>1521</td></tr>
+<tr><td>29</td><td>Collorec</td><td>646</td></tr>
+<tr><td>22</td><td>Coadout</td><td>582</td></tr>
+<tr><td>22</td><td>Saint-Étienne-du-Gué-de-l'Isle</td><td>378</td></tr>
+<tr><td>29</td><td>Locunolé</td><td>1164</td></tr>
+<tr><td>29</td><td>Plonéour-Lanvern</td><td>6200</td></tr>
+<tr><td>35</td><td>Saint-Séglin</td><td>543</td></tr>
+<tr><td>29</td><td>Laz</td><td>688</td></tr>
+<tr><td>56</td><td>Guillac</td><td>1434</td></tr>
+<tr><td>35</td><td>Le Theil-de-Bretagne</td><td>1778</td></tr>
+<tr><td>35</td><td>Saint-Marc-sur-Couesnon</td><td>573</td></tr>
+<tr><td>56</td><td>Rohan</td><td>1716</td></tr>
+<tr><td>56</td><td>Ploërdut</td><td>1247</td></tr>
+<tr><td>22</td><td>Louannec</td><td>3192</td></tr>
+<tr><td>35</td><td>Boisgervilly</td><td>1633</td></tr>
+<tr><td>29</td><td>Treffiagat</td><td>2513</td></tr>
+<tr><td>22</td><td>Quemperven</td><td>400</td></tr>
+<tr><td>22</td><td>Lescouët-Gouarec</td><td>214</td></tr>
+<tr><td>35</td><td>Chavagne</td><td>3768</td></tr>
+<tr><td>56</td><td>Saint-Nicolas-du-Tertre</td><td>480</td></tr>
+<tr><td>22</td><td>Pludual</td><td>755</td></tr>
+<tr><td>22</td><td>Pleumeur-Gautier</td><td>1253</td></tr>
+<tr><td>22</td><td>Pleudaniel</td><td>955</td></tr>
+<tr><td>56</td><td>Guidel</td><td>11462</td></tr>
+<tr><td>35</td><td>Saint-Pern</td><td>1026</td></tr>
+<tr><td>56</td><td>Le Sourn</td><td>2148</td></tr>
+<tr><td>35</td><td>Pipriac</td><td>3739</td></tr>
+<tr><td>22</td><td>Guingamp</td><td>7817</td></tr>
+<tr><td>35</td><td>La Baussaine</td><td>658</td></tr>
+<tr><td>22</td><td>Saint-Gilles-Pligeaux</td><td>285</td></tr>
+<tr><td>22</td><td>La Chapelle-Neuve</td><td>437</td></tr>
+<tr><td>22</td><td>Saint-Michel-en-Grève</td><td>467</td></tr>
+<tr><td>29</td><td>Rédené</td><td>3003</td></tr>
+<tr><td>35</td><td>Janzé</td><td>8426</td></tr>
+<tr><td>35</td><td>La Bosse-de-Bretagne</td><td>647</td></tr>
+<tr><td>29</td><td>Saint-Renan</td><td>8225</td></tr>
+<tr><td>22</td><td>Lanmodez</td><td>443</td></tr>
+<tr><td>29</td><td>Irvillac</td><td>1453</td></tr>
+<tr><td>29</td><td>Le Ponthou</td><td>173</td></tr>
+<tr><td>22</td><td>Rouillac</td><td>403</td></tr>
+<tr><td>22</td><td>Kermoroc'h</td><td>444</td></tr>
+<tr><td>35</td><td>Roz-sur-Couesnon</td><td>1048</td></tr>
+<tr><td>29</td><td>La Forest-Landerneau</td><td>1849</td></tr>
+<tr><td>35</td><td>Saint-Suliac</td><td>969</td></tr>
+<tr><td>35</td><td>Champeaux</td><td>498</td></tr>
+<tr><td>56</td><td>Sauzon</td><td>958</td></tr>
+<tr><td>35</td><td>Vergéal</td><td>812</td></tr>
+<tr><td>35</td><td>Lanhélin</td><td>1011</td></tr>
+<tr><td>22</td><td>Tressignaux</td><td>678</td></tr>
+<tr><td>22</td><td>Bringolo</td><td>461</td></tr>
+<tr><td>29</td><td>Châteaulin</td><td>5737</td></tr>
+<tr><td>35</td><td>Bazouges-la-Pérouse</td><td>1838</td></tr>
+<tr><td>35</td><td>Vern-sur-Seiche</td><td>8123</td></tr>
+<tr><td>29</td><td>Guimiliau</td><td>1047</td></tr>
+<tr><td>22</td><td>Plœuc-L'Hermitage</td><td>4136</td></tr>
+<tr><td>56</td><td>Noyal-Muzillac</td><td>2584</td></tr>
+<tr><td>29</td><td>Rosporden</td><td>7698</td></tr>
+<tr><td>22</td><td>Corseul</td><td>2194</td></tr>
+<tr><td>29</td><td>Tréflévénez</td><td>268</td></tr>
+<tr><td>29</td><td>Plougonvelin</td><td>4113</td></tr>
+<tr><td>29</td><td>Plonévez-Porzay</td><td>1845</td></tr>
+<tr><td>29</td><td>Pont-l'Abbé</td><td>8687</td></tr>
+<tr><td>22</td><td>Plouasne</td><td>1717</td></tr>
+<tr><td>29</td><td>Loc-Brévalaire</td><td>202</td></tr>
+<tr><td>29</td><td>Kernouës</td><td>743</td></tr>
+<tr><td>56</td><td>Férel</td><td>3202</td></tr>
+<tr><td>22</td><td>Saint-Brieuc</td><td>47295</td></tr>
+<tr><td>56</td><td>Helléan</td><td>366</td></tr>
+<tr><td>56</td><td>Cléguer</td><td>3402</td></tr>
+<tr><td>29</td><td>Guipronvel</td><td>796</td></tr>
+<tr><td>29</td><td>Ploudalmézeau</td><td>6437</td></tr>
+<tr><td>22</td><td>Saint-Brandan</td><td>2438</td></tr>
+<tr><td>22</td><td>Pluduno</td><td>2213</td></tr>
+<tr><td>22</td><td>Le Moustoir</td><td>698</td></tr>
+<tr><td>29</td><td>Hôpital-Camfrout</td><td>2265</td></tr>
+<tr><td>35</td><td>Cesson-Sévigné</td><td>17934</td></tr>
+<tr><td>56</td><td>Arzon</td><td>2146</td></tr>
+<tr><td>35</td><td>Mernel</td><td>1068</td></tr>
+<tr><td>35</td><td>Meillac</td><td>1816</td></tr>
+<tr><td>22</td><td>Trédias</td><td>498</td></tr>
+<tr><td>35</td><td>Orgères</td><td>4151</td></tr>
+<tr><td>29</td><td>Locmélar</td><td>467</td></tr>
+<tr><td>22</td><td>Fréhel</td><td>1585</td></tr>
+<tr><td>22</td><td>Gommenec'h</td><td>564</td></tr>
+<tr><td>22</td><td>Évran</td><td>1765</td></tr>
+<tr><td>56</td><td>Trédion</td><td>1238</td></tr>
+<tr><td>56</td><td>Le Guerno</td><td>941</td></tr>
+<tr><td>29</td><td>Briec</td><td>5760</td></tr>
+<tr><td>22</td><td>Saint-Mayeux</td><td>506</td></tr>
+<tr><td>56</td><td>La Trinité-Surzur</td><td>1493</td></tr>
+<tr><td>35</td><td>Saint-Méen-le-Grand</td><td>4745</td></tr>
+<tr><td>35</td><td>Chelun</td><td>353</td></tr>
+<tr><td>35</td><td>Muel</td><td>913</td></tr>
+<tr><td>35</td><td>La Chapelle-aux-Filtzméens</td><td>846</td></tr>
+<tr><td>56</td><td>Camoël</td><td>990</td></tr>
+<tr><td>56</td><td>Allaire</td><td>3857</td></tr>
+<tr><td>29</td><td>Moëlan-sur-Mer</td><td>7096</td></tr>
+<tr><td>56</td><td>Guilliers</td><td>1603</td></tr>
+<tr><td>56</td><td>Guéhenno</td><td>815</td></tr>
+<tr><td>29</td><td>Saint-Jean-du-Doigt</td><td>640</td></tr>
+<tr><td>22</td><td>Plaintel</td><td>4367</td></tr>
+<tr><td>29</td><td>Trégunc</td><td>7315</td></tr>
+<tr><td>22</td><td>Tréméreuc</td><td>737</td></tr>
+<tr><td>56</td><td>Saint-Malo-de-Beignon</td><td>517</td></tr>
+<tr><td>56</td><td>Pluvigner</td><td>7536</td></tr>
+<tr><td>56</td><td>Plumelec</td><td>2751</td></tr>
+<tr><td>22</td><td>Le Haut-Corlay</td><td>725</td></tr>
+<tr><td>22</td><td>Plouëc-du-Trieux</td><td>1159</td></tr>
+<tr><td>29</td><td>Spézet</td><td>1855</td></tr>
+<tr><td>22</td><td>Grâce-Uzel</td><td>436</td></tr>
+<tr><td>35</td><td>Guichen</td><td>8272</td></tr>
+<tr><td>56</td><td>Pénestin</td><td>1819</td></tr>
+<tr><td>56</td><td>Le Cours</td><td>660</td></tr>
+<tr><td>29</td><td>Beuzec-Cap-Sizun</td><td>1049</td></tr>
+<tr><td>29</td><td>Saint-Jean-Trolimon</td><td>1035</td></tr>
+<tr><td>29</td><td>Saint-Yvi</td><td>3075</td></tr>
+<tr><td>22</td><td>Le Quillio</td><td>564</td></tr>
+<tr><td>29</td><td>Guipavas</td><td>14502</td></tr>
+<tr><td>22</td><td>La Vicomté-sur-Rance</td><td>1056</td></tr>
+<tr><td>22</td><td>Languédias</td><td>504</td></tr>
+<tr><td>35</td><td>Vezin-le-Coquet</td><td>5249</td></tr>
+<tr><td>22</td><td>Île-de-Bréhat</td><td>400</td></tr>
+<tr><td>35</td><td>Lassy</td><td>1589</td></tr>
+<tr><td>35</td><td>Le Minihic-sur-Rance</td><td>1452</td></tr>
+<tr><td>22</td><td>Mantallot</td><td>234</td></tr>
+<tr><td>56</td><td>Sainte-Hélène</td><td>1228</td></tr>
+<tr><td>35</td><td>Pleurtuit</td><td>6604</td></tr>
+<tr><td>22</td><td>Trédaniel</td><td>990</td></tr>
+<tr><td>22</td><td>Yffiniac</td><td>5063</td></tr>
+<tr><td>35</td><td>Saint-Christophe-de-Valains</td><td>220</td></tr>
+<tr><td>29</td><td>Le Juch</td><td>747</td></tr>
+<tr><td>29</td><td>Plouzévédé</td><td>1855</td></tr>
+<tr><td>22</td><td>Lanrivain</td><td>531</td></tr>
+<tr><td>35</td><td>Domagné</td><td>2320</td></tr>
+<tr><td>35</td><td>Brielles</td><td>720</td></tr>
+<tr><td>56</td><td>Merlevenez</td><td>3237</td></tr>
+<tr><td>22</td><td>Pleumeur-Bodou</td><td>4168</td></tr>
+<tr><td>22</td><td>Saint-Lormel</td><td>898</td></tr>
+<tr><td>22</td><td>Pluzunet</td><td>1043</td></tr>
+<tr><td>56</td><td>Sainte-Anne-d'Auray</td><td>2706</td></tr>
+<tr><td>22</td><td>Erquy</td><td>3968</td></tr>
+<tr><td>35</td><td>Marcillé-Robert</td><td>1017</td></tr>
+<tr><td>35</td><td>Saulnières</td><td>730</td></tr>
+<tr><td>35</td><td>Pleumeleuc</td><td>3220</td></tr>
+<tr><td>29</td><td>Plouezoc'h</td><td>1642</td></tr>
+<tr><td>22</td><td>Pleslin-Trigavou</td><td>3540</td></tr>
+<tr><td>35</td><td>Quédillac</td><td>1208</td></tr>
+<tr><td>35</td><td>Saint-Didier</td><td>1982</td></tr>
+<tr><td>29</td><td>Tréflaouénan</td><td>517</td></tr>
+<tr><td>22</td><td>Saint-André-des-Eaux</td><td>309</td></tr>
+<tr><td>56</td><td>Lanouée</td><td>1804</td></tr>
+<tr><td>29</td><td>Poullaouen</td><td>1340</td></tr>
+<tr><td>29</td><td>Trégarvan</td><td>150</td></tr>
+<tr><td>35</td><td>Baguer-Morvan</td><td>1680</td></tr>
+<tr><td>29</td><td>Île-Molène</td><td>153</td></tr>
+<tr><td>29</td><td>Querrien</td><td>1773</td></tr>
+<tr><td>22</td><td>Bégard</td><td>4851</td></tr>
+<tr><td>56</td><td>Malestroit</td><td>2572</td></tr>
+<tr><td>22</td><td>Trégrom</td><td>402</td></tr>
+<tr><td>29</td><td>Plouédern</td><td>2852</td></tr>
+<tr><td>29</td><td>La Roche-Maurice</td><td>1967</td></tr>
+<tr><td>29</td><td>Trémaouézan</td><td>553</td></tr>
+<tr><td>22</td><td>Plédéliac</td><td>1429</td></tr>
+<tr><td>56</td><td>Inzinzac-Lochrist</td><td>6575</td></tr>
+<tr><td>56</td><td>Mauron</td><td>3269</td></tr>
+<tr><td>56</td><td>Josselin</td><td>2625</td></tr>
+<tr><td>56</td><td>Loyat</td><td>1688</td></tr>
+<tr><td>22</td><td>Quintenic</td><td>369</td></tr>
+<tr><td>35</td><td>La Noë-Blanche</td><td>977</td></tr>
+<tr><td>22</td><td>Ploubazlanec</td><td>3166</td></tr>
+<tr><td>35</td><td>Bruc-sur-Aff</td><td>876</td></tr>
+<tr><td>56</td><td>Ploeren</td><td>6660</td></tr>
+<tr><td>56</td><td>Plougoumelen</td><td>2536</td></tr>
+<tr><td>35</td><td>Monterfil</td><td>1337</td></tr>
+<tr><td>22</td><td>Rospez</td><td>1802</td></tr>
+<tr><td>29</td><td>Plouguerneau</td><td>6573</td></tr>
+<tr><td>29</td><td>Kerlouan</td><td>2298</td></tr>
+<tr><td>35</td><td>Val-d'Izé</td><td>2630</td></tr>
+<tr><td>35</td><td>Tressé</td><td>370</td></tr>
+<tr><td>35</td><td>Saint-Germain-du-Pinel</td><td>914</td></tr>
+<tr><td>29</td><td>Plouégat-Moysan</td><td>698</td></tr>
+<tr><td>22</td><td>Quessoy</td><td>4112</td></tr>
+<tr><td>22</td><td>Léhon</td><td>3141</td></tr>
+<tr><td>22</td><td>Trédarzec</td><td>1134</td></tr>
+<tr><td>29</td><td>Scaër</td><td>5504</td></tr>
+<tr><td>35</td><td>Brie</td><td>865</td></tr>
+<tr><td>22</td><td>Ploubalay</td><td>3126</td></tr>
+<tr><td>56</td><td>Évriguet</td><td>171</td></tr>
+<tr><td>29</td><td>Poullan-sur-Mer</td><td>1635</td></tr>
+<tr><td>22</td><td>Hénansal</td><td>1189</td></tr>
+<tr><td>35</td><td>Landujan</td><td>1001</td></tr>
+<tr><td>35</td><td>Ercé-en-Lamée</td><td>1525</td></tr>
+<tr><td>29</td><td>Landerneau</td><td>16012</td></tr>
+<tr><td>35</td><td>Guipel</td><td>1747</td></tr>
+<tr><td>22</td><td>Loudéac</td><td>10081</td></tr>
+<tr><td>29</td><td>Plourin-lès-Morlaix</td><td>4665</td></tr>
+<tr><td>29</td><td>Landudec</td><td>1423</td></tr>
+<tr><td>35</td><td>La Chapelle-Saint-Aubert</td><td>435</td></tr>
+<tr><td>22</td><td>Hengoat</td><td>220</td></tr>
+<tr><td>56</td><td>Larmor-Baden</td><td>928</td></tr>
+<tr><td>22</td><td>Landébia</td><td>496</td></tr>
+<tr><td>29</td><td>Saint-Servais</td><td>831</td></tr>
+<tr><td>56</td><td>Taupont</td><td>2309</td></tr>
+<tr><td>22</td><td>Plouaret</td><td>2193</td></tr>
+<tr><td>22</td><td>Saint-Connec</td><td>263</td></tr>
+<tr><td>22</td><td>Lanmérin</td><td>576</td></tr>
+<tr><td>22</td><td>Pouldouran</td><td>163</td></tr>
+<tr><td>22</td><td>Saint-Pôtan</td><td>800</td></tr>
+<tr><td>35</td><td>Saint-Marcan</td><td>464</td></tr>
+<tr><td>29</td><td>Quimper</td><td>66979</td></tr>
+<tr><td>35</td><td>Saint-Georges-de-Chesné</td><td>704</td></tr>
+<tr><td>29</td><td>Plougonven</td><td>3474</td></tr>
+<tr><td>35</td><td>Romazy</td><td>292</td></tr>
+<tr><td>56</td><td>Lanvaudan</td><td>790</td></tr>
+<tr><td>56</td><td>Lauzach</td><td>1090</td></tr>
+<tr><td>29</td><td>Motreff</td><td>727</td></tr>
+<tr><td>22</td><td>Camlez</td><td>916</td></tr>
+<tr><td>56</td><td>Croixanvec</td><td>164</td></tr>
+<tr><td>35</td><td>Dinard</td><td>10469</td></tr>
+<tr><td>22</td><td>Morieux</td><td>993</td></tr>
+<tr><td>35</td><td>Gahard</td><td>1421</td></tr>
+<tr><td>29</td><td>Lennon</td><td>858</td></tr>
+<tr><td>29</td><td>Berrien</td><td>997</td></tr>
+<tr><td>22</td><td>Binic</td><td>3887</td></tr>
+<tr><td>56</td><td>Silfiac</td><td>447</td></tr>
+<tr><td>56</td><td>Locoal-Mendon</td><td>3381</td></tr>
+<tr><td>22</td><td>Ploumilliau</td><td>2567</td></tr>
+<tr><td>35</td><td>Amanlis</td><td>1718</td></tr>
+<tr><td>56</td><td>Ploemel</td><td>2837</td></tr>
+<tr><td>56</td><td>Quiberon</td><td>5087</td></tr>
+<tr><td>35</td><td>Sainte-Anne-sur-Vilaine</td><td>1006</td></tr>
+<tr><td>29</td><td>Ouessant</td><td>878</td></tr>
+<tr><td>35</td><td>Domalain</td><td>2011</td></tr>
+<tr><td>35</td><td>Châteaugiron</td><td>7633</td></tr>
+<tr><td>29</td><td>Bourg-Blanc</td><td>3545</td></tr>
+<tr><td>56</td><td>Saint-Vincent-sur-Oust</td><td>1452</td></tr>
+<tr><td>56</td><td>Malguénac</td><td>1851</td></tr>
+<tr><td>56</td><td>Persquen</td><td>344</td></tr>
+<tr><td>22</td><td>Trévron</td><td>715</td></tr>
+<tr><td>56</td><td>Arzal</td><td>1605</td></tr>
+<tr><td>22</td><td>Saint-Samson-sur-Rance</td><td>1591</td></tr>
+<tr><td>29</td><td>Plouvorn</td><td>2916</td></tr>
+<tr><td>56</td><td>Campénéac</td><td>1999</td></tr>
+<tr><td>29</td><td>Plozévet</td><td>3061</td></tr>
+<tr><td>22</td><td>Maël-Carhaix</td><td>1580</td></tr>
+<tr><td>29</td><td>Henvic</td><td>1347</td></tr>
+<tr><td>56</td><td>Saint-Thuriau</td><td>1943</td></tr>
+<tr><td>29</td><td>Coat-Méal</td><td>1096</td></tr>
+<tr><td>29</td><td>Gouesnach</td><td>2791</td></tr>
+<tr><td>22</td><td>Laurenan</td><td>751</td></tr>
+<tr><td>56</td><td>Langonnet</td><td>1940</td></tr>
+<tr><td>35</td><td>Saint-Brieuc-des-Iffs</td><td>353</td></tr>
+<tr><td>29</td><td>Loqueffret</td><td>381</td></tr>
+<tr><td>56</td><td>Sainte-Brigitte</td><td>184</td></tr>
+<tr><td>35</td><td>Vitré</td><td>18171</td></tr>
+<tr><td>22</td><td>Pont-Melvez</td><td>659</td></tr>
+<tr><td>56</td><td>Baden</td><td>4611</td></tr>
+<tr><td>22</td><td>Trélivan</td><td>2700</td></tr>
+<tr><td>35</td><td>Brécé</td><td>2141</td></tr>
+<tr><td>22</td><td>Lannebert</td><td>458</td></tr>
+<tr><td>22</td><td>Hémonstoir</td><td>728</td></tr>
+<tr><td>56</td><td>La Chapelle-Gaceline</td><td>803</td></tr>
+<tr><td>35</td><td>Monthault</td><td>278</td></tr>
+<tr><td>29</td><td>Guengat</td><td>1781</td></tr>
+<tr><td>22</td><td>Lanleff</td><td>119</td></tr>
+<tr><td>22</td><td>Saint-Quay-Portrieux</td><td>3166</td></tr>
+<tr><td>56</td><td>Pleucadeuc</td><td>1773</td></tr>
+<tr><td>22</td><td>Saint-Maden</td><td>225</td></tr>
+<tr><td>56</td><td>Rochefort-en-Terre</td><td>663</td></tr>
+<tr><td>35</td><td>Louvigné-du-Désert</td><td>3527</td></tr>
+<tr><td>56</td><td>Locmaria-Grand-Champ</td><td>1627</td></tr>
+<tr><td>22</td><td>Plounérin</td><td>744</td></tr>
+<tr><td>35</td><td>Chasné-sur-Illet</td><td>1527</td></tr>
+<tr><td>35</td><td>Thourie</td><td>777</td></tr>
+<tr><td>29</td><td>Plourin</td><td>1276</td></tr>
+<tr><td>22</td><td>La Bouillie</td><td>866</td></tr>
+<tr><td>22</td><td>Moncontour</td><td>906</td></tr>
+<tr><td>22</td><td>Kerbors</td><td>324</td></tr>
+<tr><td>29</td><td>Locmaria-Plouzané</td><td>5047</td></tr>
+<tr><td>22</td><td>Pléven</td><td>587</td></tr>
+<tr><td>56</td><td>Billiers</td><td>946</td></tr>
+<tr><td>56</td><td>Gâvres</td><td>719</td></tr>
+<tr><td>56</td><td>Île-d'Arz</td><td>248</td></tr>
+<tr><td>35</td><td>La Chapelle-des-Fougeretz</td><td>4836</td></tr>
+<tr><td>22</td><td>Plévin</td><td>815</td></tr>
+<tr><td>56</td><td>Saint-Caradec-Trégomel</td><td>473</td></tr>
+<tr><td>56</td><td>Guémené-sur-Scorff</td><td>1156</td></tr>
+<tr><td>29</td><td>Guiler-sur-Goyen</td><td>540</td></tr>
+<tr><td>35</td><td>Saint-Just</td><td>1113</td></tr>
+<tr><td>35</td><td>Cardroc</td><td>561</td></tr>
+<tr><td>35</td><td>La Chapelle-de-Brain</td><td>992</td></tr>
+<tr><td>22</td><td>Tréogan</td><td>105</td></tr>
+<tr><td>56</td><td>Île-d'Houat</td><td>250</td></tr>
+<tr><td>22</td><td>Bourseul</td><td>1144</td></tr>
+<tr><td>22</td><td>Saint-Maudez</td><td>326</td></tr>
+<tr><td>35</td><td>Landéan</td><td>1307</td></tr>
+<tr><td>56</td><td>Limerzel</td><td>1373</td></tr>
+<tr><td>22</td><td>Plourac'h</td><td>338</td></tr>
+<tr><td>22</td><td>Plusquellec</td><td>564</td></tr>
+<tr><td>22</td><td>Plouézec</td><td>3349</td></tr>
+<tr><td>56</td><td>Larmor-Plage</td><td>8498</td></tr>
+<tr><td>35</td><td>Rimou</td><td>344</td></tr>
+<tr><td>35</td><td>Piré-sur-Seiche</td><td>2504</td></tr>
+<tr><td>35</td><td>La Selle-Guerchaise</td><td>165</td></tr>
+<tr><td>22</td><td>Plounévez-Quintin</td><td>1136</td></tr>
+<tr><td>35</td><td>Longaulnay</td><td>649</td></tr>
+<tr><td>29</td><td>Loc-Eguiner</td><td>383</td></tr>
+<tr><td>35</td><td>Cintré</td><td>2254</td></tr>
+<tr><td>22</td><td>Trémel</td><td>454</td></tr>
+<tr><td>29</td><td>Saint-Thégonnec Loc-Eguiner</td><td>3122</td></tr>
+<tr><td>35</td><td>Dingé</td><td>1723</td></tr>
+<tr><td>56</td><td>Monterrein</td><td>398</td></tr>
+<tr><td>35</td><td>Tremblay</td><td>1614</td></tr>
+<tr><td>35</td><td>Noyal-Châtillon-sur-Seiche</td><td>7070</td></tr>
+<tr><td>56</td><td>Groix</td><td>2308</td></tr>
+<tr><td>22</td><td>Saint-Hervé</td><td>434</td></tr>
+<tr><td>22</td><td>La Malhoure</td><td>554</td></tr>
+<tr><td>29</td><td>Brignogan-Plages</td><td>761</td></tr>
+<tr><td>29</td><td>Cléden-Cap-Sizun</td><td>966</td></tr>
+<tr><td>22</td><td>Coëtmieux</td><td>1793</td></tr>
+<tr><td>22</td><td>Louargat</td><td>2405</td></tr>
+<tr><td>35</td><td>Cancale</td><td>5321</td></tr>
+<tr><td>29</td><td>Riec-sur-Bélon</td><td>4268</td></tr>
+<tr><td>29</td><td>Gourlizon</td><td>918</td></tr>
+<tr><td>29</td><td>Quéménéven</td><td>1186</td></tr>
+<tr><td>35</td><td>Saint-Lunaire</td><td>2368</td></tr>
+<tr><td>56</td><td>Nivillac</td><td>4512</td></tr>
+<tr><td>29</td><td>Landivisiau</td><td>9452</td></tr>
+<tr><td>22</td><td>Bobital</td><td>1101</td></tr>
+<tr><td>35</td><td>Plesder</td><td>775</td></tr>
+<tr><td>22</td><td>Trévé</td><td>1667</td></tr>
+<tr><td>22</td><td>Dinan</td><td>11403</td></tr>
+<tr><td>29</td><td>Plomeur</td><td>3867</td></tr>
+<tr><td>35</td><td>Lohéac</td><td>674</td></tr>
+<tr><td>29</td><td>Pencran</td><td>1931</td></tr>
+<tr><td>35</td><td>La Boussac</td><td>1170</td></tr>
+<tr><td>29</td><td>Kernilis</td><td>1475</td></tr>
+<tr><td>56</td><td>Locmiquélic</td><td>4198</td></tr>
+<tr><td>22</td><td>Mûr-de-Bretagne</td><td>2097</td></tr>
+<tr><td>35</td><td>Pacé</td><td>11596</td></tr>
+<tr><td>29</td><td>Le Cloître-Saint-Thégonnec</td><td>677</td></tr>
+<tr><td>35</td><td>Parigné</td><td>1356</td></tr>
+<tr><td>22</td><td>Kergrist-Moëlou</td><td>660</td></tr>
+<tr><td>29</td><td>Huelgoat</td><td>1586</td></tr>
+<tr><td>35</td><td>Chanteloup</td><td>1833</td></tr>
+<tr><td>56</td><td>Erdeven</td><td>3628</td></tr>
+<tr><td>22</td><td>Trégastel</td><td>2485</td></tr>
+<tr><td>56</td><td>Ambon</td><td>1856</td></tr>
+<tr><td>56</td><td>Guern</td><td>1391</td></tr>
+<tr><td>56</td><td>Saint-Armel</td><td>924</td></tr>
+<tr><td>22</td><td>Saint-Julien</td><td>2100</td></tr>
+<tr><td>35</td><td>Trémeheuc</td><td>356</td></tr>
+<tr><td>29</td><td>Lopérec</td><td>1013</td></tr>
+<tr><td>56</td><td>Cournon</td><td>795</td></tr>
+<tr><td>22</td><td>Pleudihen-sur-Rance</td><td>2882</td></tr>
+<tr><td>35</td><td>Baulon</td><td>2148</td></tr>
+<tr><td>22</td><td>Belle-Isle-en-Terre</td><td>1100</td></tr>
+<tr><td>22</td><td>Locarn</td><td>437</td></tr>
+<tr><td>29</td><td>Pleyben</td><td>4092</td></tr>
+<tr><td>29</td><td>Cast</td><td>1712</td></tr>
+<tr><td>29</td><td>Guimaëc</td><td>1010</td></tr>
+<tr><td>35</td><td>Argentré-du-Plessis</td><td>4424</td></tr>
+<tr><td>29</td><td>Mahalon</td><td>972</td></tr>
+<tr><td>29</td><td>Névez</td><td>2728</td></tr>
+<tr><td>35</td><td>Maure-de-Bretagne</td><td>3432</td></tr>
+<tr><td>56</td><td>Cléguérec</td><td>3013</td></tr>
+<tr><td>22</td><td>Pléneuf-Val-André</td><td>4130</td></tr>
+<tr><td>35</td><td>Saint-Méloir-des-Ondes</td><td>4016</td></tr>
+<tr><td>29</td><td>Plouénan</td><td>2557</td></tr>
+<tr><td>22</td><td>Cohiniac</td><td>402</td></tr>
+<tr><td>22</td><td>Coatréven</td><td>496</td></tr>
+<tr><td>29</td><td>Pouldergat</td><td>1259</td></tr>
+<tr><td>29</td><td>Trégarantec</td><td>569</td></tr>
+<tr><td>35</td><td>Mondevert</td><td>826</td></tr>
+<tr><td>22</td><td>Saint-Caradec</td><td>1161</td></tr>
+<tr><td>22</td><td>Saint-Bihy</td><td>244</td></tr>
+<tr><td>22</td><td>Lanvallay</td><td>4094</td></tr>
+<tr><td>35</td><td>Cornillé</td><td>971</td></tr>
+<tr><td>56</td><td>Saint-Gravé</td><td>784</td></tr>
+<tr><td>29</td><td>La Feuillée</td><td>650</td></tr>
+<tr><td>35</td><td>Bléruais</td><td>114</td></tr>
+<tr><td>22</td><td>Allineuc</td><td>595</td></tr>
+<tr><td>22</td><td>Trégonneau</td><td>554</td></tr>
+<tr><td>35</td><td>Châtillon-en-Vendelais</td><td>1754</td></tr>
+<tr><td>35</td><td>Paimpont</td><td>1690</td></tr>
+<tr><td>35</td><td>Montreuil-le-Gast</td><td>1952</td></tr>
+<tr><td>29</td><td>Plonéis</td><td>2267</td></tr>
+<tr><td>56</td><td>Plumergat</td><td>4035</td></tr>
+<tr><td>35</td><td>Guipry-Messac</td><td>7002</td></tr>
+<tr><td>56</td><td>Gourhel</td><td>687</td></tr>
+<tr><td>29</td><td>Pluguffan</td><td>4028</td></tr>
+<tr><td>29</td><td>Saint-Évarzec</td><td>3668</td></tr>
+<tr><td>35</td><td>Laillé</td><td>5168</td></tr>
+<tr><td>35</td><td>Parthenay-de-Bretagne</td><td>1590</td></tr>
+<tr><td>56</td><td>Guénin</td><td>1710</td></tr>
+<tr><td>56</td><td>Auray</td><td>13812</td></tr>
+<tr><td>22</td><td>Plouha</td><td>4565</td></tr>
+<tr><td>35</td><td>Chevaigné</td><td>2100</td></tr>
+<tr><td>29</td><td>Plougourvest</td><td>1423</td></tr>
+<tr><td>29</td><td>Châteauneuf-du-Faou</td><td>3803</td></tr>
+<tr><td>22</td><td>La Chèze</td><td>603</td></tr>
+<tr><td>35</td><td>La Richardais</td><td>2363</td></tr>
+<tr><td>29</td><td>Plobannalec-Lesconil</td><td>3513</td></tr>
+<tr><td>35</td><td>Vendel</td><td>399</td></tr>
+<tr><td>29</td><td>Le Relecq-Kerhuon</td><td>11559</td></tr>
+<tr><td>35</td><td>Saint-Gondran</td><td>543</td></tr>
+<tr><td>29</td><td>Ergué-Gabéric</td><td>8487</td></tr>
+<tr><td>35</td><td>La Dominelais</td><td>1348</td></tr>
+<tr><td>22</td><td>Saint-Martin-des-Prés</td><td>336</td></tr>
+<tr><td>56</td><td>Crédin</td><td>1551</td></tr>
+<tr><td>22</td><td>Penguily</td><td>630</td></tr>
+<tr><td>56</td><td>La Croix-Helléan</td><td>899</td></tr>
+<tr><td>22</td><td>Saint-Adrien</td><td>366</td></tr>
+<tr><td>29</td><td>Le Tréhou</td><td>635</td></tr>
+<tr><td>22</td><td>Saint-Glen</td><td>620</td></tr>
+<tr><td>29</td><td>Combrit</td><td>4049</td></tr>
+<tr><td>35</td><td>Miniac-Morvan</td><td>3879</td></tr>
+<tr><td>22</td><td>Mellionnec</td><td>431</td></tr>
+<tr><td>56</td><td>Saint-Jean-la-Poterie</td><td>1561</td></tr>
+<tr><td>22</td><td>Saint-Donan</td><td>1467</td></tr>
+<tr><td>22</td><td>Plerneuf</td><td>1045</td></tr>
+<tr><td>56</td><td>Guer</td><td>6563</td></tr>
+<tr><td>56</td><td>Tréal</td><td>672</td></tr>
+<tr><td>35</td><td>Essé</td><td>1139</td></tr>
+<tr><td>29</td><td>Plouvien</td><td>3778</td></tr>
+<tr><td>35</td><td>Saint-Aubin-du-Cormier</td><td>3811</td></tr>
+<tr><td>22</td><td>Ploulec'h</td><td>1716</td></tr>
+<tr><td>22</td><td>Calanhel</td><td>212</td></tr>
+<tr><td>56</td><td>Saint-Jean-Brévelay</td><td>2898</td></tr>
+<tr><td>29</td><td>Île-de-Sein</td><td>236</td></tr>
+<tr><td>29</td><td>Tréguennec</td><td>330</td></tr>
+<tr><td>29</td><td>Le Faou</td><td>1767</td></tr>
+<tr><td>22</td><td>Sainte-Tréphine</td><td>204</td></tr>
+<tr><td>56</td><td>Langoëlan</td><td>402</td></tr>
+<tr><td>56</td><td>Mohon</td><td>1021</td></tr>
+<tr><td>22</td><td>Hillion</td><td>4187</td></tr>
+<tr><td>56</td><td>La Gacilly</td><td>2290</td></tr>
+<tr><td>35</td><td>Tinténiac</td><td>3579</td></tr>
+<tr><td>56</td><td>Lanvénégen</td><td>1198</td></tr>
+<tr><td>22</td><td>Saint-Barnabé</td><td>1299</td></tr>
+<tr><td>29</td><td>Saint-Eloy</td><td>227</td></tr>
+<tr><td>35</td><td>Sougéal</td><td>682</td></tr>
+<tr><td>35</td><td>Montautour</td><td>267</td></tr>
+<tr><td>29</td><td>Morlaix</td><td>15633</td></tr>
+<tr><td>22</td><td>Saint-Igeaux</td><td>143</td></tr>
+<tr><td>22</td><td>Saint-Quay-Perros</td><td>1360</td></tr>
+<tr><td>35</td><td>La Selle-en-Luitré</td><td>606</td></tr>
+<tr><td>29</td><td>Trégourez</td><td>1006</td></tr>
+<tr><td>22</td><td>Saint-Péver</td><td>431</td></tr>
+<tr><td>35</td><td>Bécherel</td><td>715</td></tr>
+<tr><td>56</td><td>Évellys</td><td>3499</td></tr>
+<tr><td>29</td><td>Bénodet</td><td>3533</td></tr>
+<tr><td>56</td><td>Bieuzy</td><td>784</td></tr>
+<tr><td>29</td><td>Plonévez-du-Faou</td><td>2191</td></tr>
+<tr><td>56</td><td>Les Fougerêts</td><td>972</td></tr>
+<tr><td>22</td><td>Guitté</td><td>697</td></tr>
+<tr><td>56</td><td>Saint-Nolff</td><td>3778</td></tr>
+<tr><td>56</td><td>Plumelin</td><td>2811</td></tr>
+<tr><td>22</td><td>Tramain</td><td>688</td></tr>
+<tr><td>56</td><td>Sarzeau</td><td>8001</td></tr>
+<tr><td>29</td><td>Locquénolé</td><td>835</td></tr>
+<tr><td>29</td><td>Saint-Méen</td><td>901</td></tr>
+<tr><td>35</td><td>Ossé</td><td>1206</td></tr>
+<tr><td>35</td><td>Saint-Coulomb</td><td>2705</td></tr>
+<tr><td>29</td><td>Guerlesquin</td><td>1376</td></tr>
+<tr><td>35</td><td>Montreuil-sur-Ille</td><td>2291</td></tr>
+<tr><td>56</td><td>Theix-Noyalo</td><td>8018</td></tr>
+<tr><td>56</td><td>Caro</td><td>1240</td></tr>
+<tr><td>35</td><td>Le Crouais</td><td>554</td></tr>
+<tr><td>35</td><td>Romillé</td><td>3953</td></tr>
+<tr><td>56</td><td>Saint-Aignan</td><td>608</td></tr>
+<tr><td>35</td><td>Clayes</td><td>778</td></tr>
+<tr><td>22</td><td>Le Merzer</td><td>1001</td></tr>
+<tr><td>35</td><td>Saint-Gilles</td><td>4302</td></tr>
+<tr><td>29</td><td>Plomodiern</td><td>2181</td></tr>
+<tr><td>56</td><td>Colpo</td><td>2283</td></tr>
+<tr><td>29</td><td>Pont-Croix</td><td>1624</td></tr>
+<tr><td>35</td><td>Taillis</td><td>1046</td></tr>
+<tr><td>35</td><td>Torcé</td><td>1193</td></tr>
+<tr><td>29</td><td>Ploudiry</td><td>942</td></tr>
+<tr><td>29</td><td>Concarneau</td><td>19989</td></tr>
+<tr><td>35</td><td>La Chapelle-Thouarault</td><td>2034</td></tr>
+<tr><td>56</td><td>Caudan</td><td>6879</td></tr>
+<tr><td>22</td><td>Gausson</td><td>660</td></tr>
+<tr><td>22</td><td>Carnoët</td><td>704</td></tr>
+<tr><td>56</td><td>Radenac</td><td>1039</td></tr>
+<tr><td>22</td><td>Trébrivan</td><td>730</td></tr>
+<tr><td>29</td><td>Porspoder</td><td>1843</td></tr>
+<tr><td>29</td><td>Elliant</td><td>3423</td></tr>
+<tr><td>29</td><td>Lothey</td><td>467</td></tr>
+<tr><td>29</td><td>Tourch</td><td>1052</td></tr>
+<tr><td>35</td><td>La Ville-ès-Nonais</td><td>1152</td></tr>
+<tr><td>35</td><td>Livré-sur-Changeon</td><td>1694</td></tr>
+<tr><td>22</td><td>Saint-Hélen</td><td>1426</td></tr>
+<tr><td>56</td><td>Marzan</td><td>2271</td></tr>
+<tr><td>56</td><td>Le Croisty</td><td>763</td></tr>
+<tr><td>35</td><td>Tresbœuf</td><td>1283</td></tr>
+<tr><td>29</td><td>Tréouergat</td><td>329</td></tr>
+<tr><td>22</td><td>Penvénan</td><td>2721</td></tr>
+<tr><td>56</td><td>Concoret</td><td>753</td></tr>
+<tr><td>22</td><td>Châtelaudren</td><td>1024</td></tr>
+<tr><td>56</td><td>Bubry</td><td>2416</td></tr>
+<tr><td>56</td><td>Neulliac</td><td>1493</td></tr>
+<tr><td>35</td><td>Bain-de-Bretagne</td><td>7597</td></tr>
+<tr><td>35</td><td>Saint-Symphorien</td><td>729</td></tr>
+<tr><td>22</td><td>Corlay</td><td>986</td></tr>
+<tr><td>29</td><td>Pont-de-Buis-lès-Quimerch</td><td>4048</td></tr>
+<tr><td>22</td><td>Saint-Gildas</td><td>281</td></tr>
+<tr><td>22</td><td>Langueux</td><td>7779</td></tr>
+<tr><td>22</td><td>Pordic</td><td>7122</td></tr>
+<tr><td>35</td><td>La Chapelle-Janson</td><td>1451</td></tr>
+<tr><td>35</td><td>Renac</td><td>998</td></tr>
+<tr><td>56</td><td>Treffléan</td><td>2186</td></tr>
+<tr><td>56</td><td>Meslan</td><td>1447</td></tr>
+<tr><td>35</td><td>Saint-Péran</td><td>404</td></tr>
+<tr><td>35</td><td>Lillemer</td><td>346</td></tr>
+<tr><td>29</td><td>Sizun</td><td>2326</td></tr>
+<tr><td>56</td><td>Guiscriff</td><td>2284</td></tr>
+<tr><td>56</td><td>Ploërmel</td><td>10150</td></tr>
+<tr><td>56</td><td>Gueltas</td><td>519</td></tr>
+<tr><td>22</td><td>Saint-Connan</td><td>315</td></tr>
+<tr><td>56</td><td>Porcaro</td><td>714</td></tr>
+<tr><td>29</td><td>Tréméven</td><td>2333</td></tr>
+<tr><td>35</td><td>Plélan-le-Grand</td><td>3831</td></tr>
+<tr><td>35</td><td>Médréac</td><td>1840</td></tr>
+<tr><td>56</td><td>Guégon</td><td>2343</td></tr>
+<tr><td>35</td><td>Gévezé</td><td>5246</td></tr>
+<tr><td>35</td><td>Bréal-sous-Montfort</td><td>5785</td></tr>
+<tr><td>29</td><td>Plouhinec</td><td>4180</td></tr>
+<tr><td>35</td><td>Saint-Aubin-du-Pavail</td><td>838</td></tr>
+<tr><td>56</td><td>Roudouallec</td><td>759</td></tr>
+<tr><td>29</td><td>Lanarvily</td><td>449</td></tr>
+<tr><td>29</td><td>Kersaint-Plabennec</td><td>1398</td></tr>
+<tr><td>22</td><td>Noyal</td><td>897</td></tr>
+<tr><td>35</td><td>Andouillé-Neuville</td><td>861</td></tr>
+<tr><td>29</td><td>Plouguin</td><td>2172</td></tr>
+<tr><td>22</td><td>Coëtlogon</td><td>239</td></tr>
+<tr><td>56</td><td>Saint-Tugdual</td><td>388</td></tr>
+<tr><td>56</td><td>Meucon</td><td>2347</td></tr>
+<tr><td>29</td><td>Guissény</td><td>2057</td></tr>
+<tr><td>22</td><td>Le Vieux-Bourg</td><td>798</td></tr>
+<tr><td>29</td><td>Milizac</td><td>3558</td></tr>
+<tr><td>22</td><td>Pédernec</td><td>1928</td></tr>
+<tr><td>29</td><td>Hanvec</td><td>2044</td></tr>
+<tr><td>29</td><td>Le Drennec</td><td>1851</td></tr>
+<tr><td>35</td><td>Visseiche</td><td>809</td></tr>
+<tr><td>22</td><td>Les Moulins</td><td>3791</td></tr>
+<tr><td>35</td><td>Mordelles</td><td>7405</td></tr>
+<tr><td>35</td><td>Saint-Georges-de-Reintembault</td><td>1619</td></tr>
+<tr><td>22</td><td>Plumaudan</td><td>1271</td></tr>
+<tr><td>29</td><td>Kergloff</td><td>957</td></tr>
+<tr><td>29</td><td>Saint-Goazec</td><td>738</td></tr>
+<tr><td>56</td><td>Saint-Laurent-sur-Oust</td><td>373</td></tr>
+<tr><td>56</td><td>Les Forges</td><td>462</td></tr>
+<tr><td>35</td><td>Trimer</td><td>197</td></tr>
+<tr><td>56</td><td>Augan</td><td>1604</td></tr>
+<tr><td>56</td><td>Saint-Gorgon</td><td>378</td></tr>
+<tr><td>35</td><td>Erbrée</td><td>1696</td></tr>
+<tr><td>35</td><td>La Bouëxière</td><td>4376</td></tr>
+<tr><td>35</td><td>Québriac</td><td>1627</td></tr>
+<tr><td>29</td><td>Lanmeur</td><td>2258</td></tr>
+<tr><td>22</td><td>Saint-Jacut-de-la-Mer</td><td>895</td></tr>
+<tr><td>35</td><td>Saint-Uniac</td><td>525</td></tr>
+<tr><td>29</td><td>Loctudy</td><td>4121</td></tr>
+<tr><td>22</td><td>Lancieux</td><td>1563</td></tr>
+<tr><td>22</td><td>Berhet</td><td>255</td></tr>
+<tr><td>22</td><td>Saint-Laurent</td><td>529</td></tr>
+<tr><td>35</td><td>Saint-Léger-des-Prés</td><td>251</td></tr>
+<tr><td>22</td><td>Trévérec</td><td>231</td></tr>
+<tr><td>29</td><td>Argol</td><td>1077</td></tr>
+<tr><td>29</td><td>Le Trévoux</td><td>1629</td></tr>
+<tr><td>35</td><td>Sains</td><td>501</td></tr>
+<tr><td>29</td><td>Saint-Martin-des-Champs</td><td>4853</td></tr>
+<tr><td>35</td><td>Bains-sur-Oust</td><td>3510</td></tr>
+<tr><td>35</td><td>Bruz</td><td>17863</td></tr>
+<tr><td>22</td><td>Plougonver</td><td>745</td></tr>
+<tr><td>22</td><td>Tréguier</td><td>2738</td></tr>
+<tr><td>22</td><td>Saint-Michel-de-Plélan</td><td>342</td></tr>
+<tr><td>56</td><td>Arradon</td><td>5648</td></tr>
+<tr><td>29</td><td>Saint-Thurien</td><td>1047</td></tr>
+<tr><td>56</td><td>Languidic</td><td>7788</td></tr>
+<tr><td>56</td><td>Moustoir-Ac</td><td>1861</td></tr>
+<tr><td>35</td><td>Saint-Pierre-de-Plesguen</td><td>2841</td></tr>
+<tr><td>35</td><td>Saint-Malon-sur-Mel</td><td>611</td></tr>
+<tr><td>22</td><td>Loscouët-sur-Meu</td><td>654</td></tr>
+<tr><td>35</td><td>Goven</td><td>4542</td></tr>
+<tr><td>56</td><td>Riantec</td><td>5438</td></tr>
+<tr><td>56</td><td>Saint-Perreux</td><td>1255</td></tr>
+<tr><td>22</td><td>Saint-Cast-le-Guildo</td><td>3498</td></tr>
+<tr><td>29</td><td>Locquirec</td><td>1406</td></tr>
+<tr><td>56</td><td>Vannes</td><td>55527</td></tr>
+<tr><td>35</td><td>Le Tronchet</td><td>1153</td></tr>
+<tr><td>22</td><td>Plévenon</td><td>788</td></tr>
+<tr><td>35</td><td>Pancé</td><td>1179</td></tr>
+<tr><td>22</td><td>Pommeret</td><td>2098</td></tr>
+<tr><td>35</td><td>Redon</td><td>9848</td></tr>
+<tr><td>35</td><td>Saint-Brice-en-Coglès</td><td>3033</td></tr>
+<tr><td>22</td><td>La Landec</td><td>781</td></tr>
+<tr><td>29</td><td>Plounéour-Ménez</td><td>1308</td></tr>
+<tr><td>22</td><td>Saint-Gelven</td><td>329</td></tr>
+<tr><td>22</td><td>Saint-Nicodème</td><td>177</td></tr>
+<tr><td>56</td><td>Quistinic</td><td>1467</td></tr>
+<tr><td>29</td><td>Sibiril</td><td>1253</td></tr>
+<tr><td>22</td><td>Plérin</td><td>14719</td></tr>
+<tr><td>29</td><td>Plougasnou</td><td>3199</td></tr>
+<tr><td>35</td><td>Bourgbarré</td><td>3814</td></tr>
+<tr><td>35</td><td>Étrelles</td><td>2613</td></tr>
+<tr><td>35</td><td>Fleurigné</td><td>1054</td></tr>
+<tr><td>56</td><td>Saint-Barthélemy</td><td>1227</td></tr>
+<tr><td>35</td><td>Plerguer</td><td>2568</td></tr>
+<tr><td>56</td><td>La Trinité-sur-Mer</td><td>1680</td></tr>
+<tr><td>22</td><td>Saint-Méloir-des-Bois</td><td>262</td></tr>
+<tr><td>29</td><td>Saint-Vougay</td><td>928</td></tr>
+<tr><td>35</td><td>Hédé-Bazouges</td><td>2162</td></tr>
+<tr><td>56</td><td>Carentoir</td><td>2814</td></tr>
+<tr><td>56</td><td>Saint-Philibert</td><td>1606</td></tr>
+<tr><td>22</td><td>Langrolay-sur-Rance</td><td>911</td></tr>
+<tr><td>35</td><td>Le Pertre</td><td>1430</td></tr>
+<tr><td>29</td><td>Saint-Pabu</td><td>2095</td></tr>
+<tr><td>22</td><td>Plourivo</td><td>2288</td></tr>
+<tr><td>22</td><td>Tréduder</td><td>206</td></tr>
+<tr><td>35</td><td>La Bazouge-du-Désert</td><td>1140</td></tr>
+<tr><td>29</td><td>Mellac</td><td>2977</td></tr>
+<tr><td>56</td><td>Missiriac</td><td>1133</td></tr>
+<tr><td>56</td><td>Grand-Champ</td><td>5385</td></tr>
+<tr><td>35</td><td>Saint-Georges-de-Gréhaigne</td><td>391</td></tr>
+<tr><td>56</td><td>Montertelot</td><td>375</td></tr>
+<tr><td>22</td><td>Sévignac</td><td>1141</td></tr>
+
+      </tbody>
+</table>
+    <p>Source : Insee, Recensement de la population 2014</a></p>
+
+
+
+</body></html>
