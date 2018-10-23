@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="webix/webix.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="webix/webix.js"></script>
+  <script src="webix/tinymce/tinymce.js"></script>
+  <title>Poem</title>
+  <script src="js/utils.js"></script>
+  <script>
+  secret = "13RT?SDLKQ°°°43zez%";
+  </script>
+</head>
+<body>
+    <script>
+    var target = "The rose family";
+    webix.codebase = "./webix/tinymce/";
+    webix.ready(function() {
+      webix.ui({
+        view:"layout",
+        rows:[{}]
+      });
+      webix.ui({
+        view:"window",
+        id:"fenetre",
+        hidden:false,
+        fullscreen:true,
+        head:{
+          view:"toolbar",
+          cols:[{
+              view: "label",
+              label: "Poem"
+            }
+          ]
+        },
+        body:{
+          id:"editor",
+          view:"tinymce-editor",
+          config: {
+            theme:"modern",
+            language:"en_EN"
+          }
+        }
+      });
+      $$("editor").setValue("<h2>The rose family</h2><p>The rose is a rose,<br> And was always a rose.<br> But the theory now goes <br>That the apple’s a rose, <br>And the pear is, and so’s <br> The plum, I suppose. <br> The dear only knows <br> What will next prove a rose. <br> You, of course, are a rose –<br>But were alwas a rose.<br><p> Robert Frost .</p>");
+      var waitEditor = $$("editor").getEditor(true);
+      waitEditor.then(function(editor) {
+        var query = editor.$;
+        editor.on('Change', function (e) {
+          var element = query("body").children().first();
+          if (element.css("text-align") == "center" && element.text() == target) {
+            webix.alert("Congratulations!<br>The word is: <span class='answer'>"+getWord()+"</span>");
+          }
+        });
+      })
+    });
+  </script>
+</body>
+</html>
